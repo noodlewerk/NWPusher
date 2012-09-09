@@ -51,7 +51,7 @@ static NSUInteger const NWPayloadMaxSize = 256;
 
 - (void)disconnect
 {
-	[connection disconnect]; connection = nil;
+    [connection disconnect]; connection = nil;
 }
 
 
@@ -117,13 +117,13 @@ static NSUInteger const NWPayloadMaxSize = 256;
         NWLogWarn(@"Payload cannot be more than %i bytes (UTF8)", (int)NWPayloadMaxSize);
         return NO;
     }
-	
-	char buffer[sizeof(uint8_t) + sizeof(uint32_t) * 2 + sizeof(uint16_t) + NWDeviceTokenSize + sizeof(uint16_t) + NWPayloadMaxSize];
-	char *p = buffer;
     
-	uint8_t command = enhance ? 1 : 0;
-	memcpy(p, &command, sizeof(uint8_t));
-	p += sizeof(uint8_t);
+    char buffer[sizeof(uint8_t) + sizeof(uint32_t) * 2 + sizeof(uint16_t) + NWDeviceTokenSize + sizeof(uint16_t) + NWPayloadMaxSize];
+    char *p = buffer;
+    
+    uint8_t command = enhance ? 1 : 0;
+    memcpy(p, &command, sizeof(uint8_t));
+    p += sizeof(uint8_t);
     
     if (enhance) {
         uint32_t ID = htonl(identifier);
@@ -135,20 +135,20 @@ static NSUInteger const NWPayloadMaxSize = 256;
         p += sizeof(uint32_t);
     }
     
-	uint16_t tokenLength = htons(token.length);
-	memcpy(p, &tokenLength, sizeof(uint16_t));
-	p += sizeof(uint16_t);
+    uint16_t tokenLength = htons(token.length);
+    memcpy(p, &tokenLength, sizeof(uint16_t));
+    p += sizeof(uint16_t);
     
-	memcpy(p, token.bytes, token.length);
-	p += token.length;
+    memcpy(p, token.bytes, token.length);
+    p += token.length;
     
-	uint16_t payloadLength = htons(payload.length);
-	memcpy(p, &payloadLength, sizeof(uint16_t));
-	p += sizeof(uint16_t);
+    uint16_t payloadLength = htons(payload.length);
+    memcpy(p, &payloadLength, sizeof(uint16_t));
+    p += sizeof(uint16_t);
     
-	memcpy(p, payload.bytes, payload.length);
-	p += payload.length;
-	
+    memcpy(p, payload.bytes, payload.length);
+    p += payload.length;
+    
     NSData *data = [NSData dataWithBytes:buffer length:p - buffer];
     BOOL result = [connection write:data length:NULL];
     

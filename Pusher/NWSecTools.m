@@ -34,7 +34,7 @@ typedef enum {
 
 + (BOOL)identityWithCertificateRef:(SecCertificateRef)certificate identity:(SecIdentityRef *)identity
 {
-	OSStatus status = SecIdentityCreateWithCertificate(NULL, certificate, identity);
+    OSStatus status = SecIdentityCreateWithCertificate(NULL, certificate, identity);
     if (status != noErr) {
         switch (status) {
             case errSecItemNotFound: NWLogWarn(@"Unable to create identitiy, private key missing"); break;

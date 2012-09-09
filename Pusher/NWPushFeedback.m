@@ -50,7 +50,7 @@ static NSUInteger const NWTokenMaxSize = 32;
 
 - (void)disconnect
 {
-	[connection disconnect]; connection = nil;
+    [connection disconnect]; connection = nil;
 }
 
 

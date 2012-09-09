@@ -46,12 +46,12 @@
 - (void)applicationWillTerminate:(NSNotification *)notification
 {
     NWLog(@"Application will terminate");
-	[pusher disconnect]; pusher = nil;
+    [pusher disconnect]; pusher = nil;
 }
 
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)application
 {
-	return YES;
+    return YES;
 }
 
 

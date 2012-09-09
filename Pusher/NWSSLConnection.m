@@ -12,7 +12,7 @@
 
 @implementation NWSSLConnection {
     otSocket connection;
-	SSLContextRef context;
+    SSLContextRef context;
 }
 
 @synthesize host, port, identity;
@@ -37,48 +37,48 @@
 
 - (BOOL)connect
 {
-	PeerSpec spec;
-	OSStatus status = MakeServerConnection(host.UTF8String, (int)port, &connection, &spec);
+    PeerSpec spec;
+    OSStatus status = MakeServerConnection(host.UTF8String, (int)port, &connection, &spec);
     if (status != noErr) {
         NWLogWarn(@"Unable to create connection to server (%i)", status);
         return NO;
     }
     
-	status = SSLNewContext(false, &context);
+    status = SSLNewContext(false, &context);
     if (status != noErr) {
         NWLogWarn(@"Unable create SSL context (%i)", status);
         return NO;
     }
-	
-	status = SSLSetIOFuncs(context, SocketRead, SocketWrite);
+    
+    status = SSLSetIOFuncs(context, SocketRead, SocketWrite);
     if (status != noErr) {
         NWLogWarn(@"Unable to set socket callbacks (%i)", status);
         return NO;
     }
-	
-	status = SSLSetConnection(context, connection);
+    
+    status = SSLSetConnection(context, connection);
     if (status != noErr) {
         NWLogWarn(@"Unable to set SSL connection (%i)", status);
         return NO;
     }
-	
-	status = SSLSetPeerDomainName(context, host.UTF8String, strlen(host.UTF8String));
+    
+    status = SSLSetPeerDomainName(context, host.UTF8String, strlen(host.UTF8String));
     if (status != noErr) {
         NWLogWarn(@"Unable to set peer domain (%i)", status);
         return NO;
     }
     
-	CFArrayRef certificates = CFArrayCreate(NULL, (const void **)&identity, 1, NULL);
-	status = SSLSetCertificate(context, certificates);
+    CFArrayRef certificates = CFArrayCreate(NULL, (const void **)&identity, 1, NULL);
+    status = SSLSetCertificate(context, certificates);
     CFRelease(certificates);
     if (status != noErr) {
         NWLogWarn(@"Unable to assign certificate (%i)", status);
         return NO;
     }
-	
-	do {
-		status = SSLHandshake(context);
-	} while(status == errSSLWouldBlock);
+    
+    do {
+        status = SSLHandshake(context);
+    } while(status == errSSLWouldBlock);
     if (status != noErr) {
         switch (status) {
             case ioErr: NWLogWarn(@"Unable to perform SSL handshake, no connection"); break;
@@ -120,7 +120,7 @@
 {
     size_t processed = 0;
     const void *bytes = data.bytes;
-	OSStatus status = errSSLWouldBlock;
+    OSStatus status = errSSLWouldBlock;
     for (NSUInteger i = 0; i < 4 && status == errSSLWouldBlock; i++) {
         status = SSLWrite(context, bytes, data.length, &processed);
     }
@@ -140,9 +140,9 @@
 
 - (void)disconnect
 {
-	SSLClose(context);
-	close((int)connection); connection = NULL;
-	SSLDisposeContext(context);	context = NULL;
+    SSLClose(context);
+    close((int)connection); connection = NULL;
+    SSLDisposeContext(context);    context = NULL;
 }
 
 @end
