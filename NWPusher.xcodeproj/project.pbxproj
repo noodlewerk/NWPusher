@@ -1,0 +1,358 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B3C6BD8015FD24D200F1F3F1 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3C6BD7F15FD24D200F1F3F1 /* Cocoa.framework */; };
+		B3C6BD8C15FD24D200F1F3F1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C6BD8B15FD24D200F1F3F1 /* main.m */; };
+		B3C6BD9315FD24D200F1F3F1 /* NWAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C6BD9215FD24D200F1F3F1 /* NWAppDelegate.m */; };
+		B3C6BDB415FD253100F1F3F1 /* NWPusher.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C6BDB315FD253100F1F3F1 /* NWPusher.m */; };
+		B3C6BDB715FD254900F1F3F1 /* NWSSLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C6BDB615FD254900F1F3F1 /* NWSSLConnection.m */; };
+		B3C6BDBA15FD255500F1F3F1 /* NWSecTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C6BDB915FD255500F1F3F1 /* NWSecTools.m */; };
+		B3C6BDBD15FD257100F1F3F1 /* NWPushFeedback.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C6BDBC15FD257000F1F3F1 /* NWPushFeedback.m */; };
+		B3C6BDC015FD259400F1F3F1 /* ioSock.c in Sources */ = {isa = PBXBuildFile; fileRef = B3C6BDBE15FD259400F1F3F1 /* ioSock.c */; };
+		B3C6BDD115FD268F00F1F3F1 /* libNWLoggingCocoa.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B3C6BDC815FD268F00F1F3F1 /* libNWLoggingCocoa.a */; };
+		B3C6BDD315FD27E900F1F3F1 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3C6BDD215FD27E900F1F3F1 /* Security.framework */; };
+		B3C6BDD515FD285600F1F3F1 /* configuration.plist in Resources */ = {isa = PBXBuildFile; fileRef = B3C6BDD415FD285600F1F3F1 /* configuration.plist */; };
+		B3C6BDF715FD2CF800F1F3F1 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3C6BDF615FD2CF800F1F3F1 /* MainMenu.xib */; };
+		B3C6BDF915FD2D4100F1F3F1 /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = B3C6BDF815FD2D4100F1F3F1 /* icon.icns */; };
+		B3C6BE0115FD30E900F1F3F1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B3C6BE0015FD30E900F1F3F1 /* README.md */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B3C6BD7B15FD24D200F1F3F1 /* Pusher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pusher.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B3C6BD7F15FD24D200F1F3F1 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		B3C6BD8215FD24D200F1F3F1 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		B3C6BD8315FD24D200F1F3F1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		B3C6BD8415FD24D200F1F3F1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		B3C6BD8715FD24D200F1F3F1 /* NWPusher-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NWPusher-Info.plist"; sourceTree = "<group>"; };
+		B3C6BD8B15FD24D200F1F3F1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		B3C6BD8D15FD24D200F1F3F1 /* NWPusher-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NWPusher-Prefix.pch"; sourceTree = "<group>"; };
+		B3C6BD9115FD24D200F1F3F1 /* NWAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NWAppDelegate.h; sourceTree = "<group>"; };
+		B3C6BD9215FD24D200F1F3F1 /* NWAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NWAppDelegate.m; sourceTree = "<group>"; };
+		B3C6BDB215FD253100F1F3F1 /* NWPusher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWPusher.h; sourceTree = "<group>"; };
+		B3C6BDB315FD253100F1F3F1 /* NWPusher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWPusher.m; sourceTree = "<group>"; };
+		B3C6BDB515FD254900F1F3F1 /* NWSSLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWSSLConnection.h; sourceTree = "<group>"; };
+		B3C6BDB615FD254900F1F3F1 /* NWSSLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWSSLConnection.m; sourceTree = "<group>"; };
+		B3C6BDB815FD255500F1F3F1 /* NWSecTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWSecTools.h; sourceTree = "<group>"; };
+		B3C6BDB915FD255500F1F3F1 /* NWSecTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWSecTools.m; sourceTree = "<group>"; };
+		B3C6BDBB15FD257000F1F3F1 /* NWPushFeedback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWPushFeedback.h; sourceTree = "<group>"; };
+		B3C6BDBC15FD257000F1F3F1 /* NWPushFeedback.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWPushFeedback.m; sourceTree = "<group>"; };
+		B3C6BDBE15FD259400F1F3F1 /* ioSock.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioSock.c; sourceTree = "<group>"; };
+		B3C6BDBF15FD259400F1F3F1 /* ioSock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioSock.h; sourceTree = "<group>"; };
+		B3C6BDC815FD268F00F1F3F1 /* libNWLoggingCocoa.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libNWLoggingCocoa.a; sourceTree = "<group>"; };
+		B3C6BDC915FD268F00F1F3F1 /* NWLCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWLCore.h; sourceTree = "<group>"; };
+		B3C6BDCA15FD268F00F1F3F1 /* NWLFilePrinter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWLFilePrinter.h; sourceTree = "<group>"; };
+		B3C6BDCB15FD268F00F1F3F1 /* NWLLineLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWLLineLogger.h; sourceTree = "<group>"; };
+		B3C6BDCC15FD268F00F1F3F1 /* NWLLogView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWLLogView.h; sourceTree = "<group>"; };
+		B3C6BDCD15FD268F00F1F3F1 /* NWLMultiLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWLMultiLogger.h; sourceTree = "<group>"; };
+		B3C6BDCE15FD268F00F1F3F1 /* NWLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWLogging.h; sourceTree = "<group>"; };
+		B3C6BDCF15FD268F00F1F3F1 /* NWLPrinter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWLPrinter.h; sourceTree = "<group>"; };
+		B3C6BDD015FD268F00F1F3F1 /* NWLTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWLTools.h; sourceTree = "<group>"; };
+		B3C6BDD215FD27E900F1F3F1 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		B3C6BDD415FD285600F1F3F1 /* configuration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = configuration.plist; sourceTree = "<group>"; };
+		B3C6BDF615FD2CF800F1F3F1 /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
+		B3C6BDF815FD2D4100F1F3F1 /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
+		B3C6BE0015FD30E900F1F3F1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B3C6BD7815FD24D200F1F3F1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B3C6BDD315FD27E900F1F3F1 /* Security.framework in Frameworks */,
+				B3C6BD8015FD24D200F1F3F1 /* Cocoa.framework in Frameworks */,
+				B3C6BDD115FD268F00F1F3F1 /* libNWLoggingCocoa.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B3C6BD7015FD24D200F1F3F1 = {
+			isa = PBXGroup;
+			children = (
+				B3C6BE0015FD30E900F1F3F1 /* README.md */,
+				B3C6BDD415FD285600F1F3F1 /* configuration.plist */,
+				B3C6BD8515FD24D200F1F3F1 /* Pusher */,
+				B3C6BD7E15FD24D200F1F3F1 /* Frameworks */,
+				B3C6BD7C15FD24D200F1F3F1 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B3C6BD7C15FD24D200F1F3F1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B3C6BD7B15FD24D200F1F3F1 /* Pusher.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B3C6BD7E15FD24D200F1F3F1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B3C6BDC715FD268F00F1F3F1 /* NWLogging */,
+				B3C6BDD215FD27E900F1F3F1 /* Security.framework */,
+				B3C6BD7F15FD24D200F1F3F1 /* Cocoa.framework */,
+				B3C6BD8115FD24D200F1F3F1 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B3C6BD8115FD24D200F1F3F1 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B3C6BD8215FD24D200F1F3F1 /* AppKit.framework */,
+				B3C6BD8315FD24D200F1F3F1 /* CoreData.framework */,
+				B3C6BD8415FD24D200F1F3F1 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		B3C6BD8515FD24D200F1F3F1 /* Pusher */ = {
+			isa = PBXGroup;
+			children = (
+				B3C6BDB215FD253100F1F3F1 /* NWPusher.h */,
+				B3C6BDB315FD253100F1F3F1 /* NWPusher.m */,
+				B3C6BDBB15FD257000F1F3F1 /* NWPushFeedback.h */,
+				B3C6BDBC15FD257000F1F3F1 /* NWPushFeedback.m */,
+				B3C6BDB815FD255500F1F3F1 /* NWSecTools.h */,
+				B3C6BDB915FD255500F1F3F1 /* NWSecTools.m */,
+				B3C6BDB515FD254900F1F3F1 /* NWSSLConnection.h */,
+				B3C6BDB615FD254900F1F3F1 /* NWSSLConnection.m */,
+				B3C6BDBF15FD259400F1F3F1 /* ioSock.h */,
+				B3C6BDBE15FD259400F1F3F1 /* ioSock.c */,
+				B3C6BD9115FD24D200F1F3F1 /* NWAppDelegate.h */,
+				B3C6BD9215FD24D200F1F3F1 /* NWAppDelegate.m */,
+				B3C6BDF615FD2CF800F1F3F1 /* MainMenu.xib */,
+				B3C6BD8615FD24D200F1F3F1 /* Supporting Files */,
+			);
+			path = Pusher;
+			sourceTree = "<group>";
+		};
+		B3C6BD8615FD24D200F1F3F1 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				B3C6BDF815FD2D4100F1F3F1 /* icon.icns */,
+				B3C6BD8715FD24D200F1F3F1 /* NWPusher-Info.plist */,
+				B3C6BD8B15FD24D200F1F3F1 /* main.m */,
+				B3C6BD8D15FD24D200F1F3F1 /* NWPusher-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B3C6BDC715FD268F00F1F3F1 /* NWLogging */ = {
+			isa = PBXGroup;
+			children = (
+				B3C6BDC815FD268F00F1F3F1 /* libNWLoggingCocoa.a */,
+				B3C6BDC915FD268F00F1F3F1 /* NWLCore.h */,
+				B3C6BDCA15FD268F00F1F3F1 /* NWLFilePrinter.h */,
+				B3C6BDCB15FD268F00F1F3F1 /* NWLLineLogger.h */,
+				B3C6BDCC15FD268F00F1F3F1 /* NWLLogView.h */,
+				B3C6BDCD15FD268F00F1F3F1 /* NWLMultiLogger.h */,
+				B3C6BDCE15FD268F00F1F3F1 /* NWLogging.h */,
+				B3C6BDCF15FD268F00F1F3F1 /* NWLPrinter.h */,
+				B3C6BDD015FD268F00F1F3F1 /* NWLTools.h */,
+			);
+			name = NWLogging;
+			path = Frameworks/NWLogging;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B3C6BD7A15FD24D200F1F3F1 /* Pusher */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B3C6BD9915FD24D200F1F3F1 /* Build configuration list for PBXNativeTarget "Pusher" */;
+			buildPhases = (
+				B3C6BD7715FD24D200F1F3F1 /* Sources */,
+				B3C6BD7815FD24D200F1F3F1 /* Frameworks */,
+				B3C6BD7915FD24D200F1F3F1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Pusher;
+			productName = Pusher;
+			productReference = B3C6BD7B15FD24D200F1F3F1 /* Pusher.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B3C6BD7215FD24D200F1F3F1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = NW;
+				LastUpgradeCheck = 0440;
+				ORGANIZATIONNAME = noodlewerk;
+			};
+			buildConfigurationList = B3C6BD7515FD24D200F1F3F1 /* Build configuration list for PBXProject "NWPusher" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = B3C6BD7015FD24D200F1F3F1;
+			productRefGroup = B3C6BD7C15FD24D200F1F3F1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B3C6BD7A15FD24D200F1F3F1 /* Pusher */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B3C6BD7915FD24D200F1F3F1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B3C6BDD515FD285600F1F3F1 /* configuration.plist in Resources */,
+				B3C6BDF715FD2CF800F1F3F1 /* MainMenu.xib in Resources */,
+				B3C6BDF915FD2D4100F1F3F1 /* icon.icns in Resources */,
+				B3C6BE0115FD30E900F1F3F1 /* README.md in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B3C6BD7715FD24D200F1F3F1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B3C6BD8C15FD24D200F1F3F1 /* main.m in Sources */,
+				B3C6BD9315FD24D200F1F3F1 /* NWAppDelegate.m in Sources */,
+				B3C6BDB415FD253100F1F3F1 /* NWPusher.m in Sources */,
+				B3C6BDB715FD254900F1F3F1 /* NWSSLConnection.m in Sources */,
+				B3C6BDBA15FD255500F1F3F1 /* NWSecTools.m in Sources */,
+				B3C6BDBD15FD257100F1F3F1 /* NWPushFeedback.m in Sources */,
+				B3C6BDC015FD259400F1F3F1 /* ioSock.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		B3C6BD9715FD24D200F1F3F1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		B3C6BD9815FD24D200F1F3F1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		B3C6BD9A15FD24D200F1F3F1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Pusher/NWPusher-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"NWL_LIB=Pusher",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "Pusher/NWPusher-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Frameworks/NWLogging\"",
+				);
+				PRODUCT_NAME = Pusher;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		B3C6BD9B15FD24D200F1F3F1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Pusher/NWPusher-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"NWL_LIB=Pusher",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "Pusher/NWPusher-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Frameworks/NWLogging\"",
+				);
+				PRODUCT_NAME = Pusher;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B3C6BD7515FD24D200F1F3F1 /* Build configuration list for PBXProject "NWPusher" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B3C6BD9715FD24D200F1F3F1 /* Debug */,
+				B3C6BD9815FD24D200F1F3F1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B3C6BD9915FD24D200F1F3F1 /* Build configuration list for PBXNativeTarget "Pusher" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B3C6BD9A15FD24D200F1F3F1 /* Debug */,
+				B3C6BD9B15FD24D200F1F3F1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B3C6BD7215FD24D200F1F3F1 /* Project object */;
+}

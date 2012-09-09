@@ -1,0 +1,9 @@
+//
+// Prefix header for all source files of the 'Pusher' target in the 'Pusher' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif
+
+#import "NWLogging.h"
