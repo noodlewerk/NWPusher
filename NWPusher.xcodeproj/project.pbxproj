@@ -307,6 +307,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/Frameworks/NWLogging\"",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = Pusher;
 				WRAPPER_EXTENSION = app;
 			};
@@ -327,6 +328,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/Frameworks/NWLogging\"",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = Pusher;
 				WRAPPER_EXTENSION = app;
 			};
@@ -351,6 +353,7 @@
 				B3C6BD9B15FD24D200F1F3F1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
