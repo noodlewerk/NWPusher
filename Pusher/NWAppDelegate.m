@@ -20,7 +20,7 @@
     IBOutlet NSButton *pushButton;
     
     NWPusher *pusher;
-    NSArray *configuration;
+    NSDictionary *configuration;
     NSArray *certificates;
     NSUInteger index;
 }
@@ -36,6 +36,10 @@
     
     [self loadCertificatesFromKeychain];
     [self loadConfiguration];
+    
+    NSString *payload = [configuration valueForKey:@"payload"];
+    payloadField.string = payload.length ? payload : @"";
+    payloadField.font = [NSFont fontWithName:@"Courier" size:10];
     [self textDidChange:nil];
     index = 1;
 }
@@ -86,7 +90,7 @@
 - (void)loadConfiguration
 {
     NSURL *defaultURL = [NSBundle.mainBundle URLForResource:@"configuration" withExtension:@"plist"];
-    configuration = [NSArray arrayWithContentsOfURL:defaultURL];
+    configuration = [NSDictionary dictionaryWithContentsOfURL:defaultURL];
     NSURL *libraryURL = [[NSFileManager.defaultManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
     NSURL *configURL = [libraryURL URLByAppendingPathComponent:@"Pusher" isDirectory:YES];
     if (configURL) {
@@ -95,13 +99,15 @@
         NWLogWarnIfError(error);
         if (exists) {
             NSURL *plistURL = [configURL URLByAppendingPathComponent:@"configuration.plist"];
-            NSArray *config = [NSArray arrayWithContentsOfURL:plistURL];
-            if (config) {
+            NSDictionary *config = [NSDictionary dictionaryWithContentsOfURL:plistURL];
+            if ([config isKindOfClass:NSDictionary.class]) {
                 NWLogInfo(@"Read configuration from ~/Library/Pusher/configuration.plist");
                 configuration = config;
-            } else {
+            } else if (![NSFileManager.defaultManager fileExistsAtPath:plistURL.path]){
                 [configuration writeToURL:plistURL atomically:NO];
                 NWLogInfo(@"Created default configuration in ~/Library/Pusher/configuration.plist");
+            } else {
+                NWLogInfo(@"Unable to read configuration from ~/Library/Pusher/configuration.plist");
             }
         }
     }
@@ -140,7 +146,7 @@
     NSMutableArray *result = [[NSMutableArray alloc] init];
     BOOL development = [NWSecTools isDevelopmentCertificate:(__bridge SecCertificateRef)certificate];
     NSString *identifier = [NWSecTools identifierForCertificate:(__bridge SecCertificateRef)certificate];
-    for (NSDictionary *dict in configuration) {
+    for (NSDictionary *dict in [configuration valueForKey:@"tokens"]) {
         NSArray *identifiers = [dict valueForKey:@"identifiers"];
         BOOL match = !identifiers;
         for (NSString *i in identifiers) {

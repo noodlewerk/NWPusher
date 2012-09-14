@@ -1,40 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<array>
-	<dict>
-		<key>identifiers</key>
-		<array>
-			<string>com.example.app.dev</string>
-		</array>
-		<key>development</key>
-		<array>
-			<string>0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF my-iphone</string>
-		</array>
-	</dict>
-	<dict>
-		<key>identifiers</key>
-		<array>
-			<string>com.example.app</string>
-		</array>
-		<key>production</key>
-		<array>
-			<string>ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789 my-iphone</string>
-		</array>
-		<key>development</key>
-		<array>
-			<string>0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF my-iphone</string>
-		</array>
-	</dict>
-	<dict>
-		<key>production</key>
-		<array>
-			<string>DEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABC my-ipad</string>
-		</array>
-		<key>development</key>
-		<array>
-			<string>56789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF01234 my-ipad</string>
-		</array>
-	</dict>
-</array>
+<dict>
+	<key>payload</key>
+	<string>{&quot;aps&quot;:{&quot;alert&quot;:&quot;You did it!&quot;}}</string>
+	<key>tokens</key>
+	<array>
+		<dict>
+			<key>identifiers</key>
+			<array>
+				<string>com.example.app.dev</string>
+			</array>
+			<key>development</key>
+			<array>
+				<string>0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF my-iphone</string>
+			</array>
+		</dict>
+		<dict>
+			<key>identifiers</key>
+			<array>
+				<string>com.example.app</string>
+			</array>
+			<key>production</key>
+			<array>
+				<string>ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789 my-iphone</string>
+			</array>
+			<key>development</key>
+			<array>
+				<string>0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF my-iphone</string>
+			</array>
+		</dict>
+		<dict>
+			<key>production</key>
+			<array>
+				<string>DEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABC my-ipad</string>
+			</array>
+			<key>development</key>
+			<array>
+				<string>56789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF01234 my-ipad</string>
+			</array>
+		</dict>
+	</array>
+</dict>
 </plist>
