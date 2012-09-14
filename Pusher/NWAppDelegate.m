@@ -35,10 +35,7 @@
     NWLPrintInfo();
     
     [self loadCertificatesFromKeychain];
-    
-    NSURL *plist = [NSBundle.mainBundle URLForResource:@"configuration" withExtension:@"plist"];
-    configuration = [NSArray arrayWithContentsOfURL:plist];
-    
+    [self loadConfiguration];
     [self textDidChange:nil];
     index = 1;
 }
@@ -85,6 +82,30 @@
 
 
 #pragma mark - Actions
+
+- (void)loadConfiguration
+{
+    NSURL *defaultURL = [NSBundle.mainBundle URLForResource:@"configuration" withExtension:@"plist"];
+    configuration = [NSArray arrayWithContentsOfURL:defaultURL];
+    NSURL *libraryURL = [[NSFileManager.defaultManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL *configURL = [libraryURL URLByAppendingPathComponent:@"Pusher" isDirectory:YES];
+    if (configURL) {
+        NSError *error = nil;
+        BOOL exists = [NSFileManager.defaultManager createDirectoryAtURL:configURL withIntermediateDirectories:YES attributes:nil error:&error];
+        NWLogWarnIfError(error);
+        if (exists) {
+            NSURL *plistURL = [configURL URLByAppendingPathComponent:@"configuration.plist"];
+            NSArray *config = [NSArray arrayWithContentsOfURL:plistURL];
+            if (config) {
+                NWLogInfo(@"Read configuration from ~/Library/Pusher/configuration.plist");
+                configuration = config;
+            } else {
+                [configuration writeToURL:plistURL atomically:NO];
+                NWLogInfo(@"Created default configuration in ~/Library/Pusher/configuration.plist");
+            }
+        }
+    }
+}
 
 - (void)loadCertificatesFromKeychain
 {
