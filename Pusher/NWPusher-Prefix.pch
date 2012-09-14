@@ -6,4 +6,4 @@
     #import <Cocoa/Cocoa.h>
 #endif
 
-#import "NWLogging.h"
+#import "NWLCore.h"

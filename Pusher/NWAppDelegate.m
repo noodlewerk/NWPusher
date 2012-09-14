@@ -31,7 +31,7 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
     NWLog(@"Application did finish launching");
-    [NWLMultiLogger.shared addPrinter:self];
+    NWLAddPrinter("NWPusher", NWPusherPrinter, 0);
     NWLPrintInfo();
     
     [self loadCertificatesFromKeychain];
@@ -46,6 +46,7 @@
 
 - (void)applicationWillTerminate:(NSNotification *)notification
 {
+    NWLRemovePrinter("NWPusher");
     NWLog(@"Application will terminate");
     [pusher disconnect]; pusher = nil;
 }
@@ -230,20 +231,20 @@
 }
 
 
-#pragma mark - NWLPrinter
+#pragma mark - NWLogging
 
-- (void)printWithTag:(NSString *)tag lib:(NSString *)lib file:(NSString *)file line:(NSUInteger)line function:(NSString *)function message:(NSString *)message
+- (void)log:(NSString *)message warning:(BOOL)warning
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        infoField.textColor = [tag isEqualToString:@"warn"] ? NSColor.redColor : NSColor.blackColor;
+        infoField.textColor = warning ? NSColor.redColor : NSColor.blackColor;
         infoField.stringValue = message;
     });
 }
 
-- (NSString *)name
-{
-    return NSStringFromClass(self.class);
+static void NWPusherPrinter(NWLContext context, CFStringRef message, void *info) {
+    BOOL warning = strncmp(context.tag, "warn", 5) == 0;
+    NWAppDelegate *delegate = NSApplication.sharedApplication.delegate;
+    [delegate log:(__bridge NSString *)(message) warning:warning];
 }
-
 
 @end

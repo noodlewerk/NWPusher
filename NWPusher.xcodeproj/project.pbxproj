@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B37FA8DC1603690F00174E0D /* NWLCore.c in Sources */ = {isa = PBXBuildFile; fileRef = B37FA8DA1603690F00174E0D /* NWLCore.c */; };
 		B3C6BD8015FD24D200F1F3F1 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3C6BD7F15FD24D200F1F3F1 /* Cocoa.framework */; };
 		B3C6BD8C15FD24D200F1F3F1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C6BD8B15FD24D200F1F3F1 /* main.m */; };
 		B3C6BD9315FD24D200F1F3F1 /* NWAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C6BD9215FD24D200F1F3F1 /* NWAppDelegate.m */; };
@@ -15,7 +16,6 @@
 		B3C6BDBA15FD255500F1F3F1 /* NWSecTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C6BDB915FD255500F1F3F1 /* NWSecTools.m */; };
 		B3C6BDBD15FD257100F1F3F1 /* NWPushFeedback.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C6BDBC15FD257000F1F3F1 /* NWPushFeedback.m */; };
 		B3C6BDC015FD259400F1F3F1 /* ioSock.c in Sources */ = {isa = PBXBuildFile; fileRef = B3C6BDBE15FD259400F1F3F1 /* ioSock.c */; };
-		B3C6BDD115FD268F00F1F3F1 /* libNWLoggingCocoa.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B3C6BDC815FD268F00F1F3F1 /* libNWLoggingCocoa.a */; };
 		B3C6BDD315FD27E900F1F3F1 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3C6BDD215FD27E900F1F3F1 /* Security.framework */; };
 		B3C6BDD515FD285600F1F3F1 /* configuration.plist in Resources */ = {isa = PBXBuildFile; fileRef = B3C6BDD415FD285600F1F3F1 /* configuration.plist */; };
 		B3C6BDF715FD2CF800F1F3F1 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3C6BDF615FD2CF800F1F3F1 /* MainMenu.xib */; };
@@ -24,6 +24,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B37FA8DA1603690F00174E0D /* NWLCore.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = NWLCore.c; sourceTree = "<group>"; };
+		B37FA8DB1603690F00174E0D /* NWLCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWLCore.h; sourceTree = "<group>"; };
 		B3C6BD7B15FD24D200F1F3F1 /* Pusher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pusher.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3C6BD7F15FD24D200F1F3F1 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		B3C6BD8215FD24D200F1F3F1 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -44,15 +46,6 @@
 		B3C6BDBC15FD257000F1F3F1 /* NWPushFeedback.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWPushFeedback.m; sourceTree = "<group>"; };
 		B3C6BDBE15FD259400F1F3F1 /* ioSock.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioSock.c; sourceTree = "<group>"; };
 		B3C6BDBF15FD259400F1F3F1 /* ioSock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioSock.h; sourceTree = "<group>"; };
-		B3C6BDC815FD268F00F1F3F1 /* libNWLoggingCocoa.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libNWLoggingCocoa.a; sourceTree = "<group>"; };
-		B3C6BDC915FD268F00F1F3F1 /* NWLCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWLCore.h; sourceTree = "<group>"; };
-		B3C6BDCA15FD268F00F1F3F1 /* NWLFilePrinter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWLFilePrinter.h; sourceTree = "<group>"; };
-		B3C6BDCB15FD268F00F1F3F1 /* NWLLineLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWLLineLogger.h; sourceTree = "<group>"; };
-		B3C6BDCC15FD268F00F1F3F1 /* NWLLogView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWLLogView.h; sourceTree = "<group>"; };
-		B3C6BDCD15FD268F00F1F3F1 /* NWLMultiLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWLMultiLogger.h; sourceTree = "<group>"; };
-		B3C6BDCE15FD268F00F1F3F1 /* NWLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWLogging.h; sourceTree = "<group>"; };
-		B3C6BDCF15FD268F00F1F3F1 /* NWLPrinter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWLPrinter.h; sourceTree = "<group>"; };
-		B3C6BDD015FD268F00F1F3F1 /* NWLTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWLTools.h; sourceTree = "<group>"; };
 		B3C6BDD215FD27E900F1F3F1 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		B3C6BDD415FD285600F1F3F1 /* configuration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = configuration.plist; sourceTree = "<group>"; };
 		B3C6BDF615FD2CF800F1F3F1 /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
@@ -67,7 +60,6 @@
 			files = (
 				B3C6BDD315FD27E900F1F3F1 /* Security.framework in Frameworks */,
 				B3C6BD8015FD24D200F1F3F1 /* Cocoa.framework in Frameworks */,
-				B3C6BDD115FD268F00F1F3F1 /* libNWLoggingCocoa.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,7 +88,6 @@
 		B3C6BD7E15FD24D200F1F3F1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				B3C6BDC715FD268F00F1F3F1 /* NWLogging */,
 				B3C6BDD215FD27E900F1F3F1 /* Security.framework */,
 				B3C6BD7F15FD24D200F1F3F1 /* Cocoa.framework */,
 				B3C6BD8115FD24D200F1F3F1 /* Other Frameworks */,
@@ -125,6 +116,8 @@
 				B3C6BDB915FD255500F1F3F1 /* NWSecTools.m */,
 				B3C6BDB515FD254900F1F3F1 /* NWSSLConnection.h */,
 				B3C6BDB615FD254900F1F3F1 /* NWSSLConnection.m */,
+				B37FA8DA1603690F00174E0D /* NWLCore.c */,
+				B37FA8DB1603690F00174E0D /* NWLCore.h */,
 				B3C6BDBF15FD259400F1F3F1 /* ioSock.h */,
 				B3C6BDBE15FD259400F1F3F1 /* ioSock.c */,
 				B3C6BD9115FD24D200F1F3F1 /* NWAppDelegate.h */,
@@ -144,23 +137,6 @@
 				B3C6BD8D15FD24D200F1F3F1 /* NWPusher-Prefix.pch */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		B3C6BDC715FD268F00F1F3F1 /* NWLogging */ = {
-			isa = PBXGroup;
-			children = (
-				B3C6BDC815FD268F00F1F3F1 /* libNWLoggingCocoa.a */,
-				B3C6BDC915FD268F00F1F3F1 /* NWLCore.h */,
-				B3C6BDCA15FD268F00F1F3F1 /* NWLFilePrinter.h */,
-				B3C6BDCB15FD268F00F1F3F1 /* NWLLineLogger.h */,
-				B3C6BDCC15FD268F00F1F3F1 /* NWLLogView.h */,
-				B3C6BDCD15FD268F00F1F3F1 /* NWLMultiLogger.h */,
-				B3C6BDCE15FD268F00F1F3F1 /* NWLogging.h */,
-				B3C6BDCF15FD268F00F1F3F1 /* NWLPrinter.h */,
-				B3C6BDD015FD268F00F1F3F1 /* NWLTools.h */,
-			);
-			name = NWLogging;
-			path = Frameworks/NWLogging;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -236,6 +212,7 @@
 				B3C6BDBA15FD255500F1F3F1 /* NWSecTools.m in Sources */,
 				B3C6BDBD15FD257100F1F3F1 /* NWPushFeedback.m in Sources */,
 				B3C6BDC015FD259400F1F3F1 /* ioSock.c in Sources */,
+				B37FA8DC1603690F00174E0D /* NWLCore.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
