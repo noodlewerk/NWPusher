@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B37FA8DC1603690F00174E0D /* NWLCore.c in Sources */ = {isa = PBXBuildFile; fileRef = B37FA8DA1603690F00174E0D /* NWLCore.c */; };
+		B37FA8DF16036FF500174E0D /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = B37FA8DE16036FF500174E0D /* LICENSE.txt */; };
 		B3C6BD8015FD24D200F1F3F1 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3C6BD7F15FD24D200F1F3F1 /* Cocoa.framework */; };
 		B3C6BD8C15FD24D200F1F3F1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C6BD8B15FD24D200F1F3F1 /* main.m */; };
 		B3C6BD9315FD24D200F1F3F1 /* NWAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C6BD9215FD24D200F1F3F1 /* NWAppDelegate.m */; };
@@ -26,6 +27,7 @@
 /* Begin PBXFileReference section */
 		B37FA8DA1603690F00174E0D /* NWLCore.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = NWLCore.c; sourceTree = "<group>"; };
 		B37FA8DB1603690F00174E0D /* NWLCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWLCore.h; sourceTree = "<group>"; };
+		B37FA8DE16036FF500174E0D /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		B3C6BD7B15FD24D200F1F3F1 /* Pusher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pusher.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3C6BD7F15FD24D200F1F3F1 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		B3C6BD8215FD24D200F1F3F1 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -70,6 +72,7 @@
 			isa = PBXGroup;
 			children = (
 				B3C6BE0015FD30E900F1F3F1 /* README.md */,
+				B37FA8DE16036FF500174E0D /* LICENSE.txt */,
 				B3C6BDD415FD285600F1F3F1 /* configuration.plist */,
 				B3C6BD8515FD24D200F1F3F1 /* Pusher */,
 				B3C6BD7E15FD24D200F1F3F1 /* Frameworks */,
@@ -116,8 +119,8 @@
 				B3C6BDB915FD255500F1F3F1 /* NWSecTools.m */,
 				B3C6BDB515FD254900F1F3F1 /* NWSSLConnection.h */,
 				B3C6BDB615FD254900F1F3F1 /* NWSSLConnection.m */,
-				B37FA8DA1603690F00174E0D /* NWLCore.c */,
 				B37FA8DB1603690F00174E0D /* NWLCore.h */,
+				B37FA8DA1603690F00174E0D /* NWLCore.c */,
 				B3C6BDBF15FD259400F1F3F1 /* ioSock.h */,
 				B3C6BDBE15FD259400F1F3F1 /* ioSock.c */,
 				B3C6BD9115FD24D200F1F3F1 /* NWAppDelegate.h */,
@@ -195,6 +198,7 @@
 				B3C6BDF715FD2CF800F1F3F1 /* MainMenu.xib in Resources */,
 				B3C6BDF915FD2D4100F1F3F1 /* icon.icns in Resources */,
 				B3C6BE0115FD30E900F1F3F1 /* README.md in Resources */,
+				B37FA8DF16036FF500174E0D /* LICENSE.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,10 +284,6 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Pusher/NWPusher-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/Frameworks/NWLogging\"",
-				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = Pusher;
 				WRAPPER_EXTENSION = app;
@@ -301,10 +301,6 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Pusher/NWPusher-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/Frameworks/NWLogging\"",
-				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = Pusher;
 				WRAPPER_EXTENSION = app;
