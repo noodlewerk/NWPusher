@@ -2,7 +2,6 @@
 //  NWPushFeedback.m
 //  Pusher
 //
-//  Created by Leo on 9/9/12.
 //  Copyright (c) 2012 noodlewerk. All rights reserved.
 //
 
@@ -19,56 +18,74 @@ static NSUInteger const NWPushPort = 2196;
 static NSUInteger const NWTokenMaxSize = 32;
 
 @implementation NWPushFeedback {
-    NWSSLConnection *connection;
+    NWSSLConnection *_connection;
 }
 
 
 #pragma mark - Apple SSL
 
-- (BOOL)connectWithCertificateData:(NSData *)certificateData sandbox:(BOOL)sandbox
+#if !TARGET_OS_IPHONE
+
+- (NWPusherResult)connectWithCertificateData:(NSData *)certificateData sandbox:(BOOL)sandbox
 {
     SecIdentityRef identity = NULL;
-    BOOL result = [NWSecTools identityWithCertificateData:certificateData identity:&identity];
-    if (!result) {
-        return NO;
+    NWPusherResult result = [NWSecTools identityWithCertificateData:certificateData identity:&identity];
+    if (result != kNWPusherResultSuccess) {
+        return result;
     }
     result = [self connectWithIdentity:identity sandbox:sandbox];
     CFRelease(identity);
     return result;
 }
 
-- (BOOL)connectWithIdentity:(SecIdentityRef)identity sandbox:(BOOL)sandbox
+#endif
+
+- (NWPusherResult)connectWithIdentity:(SecIdentityRef)identity sandbox:(BOOL)sandbox
 {
     NSString *host = sandbox ? NWSandboxPushHost : NWPushHost;
     
-    if (connection) [connection disconnect];
-    connection = [[NWSSLConnection alloc] initWithHost:host port:NWPushPort identity:identity];
+    if (_connection) [_connection disconnect]; _connection = nil;
+    NWSSLConnection *connection = [[NWSSLConnection alloc] initWithHost:host port:NWPushPort identity:identity];
     
-    BOOL result = [connection connect];
+    NWPusherResult result = [connection connect];
+    if (result == kNWPusherResultSuccess) {
+        _connection = connection;
+    }
+    return result;
+}
+
+- (NWPusherResult)connectWithPKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox
+{
+    SecIdentityRef identity = NULL;
+    NWPusherResult result = [NWSecTools identityWithPKCS12Data:data password:password identity:&identity];
+    if (result != kNWPusherResultSuccess) {
+        return result;
+    }
+    result = [self connectWithIdentity:identity sandbox:sandbox];
+    CFRelease(identity);
     return result;
 }
 
 - (void)disconnect
 {
-    [connection disconnect]; connection = nil;
+    [_connection disconnect]; _connection = nil;
 }
 
 
 #pragma mark - Apple push
 
-- (BOOL)readDate:(NSDate **)date token:(NSData **)token
+- (NWPusherResult)readDate:(NSDate **)date token:(NSData **)token
 {
     NSMutableData *data = [NSMutableData dataWithLength:sizeof(uint32_t) + sizeof(uint16_t) + NWTokenMaxSize];
     NSUInteger length = 0;
-    BOOL read = [connection read:data length:&length];
-    if (!read) {
-        return NO;
+    NWPusherResult read = [_connection read:data length:&length];
+    if (read != kNWPusherResultSuccess) {
+        return read;
     }
     
     if (length) {
         if (length != data.length) {
-            NWLogWarn(@"Unexpected response length: %@", [data subdataWithRange:NSMakeRange(0, length)]);
-            return NO;
+            return kNWPusherResultUnexpectedResponseLength;
         }
         
         uint32_t time = 0;
@@ -79,14 +96,13 @@ static NSUInteger const NWTokenMaxSize = 32;
         [data getBytes:&l range:NSMakeRange(4, 2)];
         NSUInteger tokenLength = htons(l);
         if (tokenLength != NWTokenMaxSize) {
-            NWLogWarn(@"Unexpected token length: %i", (int)tokenLength);
-            return NO;
+            return kNWPusherResultUnexpectedTokenLength;
         }
         
         if (token) *token = [data subdataWithRange:NSMakeRange(6, length - 6)];
     }
     
-    return YES;
+    return kNWPusherResultSuccess;
 }
 
 @end

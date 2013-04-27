@@ -2,7 +2,6 @@
 //  NWAppDelegate.m
 //  Pusher
 //
-//  Created by Leo on 9/9/12.
 //  Copyright (c) 2012 noodlewerk. All rights reserved.
 //
 
@@ -12,17 +11,17 @@
 
 
 @implementation NWAppDelegate {
-    IBOutlet NSPopUpButton *certificatePopup;
-    IBOutlet NSComboBox *tokenCombo;
-    IBOutlet NSTextView *payloadField;
-    IBOutlet NSTextField *countField;
-    IBOutlet NSTextField *infoField;
-    IBOutlet NSButton *pushButton;
+    IBOutlet NSPopUpButton *_certificatePopup;
+    IBOutlet NSComboBox *_tokenCombo;
+    IBOutlet NSTextView *_payloadField;
+    IBOutlet NSTextField *_countField;
+    IBOutlet NSTextField *_infoField;
+    IBOutlet NSButton *_pushButton;
     
-    NWPusher *pusher;
-    NSDictionary *configuration;
-    NSArray *certificates;
-    NSUInteger index;
+    NWPusher *_pusher;
+    NSDictionary *_configuration;
+    NSArray *_certificates;
+    NSUInteger _index;
 }
 
 
@@ -37,18 +36,18 @@
     [self loadCertificatesFromKeychain];
     [self loadConfiguration];
     
-    NSString *payload = [configuration valueForKey:@"payload"];
-    payloadField.string = payload.length ? payload : @"";
-    payloadField.font = [NSFont fontWithName:@"Courier" size:10];
+    NSString *payload = [_configuration valueForKey:@"payload"];
+    _payloadField.string = payload.length ? payload : @"";
+    _payloadField.font = [NSFont fontWithName:@"Courier" size:10];
     [self textDidChange:nil];
-    index = 1;
+    _index = 1;
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification
 {
     NWLRemovePrinter("NWPusher");
     NWLog(@"Application will terminate");
-    [pusher disconnect]; pusher = nil;
+    [_pusher disconnect]; _pusher = nil;
 }
 
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)application
@@ -61,8 +60,8 @@
 
 - (IBAction)certificateSelected:(NSPopUpButton *)sender
 {
-    if (certificatePopup.indexOfSelectedItem) {
-        id certificate = [certificates objectAtIndex:certificatePopup.indexOfSelectedItem - 1];
+    if (_certificatePopup.indexOfSelectedItem) {
+        id certificate = [_certificates objectAtIndex:_certificatePopup.indexOfSelectedItem - 1];
         [self selectCertificate:certificate];
     } else {
         [self selectCertificate:nil];
@@ -71,14 +70,14 @@
 
 - (void)textDidChange:(NSNotification *)notification
 {
-    NSUInteger length = payloadField.string.length;
-    countField.stringValue = [NSString stringWithFormat:@"%lu", length];
-    countField.textColor = length > 256 ? NSColor.redColor : NSColor.darkGrayColor;
+    NSUInteger length = _payloadField.string.length;
+    _countField.stringValue = [NSString stringWithFormat:@"%lu", length];
+    _countField.textColor = length > 256 ? NSColor.redColor : NSColor.darkGrayColor;
 }
 
 - (IBAction)push:(NSButton *)sender
 {
-    if (pusher) {
+    if (_pusher) {
         [self push];
     } else {
         NWLogWarn(@"No certificate selected");
@@ -91,7 +90,7 @@
 - (void)loadConfiguration
 {
     NSURL *defaultURL = [NSBundle.mainBundle URLForResource:@"configuration" withExtension:@"plist"];
-    configuration = [NSDictionary dictionaryWithContentsOfURL:defaultURL];
+    _configuration = [NSDictionary dictionaryWithContentsOfURL:defaultURL];
     NSURL *libraryURL = [[NSFileManager.defaultManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
     NSURL *configURL = [libraryURL URLByAppendingPathComponent:@"Pusher" isDirectory:YES];
     if (configURL) {
@@ -103,9 +102,9 @@
             NSDictionary *config = [NSDictionary dictionaryWithContentsOfURL:plistURL];
             if ([config isKindOfClass:NSDictionary.class]) {
                 NWLogInfo(@"Read configuration from ~/Library/Pusher/configuration.plist");
-                configuration = config;
+                _configuration = config;
             } else if (![NSFileManager.defaultManager fileExistsAtPath:plistURL.path]){
-                [configuration writeToURL:plistURL atomically:NO];
+                [_configuration writeToURL:plistURL atomically:NO];
                 NWLogInfo(@"Created default configuration in ~/Library/Pusher/configuration.plist");
             } else {
                 NWLogInfo(@"Unable to read configuration from ~/Library/Pusher/configuration.plist");
@@ -116,9 +115,8 @@
 
 - (void)loadCertificatesFromKeychain
 {
-    NSArray *certs = nil;
-    BOOL findCerts = [NWSecTools keychainCertificates:&certs];
-    if (!findCerts || !certs.count) {
+    NSArray *certs = [NWSecTools keychainCertificates];
+    if (!certs.count) {
         NWLogWarn(@"No push certificates in keychain.");
     }
     certs = [certs sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
@@ -131,14 +129,14 @@
         NSString *bname = [NWSecTools identifierForCertificate:(__bridge SecCertificateRef)(b)];
         return [aname compare:bname];
     }];
-    certificates = certs;
+    _certificates = certs;
     
-    [certificatePopup removeAllItems];
-    [certificatePopup addItemWithTitle:@"Select Push Certificate"];
-    for (id c in certificates) {
+    [_certificatePopup removeAllItems];
+    [_certificatePopup addItemWithTitle:@"Select Push Certificate"];
+    for (id c in _certificates) {
         BOOL development = [NWSecTools isDevelopmentCertificate:(__bridge SecCertificateRef)(c)];
         NSString *name = [NWSecTools identifierForCertificate:(__bridge SecCertificateRef)(c)];
-        [certificatePopup addItemWithTitle:[NSString stringWithFormat:@"%@ (%@)", name, development ? @"development" : @"production"]];
+        [_certificatePopup addItemWithTitle:[NSString stringWithFormat:@"%@ (%@)", name, development ? @"development" : @"production"]];
     }
 }
 
@@ -147,7 +145,7 @@
     NSMutableArray *result = [[NSMutableArray alloc] init];
     BOOL development = [NWSecTools isDevelopmentCertificate:(__bridge SecCertificateRef)certificate];
     NSString *identifier = [NWSecTools identifierForCertificate:(__bridge SecCertificateRef)certificate];
-    for (NSDictionary *dict in [configuration valueForKey:@"tokens"]) {
+    for (NSDictionary *dict in [_configuration valueForKey:@"tokens"]) {
         NSArray *identifiers = [dict valueForKey:@"identifiers"];
         BOOL match = !identifiers;
         for (NSString *i in identifiers) {
@@ -168,27 +166,28 @@
 
 - (void)selectCertificate:(id)certificate
 {
-    if (pusher) {
-        [pusher disconnect]; pusher = nil;
-        pushButton.enabled = NO;
+    if (_pusher) {
+        [_pusher disconnect]; _pusher = nil;
+        _pushButton.enabled = NO;
         NWLogInfo(@"Disconnected from APN");
     }
     
     NSArray *tokens = [self tokensForCertificate:certificate];
-    [tokenCombo removeAllItems];
-    tokenCombo.stringValue = @"";
-    [tokenCombo addItemsWithObjectValues:tokens];
+    [_tokenCombo removeAllItems];
+    _tokenCombo.stringValue = @"";
+    [_tokenCombo addItemsWithObjectValues:tokens];
     
     if (certificate) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             NWPusher *p = [[NWPusher alloc] init];
             BOOL sandbox = [NWSecTools isDevelopmentCertificate:(__bridge SecCertificateRef)(certificate)];
-            BOOL connected = [p connectWithCertificateRef:(__bridge SecCertificateRef)(certificate) sandbox:sandbox];
-            if (connected) {
+            NWPusherResult connected = [p connectWithCertificateRef:(__bridge SecCertificateRef)(certificate) sandbox:sandbox];
+            if (connected == kNWPusherResultSuccess) {
                 NWLogInfo(@"Connected established to APN%@", sandbox ? @" (sandbox)" : @"");
-                pusher = p;
-                pushButton.enabled = YES;
+                _pusher = p;
+                _pushButton.enabled = YES;
             } else {
+                NWLogWarn(@"Unable to connect: %@", [NWPusher stringFromResult:connected]);
                 [p disconnect];
                 [self deselectCombo];
             }
@@ -198,35 +197,23 @@
 
 - (void)push
 {
-    NSString *payload = payloadField.string;
-    NSString *token = tokenCombo.stringValue;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSUInteger i = index++;
-        NSDate *expires = [NSDate dateWithTimeIntervalSinceNow:86400];
-        BOOL pushed = [pusher pushPayloadString:payload token:token identifier:i expires:expires];
-        if (pushed) {
-            NWLogInfo(@"Pushing payload #%i..", (int)i);
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC);
-            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                NSUInteger identifier = 0;
-                NSString *reason = nil;
-                BOOL fetched = [pusher fetchFailedIdentifier:&identifier reason:&reason];
-                if (fetched) {
-                    if (!reason.length) {
-                        NWLogInfo(@"Payload #%i has been pushed", (int)i);
-                    } else {
-                        NWLogWarn(@"Payload #%i could not be pushed: %@", (int)identifier, reason);
-                    }
-                }
-            });
+    NSString *payload = _payloadField.string;
+    NSString *token = _tokenCombo.stringValue;
+    NSDate *expires = [NSDate dateWithTimeIntervalSinceNow:86400];
+    NSUInteger identifier = [_pusher pushPayloadString:payload token:token expires:expires block:^(NWPusherResult result) {
+        if (result == kNWPusherResultSuccess) {
+            NWLogInfo(@"Payload has been pushed");
+        } else {
+            NWLogWarn(@"Payload could not be pushed: %@", [NWPusher stringFromResult:result]);
         }
-    });
+    }];
+    NWLogInfo(@"Pushing payload #%i..", (int)identifier);
 }
 
 - (void)deselectCombo
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [certificatePopup selectItemAtIndex:0];
+        [_certificatePopup selectItemAtIndex:0];
     });
 }
 
@@ -236,8 +223,8 @@
 - (void)log:(NSString *)message warning:(BOOL)warning
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        infoField.textColor = warning ? NSColor.redColor : NSColor.blackColor;
-        infoField.stringValue = message;
+        _infoField.textColor = warning ? NSColor.redColor : NSColor.blackColor;
+        _infoField.stringValue = message;
     });
 }
 

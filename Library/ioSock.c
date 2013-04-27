@@ -58,7 +58,6 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacErrors.h>
 #include <time.h>
 #include <strings.h>
 

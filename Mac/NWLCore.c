@@ -2,7 +2,6 @@
 //  NWLCore.m
 //  NWLogging
 //
-//  Created by leonard on 4/25/12.
 //  Copyright (c) 2012 noodlewerk. All rights reserved.
 //
 
@@ -10,6 +9,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/uio.h>
+#include <sys/sysctl.h>
+#include <signal.h>
+#include <unistd.h>
 #include <math.h>
 #import <CoreFoundation/CFDate.h>
 
@@ -39,9 +41,12 @@ typedef struct {
     NWLPrinter elements[kNWLPrinterListSize];
 } NWLPrinterList;
 
+#define NWLDefaultPrinterFunction NWLStderrPrinter
 #define NWLDefaultPrinterName "default"
-static NWLFilterList NWLFilters = {1, {NULL, "warn", NULL, NULL, NULL, kNWLAction_print}};
-static NWLPrinterList NWLPrinters = {1, {NWLDefaultPrinterName, NWLDefaultPrinter, NULL}};
+#define NWLDefaultFilterTag "warn"
+#define NWLDefaultFilterAction kNWLAction_print
+static NWLFilterList NWLFilters = {1, {NULL, NWLDefaultFilterTag, NULL, NULL, NULL, NWLDefaultFilterAction}};
+static NWLPrinterList NWLPrinters = {1, {NWLDefaultPrinterName, NWLDefaultPrinterFunction, NULL}};
 static CFTimeInterval NWLTimeOffset = 0;
 
 
@@ -58,9 +63,8 @@ void NWLForwardToPrinters(NWLContext context, CFStringRef message) {
 int NWLAddPrinter(const char *name, void(*func)(NWLContext, CFStringRef, void *), void *info) {
     int count = NWLPrinters.count;
     if (count < kNWLPrinterListSize) {
-        NWLPrinters.elements[count].name = name;
-        NWLPrinters.elements[count].func = func;
-        NWLPrinters.elements[count].info = info;
+        NWLPrinter printer = {name, func, info};
+        NWLPrinters.elements[count] = printer;
         NWLPrinters.count = count + 1;
         return true;
     }
@@ -88,18 +92,16 @@ void NWLRemoveAllPrinters(void) {
     NWLPrinters.count = 0;
 }
 
-void NWLRestoreDefaultPrinters(void) {
-    NWLPrinters.elements[0].name = NWLDefaultPrinterName;
-    NWLPrinters.elements[0].func = NWLDefaultPrinter;
-    NWLPrinters.elements[0].info = NULL;
-    NWLPrinters.count = 1;
-}
-
 void NWLAddDefaultPrinter(void) {
-    NWLAddPrinter(NWLDefaultPrinterName, NWLDefaultPrinter, NULL);
+    NWLAddPrinter(NWLDefaultPrinterName, NWLDefaultPrinterFunction, NULL);
 }
 
-void NWLDefaultPrinter(NWLContext context, CFStringRef message, void *info) {
+void NWLRestoreDefaultPrinters(void) {
+    NWLRemoveAllPrinters();
+    NWLAddDefaultPrinter();
+}
+
+void NWLStderrPrinter(NWLContext context, CFStringRef message, void *info) {
     // init io vector
     struct iovec iov[16];
     int i = 0;
@@ -113,7 +115,7 @@ void NWLDefaultPrinter(NWLContext context, CFStringRef message, void *info) {
     int timeLength = snprintf(timeBuffer, sizeof(timeBuffer), "%02i:%02i:%02i.%06i", hour, minute, second, micro);
     iov[i].iov_base = timeBuffer;
     iov[i++].iov_len = sizeof(timeBuffer) - 1 < timeLength ? sizeof(timeBuffer) - 1 : timeLength;
-    
+
     // add context
     if (context.lib && *context.lib) {
         iov[i].iov_base = " ";
@@ -139,7 +141,7 @@ void NWLDefaultPrinter(NWLContext context, CFStringRef message, void *info) {
         iov[i].iov_base = (void *)context.tag;
         iov[i++].iov_len = strnlen(context.tag, 32);
     }
-    
+
     iov[i].iov_base = "] ";
     iov[i++].iov_len = 2;
 
@@ -149,7 +151,7 @@ void NWLDefaultPrinter(NWLContext context, CFStringRef message, void *info) {
         unsigned char messageBuffer[256];
         CFIndex messageLength = 0;
         CFIndex length = 1;
-        
+
         while (length && range.length) {
             length = CFStringGetBytes(message, range, kCFStringEncodingUTF8, '?', false, messageBuffer, sizeof(messageBuffer), &messageLength);
             iov[i].iov_base = messageBuffer;
@@ -289,16 +291,19 @@ void NWLRemoveAllFilters(void) {
     NWLFilters.count = 0;
 }
 
+void NWLAddDefaultFilter(void) {
+    NWLAddFilter(NWLDefaultFilterTag, NULL, NULL, NULL, NWLDefaultFilterAction);
+}
+
 void NWLRestoreDefaultFilters(void) {
-    NWLFilters.elements[0].action = kNWLAction_print;
-    NWLFilters.elements[0].properties[0] = "warn";
-    NWLFilters.count = 1;
+    NWLRemoveAllFilters();
+    NWLAddDefaultFilter();
 }
 
 
 #pragma mark - Clock
 
-static double NWLTime() {
+static double NWLTime(void) {
     return CFAbsoluteTimeGetCurrent() + 978307200;
 }
 
@@ -343,11 +348,12 @@ int NWLAboutString(char *buffer, int size) {
         _NWL_ABOUT_ACTION_(raise);
         _NWL_ABOUT_ACTION_(assert);
         const char *value = NULL;
-#define _NWL_ABOUT_PROP_(_prop) do {if ((value = filter->properties[kNWLProperty_##_prop])) {_NWL_PRINT_(buffer, s, " "#_prop"=%s\n", value);}} while (0)
+#define _NWL_ABOUT_PROP_(_prop) do {if ((value = filter->properties[kNWLProperty_##_prop])) {_NWL_PRINT_(buffer, s, " "#_prop"=%s", value);}} while (0)
         _NWL_ABOUT_PROP_(tag);
         _NWL_ABOUT_PROP_(lib);
         _NWL_ABOUT_PROP_(file);
         _NWL_ABOUT_PROP_(function);
+        _NWL_PRINT_(buffer, s, "\n");
     }
     for (int i = 0; i < NWLPrinters.count; i++) {
         NWLPrinter *p = &NWLPrinters.elements[i];
@@ -360,21 +366,33 @@ int NWLAboutString(char *buffer, int size) {
 void NWLogAbout(void) {
     char buffer[256];
     int length = NWLAboutString(buffer, sizeof(buffer));
-    NWLLogWithoutFilter(, NWLogging, "About NWLogging\n%s%s", buffer, length <= sizeof(buffer) - 1 ? "" : "\n   ...");
+    NWLContext context = {NULL, "NWLogging", NULL, 0, NULL};
+    CFStringRef message = CFStringCreateWithFormat(NULL, 0, CFSTR("About NWLogging\n%s%s"), buffer, length <= sizeof(buffer) - 1 ? "" : "\n   ...");\
+    NWLForwardToPrinters(context, message);
+    CFRelease(message);
+}
+
+
+#pragma mark - Misc Helpers
+
+void NWLRestore(void) {
+    NWLRestoreDefaultFilters();
+    NWLRestoreDefaultPrinters();
+    NWLRestorePrintClock();
 }
 
 
 #pragma mark - Macro wrappers
 
-void NWLPrintInfo() {
+void NWLPrintInfo(void) {
     NWLAddFilter("info", NULL, NULL, NULL, kNWLAction_print);
 }
 
-void NWLPrintWarn() {
+void NWLPrintWarn(void) {
     NWLAddFilter("warn", NULL, NULL, NULL, kNWLAction_print);
 }
 
-void NWLPrintDbug() {
+void NWLPrintDbug(void) {
     NWLAddFilter("dbug", NULL, NULL, NULL, kNWLAction_print);
 }
 
@@ -382,7 +400,7 @@ void NWLPrintTag(const char *tag) {
     NWLAddFilter(tag, NULL, NULL, NULL, kNWLAction_print);
 }
 
-void NWLPrintAll() {
+void NWLPrintAll(void) {
     NWLAddFilter(NULL, NULL, NULL, NULL, kNWLAction_print);
 }
 
@@ -414,13 +432,17 @@ void NWLPrintDbugInFile(const char *file) {
     NWLAddFilter("dbug", NULL, file, NULL, kNWLAction_print);
 }
 
+void NWLPrintAllInFile(const char *file) {
+    NWLAddFilter(NULL, NULL, file, NULL, kNWLAction_print);
+}
+
 void NWLPrintDbugInFunction(const char *function) {
     NWLAddFilter("dbug", NULL, NULL, function, kNWLAction_print);
 }
 
 
 
-void NWLBreakWarn() {
+void NWLBreakWarn(void) {
     NWLAddFilter("warn", NULL, NULL, NULL, kNWLAction_break);
 }
 
@@ -438,15 +460,15 @@ void NWLBreakTagInLib(const char *tag, const char *lib) {
 
 
 
-void NWLClearInfo() {
+void NWLClearInfo(void) {
     NWLRemoveMatchingFilters("info", NULL, NULL, NULL);
 }
 
-void NWLClearWarn() {
+void NWLClearWarn(void) {
     NWLRemoveMatchingFilters("warn", NULL, NULL, NULL);
 }
 
-void NWLClearDbug() {
+void NWLClearDbug(void) {
     NWLRemoveMatchingFilters("dbug", NULL, NULL, NULL);
 }
 
@@ -463,7 +485,19 @@ void NWLClearAll(void) {
 }
 
 
-#pragma mark - Dumping
+#pragma mark - Debugging
+
+void NWLBreakInDebugger(void) {
+    struct kinfo_proc info;
+    info.kp_proc.p_flag = 0;
+    pid_t pid = getpid();
+    int mib[4] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, pid};
+    size_t size = sizeof(info);
+    sysctl(mib, 4, &info, &size, NULL, 0);
+    if (info.kp_proc.p_flag & P_TRACED) {
+        kill(pid, SIGINT);
+    }
+}
 
 void NWLDumpConfig(void) {
     char buffer[256];
@@ -480,40 +514,9 @@ void NWLDumpConfig(void) {
 void NWLDumpFlags(int active, const char *lib, int debug, const char *file, int line, const char *function) {
     PRINT("   file         : %s:%i", file, line);
     PRINT("   function     : %s", function);
-    PRINT("   DEBUG        : %s", debug ? "ON" : "OFF");
+    PRINT("   DEBUG        : %s", debug ? "YES" : "NO");
     PRINT("   NWL_LIB      : %s", lib && *lib ? lib : (lib ? "<empty>" : "<not set>"));
-    PRINT("   NWLog macros : %s", active ? "ON" : "OFF");
-}
-
-void NWLDumpHelp(int active, const char *lib, int debug, const char *file, int line, const char *function) {
-    //PRINT("012345678910234567892023456789302345678940234567895023456789");
-    PRINT("This text privides info on the configuration of NWLogging at");
-    PRINT("a specific point in your code. The purpose of this text is");
-    PRINT("to assist you with configuring the framework. It is printed");
-    PRINT("to stderr, your console, using the NWLHelp() macro function.");
-    PRINT("Avoid checking NWLHelp() calls into version control or leaving");
-    PRINT("it in the final release of your app.");
-    PRINT();
-    PRINT("NWLogging is configured as follows:");
-    NWLDumpFlags(active, lib, debug, file, line, function);
-    if (active) {
-        NWLDumpConfig();
-    }
-    PRINT();
-    PRINT("If NWLog macros are ON then all macro functions of the form");
-    PRINT("NWLog..() are compiled and executed at runtime. Using");
-    PRINT("NWLog(\"\") should always show up in the console output.");
-    PRINT("Other logs, like NWLogInfo(\"\") might be filtered out, but");
-    PRINT("these can be activated at runtime using the NWLPrint..()");
-    PRINT("methods.");
-    PRINT();
-    PRINT("If NWLog macros are OFF then all macro functions of the form");
-    PRINT("NWLog..() are completely stripped from the binary have no");
-    PRINT("impact at runtime.");
-    PRINT();
-    PRINT("By default, NWLog macros are active in DEBUG mode and if the");
-    PRINT("NWL_LIB macro is set in the preprocessor. See the readme file");
-    PRINT("for details on how to do this in Xcode.");
+    PRINT("   NWLog macros : %s", active ? "YES" : "NO");
 }
 
 #undef NWLDump

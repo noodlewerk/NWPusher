@@ -49,7 +49,6 @@
 #ifndef	_IO_SOCK_H_
 #define _IO_SOCK_H_
 
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
 #include <Security/SecureTransport.h>
 #include <sys/types.h>
 
@@ -57,6 +56,10 @@
 extern "C" {
 #endif
 
+#ifndef __MACERRORS__
+enum {ioErr = -36};
+#endif
+    
 /*
  * Opaque reference to an Open Transport connection.
  */

@@ -7,55 +7,103 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B37FA8DC1603690F00174E0D /* NWLCore.c in Sources */ = {isa = PBXBuildFile; fileRef = B37FA8DA1603690F00174E0D /* NWLCore.c */; };
+		B3376A63172BB71200242EBB /* NWLCore.c in Sources */ = {isa = PBXBuildFile; fileRef = B3376A61172BB71200242EBB /* NWLCore.c */; };
+		B3376A64172BB71200242EBB /* NWLCore.c in Sources */ = {isa = PBXBuildFile; fileRef = B3376A61172BB71200242EBB /* NWLCore.c */; };
+		B33FB1C2172B185C006529CE /* ioSock.c in Sources */ = {isa = PBXBuildFile; fileRef = B33FB1AE172B185C006529CE /* ioSock.c */; };
+		B33FB1C4172B185C006529CE /* NWPusher.m in Sources */ = {isa = PBXBuildFile; fileRef = B33FB1B3172B185C006529CE /* NWPusher.m */; };
+		B33FB1C5172B185C006529CE /* NWPushFeedback.m in Sources */ = {isa = PBXBuildFile; fileRef = B33FB1B5172B185C006529CE /* NWPushFeedback.m */; };
+		B33FB1C6172B185C006529CE /* NWSecTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B33FB1B7172B185C006529CE /* NWSecTools.m */; };
+		B33FB1C7172B185C006529CE /* NWSSLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = B33FB1B9172B185C006529CE /* NWSSLConnection.m */; };
+		B33FB1C8172B185C006529CE /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = B33FB1BB172B185C006529CE /* icon.icns */; };
+		B33FB1C9172B185C006529CE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B33FB1BC172B185C006529CE /* main.m */; };
+		B33FB1CA172B185C006529CE /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B33FB1BD172B185C006529CE /* MainMenu.xib */; };
+		B33FB1CB172B185C006529CE /* NWAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B33FB1BF172B185C006529CE /* NWAppDelegate.m */; };
+		B33FB1F8172B1A7A006529CE /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B33FB1EE172B1A7A006529CE /* Default-568h@2x.png */; };
+		B33FB1F9172B1A7A006529CE /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = B33FB1EF172B1A7A006529CE /* Default.png */; };
+		B33FB1FA172B1A7A006529CE /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B33FB1F0172B1A7A006529CE /* Default@2x.png */; };
+		B33FB1FC172B1A7A006529CE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B33FB1F3172B1A7A006529CE /* main.m */; };
+		B33FB1FD172B1A7A006529CE /* NWAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B33FB1F5172B1A7A006529CE /* NWAppDelegate.m */; };
+		B33FB200172B1B9F006529CE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B33FB1FF172B1B9F006529CE /* UIKit.framework */; };
+		B33FB202172B1BA5006529CE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B33FB201172B1BA4006529CE /* Foundation.framework */; };
+		B33FB204172B1BAD006529CE /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B33FB203172B1BAD006529CE /* CoreGraphics.framework */; };
+		B33FB208172B1EB7006529CE /* ioSock.c in Sources */ = {isa = PBXBuildFile; fileRef = B33FB1AE172B185C006529CE /* ioSock.c */; };
+		B33FB20A172B1EB7006529CE /* NWPusher.m in Sources */ = {isa = PBXBuildFile; fileRef = B33FB1B3172B185C006529CE /* NWPusher.m */; };
+		B33FB20B172B1EB7006529CE /* NWPushFeedback.m in Sources */ = {isa = PBXBuildFile; fileRef = B33FB1B5172B185C006529CE /* NWPushFeedback.m */; };
+		B33FB20C172B1EB7006529CE /* NWSecTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B33FB1B7172B185C006529CE /* NWSecTools.m */; };
+		B33FB20D172B1EB7006529CE /* NWSSLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = B33FB1B9172B185C006529CE /* NWSSLConnection.m */; };
+		B33FB20F172B1EC2006529CE /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B33FB20E172B1EC2006529CE /* Security.framework */; };
+		B33FB214172B303D006529CE /* Icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = B33FB210172B303C006529CE /* Icon-72.png */; };
+		B33FB215172B303D006529CE /* Icon-72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B33FB211172B303D006529CE /* Icon-72@2x.png */; };
+		B33FB216172B303D006529CE /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B33FB212172B303D006529CE /* icon.png */; };
+		B33FB217172B303D006529CE /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B33FB213172B303D006529CE /* Icon@2x.png */; };
 		B37FA8DF16036FF500174E0D /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = B37FA8DE16036FF500174E0D /* LICENSE.txt */; };
+		B395BA12172BC17A00631932 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B3C6BE0015FD30E900F1F3F1 /* README.md */; };
+		B395BA13172BC17A00631932 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = B37FA8DE16036FF500174E0D /* LICENSE.txt */; };
 		B3C6BD8015FD24D200F1F3F1 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3C6BD7F15FD24D200F1F3F1 /* Cocoa.framework */; };
-		B3C6BD8C15FD24D200F1F3F1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C6BD8B15FD24D200F1F3F1 /* main.m */; };
-		B3C6BD9315FD24D200F1F3F1 /* NWAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C6BD9215FD24D200F1F3F1 /* NWAppDelegate.m */; };
-		B3C6BDB415FD253100F1F3F1 /* NWPusher.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C6BDB315FD253100F1F3F1 /* NWPusher.m */; };
-		B3C6BDB715FD254900F1F3F1 /* NWSSLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C6BDB615FD254900F1F3F1 /* NWSSLConnection.m */; };
-		B3C6BDBA15FD255500F1F3F1 /* NWSecTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C6BDB915FD255500F1F3F1 /* NWSecTools.m */; };
-		B3C6BDBD15FD257100F1F3F1 /* NWPushFeedback.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C6BDBC15FD257000F1F3F1 /* NWPushFeedback.m */; };
-		B3C6BDC015FD259400F1F3F1 /* ioSock.c in Sources */ = {isa = PBXBuildFile; fileRef = B3C6BDBE15FD259400F1F3F1 /* ioSock.c */; };
 		B3C6BDD315FD27E900F1F3F1 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3C6BDD215FD27E900F1F3F1 /* Security.framework */; };
 		B3C6BDD515FD285600F1F3F1 /* configuration.plist in Resources */ = {isa = PBXBuildFile; fileRef = B3C6BDD415FD285600F1F3F1 /* configuration.plist */; };
-		B3C6BDF715FD2CF800F1F3F1 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3C6BDF615FD2CF800F1F3F1 /* MainMenu.xib */; };
-		B3C6BDF915FD2D4100F1F3F1 /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = B3C6BDF815FD2D4100F1F3F1 /* icon.icns */; };
 		B3C6BE0115FD30E900F1F3F1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B3C6BE0015FD30E900F1F3F1 /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		B37FA8DA1603690F00174E0D /* NWLCore.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = NWLCore.c; sourceTree = "<group>"; };
-		B37FA8DB1603690F00174E0D /* NWLCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWLCore.h; sourceTree = "<group>"; };
+		B3376A61172BB71200242EBB /* NWLCore.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = NWLCore.c; path = Mac/NWLCore.c; sourceTree = SOURCE_ROOT; };
+		B3376A62172BB71200242EBB /* NWLCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NWLCore.h; path = Mac/NWLCore.h; sourceTree = SOURCE_ROOT; };
+		B33FB1AE172B185C006529CE /* ioSock.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioSock.c; sourceTree = "<group>"; };
+		B33FB1AF172B185C006529CE /* ioSock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioSock.h; sourceTree = "<group>"; };
+		B33FB1B2172B185C006529CE /* NWPusher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWPusher.h; sourceTree = "<group>"; };
+		B33FB1B3172B185C006529CE /* NWPusher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWPusher.m; sourceTree = "<group>"; };
+		B33FB1B4172B185C006529CE /* NWPushFeedback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWPushFeedback.h; sourceTree = "<group>"; };
+		B33FB1B5172B185C006529CE /* NWPushFeedback.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWPushFeedback.m; sourceTree = "<group>"; };
+		B33FB1B6172B185C006529CE /* NWSecTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWSecTools.h; sourceTree = "<group>"; };
+		B33FB1B7172B185C006529CE /* NWSecTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWSecTools.m; sourceTree = "<group>"; };
+		B33FB1B8172B185C006529CE /* NWSSLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWSSLConnection.h; sourceTree = "<group>"; };
+		B33FB1B9172B185C006529CE /* NWSSLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWSSLConnection.m; sourceTree = "<group>"; };
+		B33FB1BB172B185C006529CE /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
+		B33FB1BC172B185C006529CE /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		B33FB1BD172B185C006529CE /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
+		B33FB1BE172B185C006529CE /* NWAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWAppDelegate.h; sourceTree = "<group>"; };
+		B33FB1BF172B185C006529CE /* NWAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWAppDelegate.m; sourceTree = "<group>"; };
+		B33FB1C0172B185C006529CE /* PusherMac-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "PusherMac-Info.plist"; sourceTree = "<group>"; };
+		B33FB1C1172B185C006529CE /* PusherMac-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PusherMac-Prefix.pch"; sourceTree = "<group>"; };
+		B33FB1D1172B1A66006529CE /* PusherTouch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PusherTouch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B33FB1EE172B1A7A006529CE /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		B33FB1EF172B1A7A006529CE /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		B33FB1F0172B1A7A006529CE /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		B33FB1F3172B1A7A006529CE /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		B33FB1F4172B1A7A006529CE /* NWAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWAppDelegate.h; sourceTree = "<group>"; };
+		B33FB1F5172B1A7A006529CE /* NWAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWAppDelegate.m; sourceTree = "<group>"; };
+		B33FB1F6172B1A7A006529CE /* PusherTouch-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "PusherTouch-Info.plist"; sourceTree = "<group>"; };
+		B33FB1F7172B1A7A006529CE /* PusherTouch-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PusherTouch-Prefix.pch"; sourceTree = "<group>"; };
+		B33FB1FF172B1B9F006529CE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		B33FB201172B1BA4006529CE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		B33FB203172B1BAD006529CE /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk/System/Library/Frameworks/CoreGraphics.framework; sourceTree = DEVELOPER_DIR; };
+		B33FB20E172B1EC2006529CE /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
+		B33FB210172B303C006529CE /* Icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72.png"; sourceTree = "<group>"; };
+		B33FB211172B303D006529CE /* Icon-72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72@2x.png"; sourceTree = "<group>"; };
+		B33FB212172B303D006529CE /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
+		B33FB213172B303D006529CE /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
 		B37FA8DE16036FF500174E0D /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		B3C6BD7B15FD24D200F1F3F1 /* Pusher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pusher.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3C6BD7F15FD24D200F1F3F1 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		B3C6BD8215FD24D200F1F3F1 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
-		B3C6BD8315FD24D200F1F3F1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		B3C6BD8415FD24D200F1F3F1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		B3C6BD8715FD24D200F1F3F1 /* NWPusher-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NWPusher-Info.plist"; sourceTree = "<group>"; };
-		B3C6BD8B15FD24D200F1F3F1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		B3C6BD8D15FD24D200F1F3F1 /* NWPusher-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NWPusher-Prefix.pch"; sourceTree = "<group>"; };
-		B3C6BD9115FD24D200F1F3F1 /* NWAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NWAppDelegate.h; sourceTree = "<group>"; };
-		B3C6BD9215FD24D200F1F3F1 /* NWAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NWAppDelegate.m; sourceTree = "<group>"; };
-		B3C6BDB215FD253100F1F3F1 /* NWPusher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWPusher.h; sourceTree = "<group>"; };
-		B3C6BDB315FD253100F1F3F1 /* NWPusher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWPusher.m; sourceTree = "<group>"; };
-		B3C6BDB515FD254900F1F3F1 /* NWSSLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWSSLConnection.h; sourceTree = "<group>"; };
-		B3C6BDB615FD254900F1F3F1 /* NWSSLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWSSLConnection.m; sourceTree = "<group>"; };
-		B3C6BDB815FD255500F1F3F1 /* NWSecTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWSecTools.h; sourceTree = "<group>"; };
-		B3C6BDB915FD255500F1F3F1 /* NWSecTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWSecTools.m; sourceTree = "<group>"; };
-		B3C6BDBB15FD257000F1F3F1 /* NWPushFeedback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWPushFeedback.h; sourceTree = "<group>"; };
-		B3C6BDBC15FD257000F1F3F1 /* NWPushFeedback.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWPushFeedback.m; sourceTree = "<group>"; };
-		B3C6BDBE15FD259400F1F3F1 /* ioSock.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioSock.c; sourceTree = "<group>"; };
-		B3C6BDBF15FD259400F1F3F1 /* ioSock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioSock.h; sourceTree = "<group>"; };
 		B3C6BDD215FD27E900F1F3F1 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
-		B3C6BDD415FD285600F1F3F1 /* configuration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = configuration.plist; sourceTree = "<group>"; };
-		B3C6BDF615FD2CF800F1F3F1 /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
-		B3C6BDF815FD2D4100F1F3F1 /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
+		B3C6BDD415FD285600F1F3F1 /* configuration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = configuration.plist; path = ../configuration.plist; sourceTree = "<group>"; };
 		B3C6BE0015FD30E900F1F3F1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		B33FB1CE172B1A66006529CE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B33FB20F172B1EC2006529CE /* Security.framework in Frameworks */,
+				B33FB204172B1BAD006529CE /* CoreGraphics.framework in Frameworks */,
+				B33FB202172B1BA5006529CE /* Foundation.framework in Frameworks */,
+				B33FB200172B1B9F006529CE /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B3C6BD7815FD24D200F1F3F1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -68,13 +116,83 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B3376A5F172B9EFD00242EBB /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				B33FB1EE172B1A7A006529CE /* Default-568h@2x.png */,
+				B33FB1EF172B1A7A006529CE /* Default.png */,
+				B33FB1F0172B1A7A006529CE /* Default@2x.png */,
+				B33FB210172B303C006529CE /* Icon-72.png */,
+				B33FB211172B303D006529CE /* Icon-72@2x.png */,
+				B33FB212172B303D006529CE /* icon.png */,
+				B33FB213172B303D006529CE /* Icon@2x.png */,
+				B33FB1F3172B1A7A006529CE /* main.m */,
+				B33FB1F6172B1A7A006529CE /* PusherTouch-Info.plist */,
+				B33FB1F7172B1A7A006529CE /* PusherTouch-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B3376A60172B9F1F00242EBB /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				B33FB1BB172B185C006529CE /* icon.icns */,
+				B33FB1BC172B185C006529CE /* main.m */,
+				B33FB1C0172B185C006529CE /* PusherMac-Info.plist */,
+				B33FB1C1172B185C006529CE /* PusherMac-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B33FB1AD172B185C006529CE /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				B33FB1AF172B185C006529CE /* ioSock.h */,
+				B33FB1AE172B185C006529CE /* ioSock.c */,
+				B33FB1B2172B185C006529CE /* NWPusher.h */,
+				B33FB1B3172B185C006529CE /* NWPusher.m */,
+				B33FB1B4172B185C006529CE /* NWPushFeedback.h */,
+				B33FB1B5172B185C006529CE /* NWPushFeedback.m */,
+				B33FB1B6172B185C006529CE /* NWSecTools.h */,
+				B33FB1B7172B185C006529CE /* NWSecTools.m */,
+				B33FB1B8172B185C006529CE /* NWSSLConnection.h */,
+				B33FB1B9172B185C006529CE /* NWSSLConnection.m */,
+			);
+			path = Library;
+			sourceTree = "<group>";
+		};
+		B33FB1BA172B185C006529CE /* Mac */ = {
+			isa = PBXGroup;
+			children = (
+				B3C6BDD415FD285600F1F3F1 /* configuration.plist */,
+				B33FB1BD172B185C006529CE /* MainMenu.xib */,
+				B33FB1BE172B185C006529CE /* NWAppDelegate.h */,
+				B33FB1BF172B185C006529CE /* NWAppDelegate.m */,
+				B3376A60172B9F1F00242EBB /* Supporting Files */,
+			);
+			path = Mac;
+			sourceTree = "<group>";
+		};
+		B33FB1ED172B1A7A006529CE /* Touch */ = {
+			isa = PBXGroup;
+			children = (
+				B3376A62172BB71200242EBB /* NWLCore.h */,
+				B3376A61172BB71200242EBB /* NWLCore.c */,
+				B33FB1F4172B1A7A006529CE /* NWAppDelegate.h */,
+				B33FB1F5172B1A7A006529CE /* NWAppDelegate.m */,
+				B3376A5F172B9EFD00242EBB /* Supporting Files */,
+			);
+			path = Touch;
+			sourceTree = "<group>";
+		};
 		B3C6BD7015FD24D200F1F3F1 = {
 			isa = PBXGroup;
 			children = (
 				B3C6BE0015FD30E900F1F3F1 /* README.md */,
 				B37FA8DE16036FF500174E0D /* LICENSE.txt */,
-				B3C6BDD415FD285600F1F3F1 /* configuration.plist */,
-				B3C6BD8515FD24D200F1F3F1 /* Pusher */,
+				B33FB1AD172B185C006529CE /* Library */,
+				B33FB1BA172B185C006529CE /* Mac */,
+				B33FB1ED172B1A7A006529CE /* Touch */,
 				B3C6BD7E15FD24D200F1F3F1 /* Frameworks */,
 				B3C6BD7C15FD24D200F1F3F1 /* Products */,
 			);
@@ -84,6 +202,7 @@
 			isa = PBXGroup;
 			children = (
 				B3C6BD7B15FD24D200F1F3F1 /* Pusher.app */,
+				B33FB1D1172B1A66006529CE /* PusherTouch.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -91,63 +210,41 @@
 		B3C6BD7E15FD24D200F1F3F1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B33FB20E172B1EC2006529CE /* Security.framework */,
 				B3C6BDD215FD27E900F1F3F1 /* Security.framework */,
 				B3C6BD7F15FD24D200F1F3F1 /* Cocoa.framework */,
-				B3C6BD8115FD24D200F1F3F1 /* Other Frameworks */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		B3C6BD8115FD24D200F1F3F1 /* Other Frameworks */ = {
-			isa = PBXGroup;
-			children = (
+				B33FB203172B1BAD006529CE /* CoreGraphics.framework */,
+				B33FB1FF172B1B9F006529CE /* UIKit.framework */,
 				B3C6BD8215FD24D200F1F3F1 /* AppKit.framework */,
-				B3C6BD8315FD24D200F1F3F1 /* CoreData.framework */,
+				B33FB201172B1BA4006529CE /* Foundation.framework */,
 				B3C6BD8415FD24D200F1F3F1 /* Foundation.framework */,
 			);
-			name = "Other Frameworks";
-			sourceTree = "<group>";
-		};
-		B3C6BD8515FD24D200F1F3F1 /* Pusher */ = {
-			isa = PBXGroup;
-			children = (
-				B3C6BDB215FD253100F1F3F1 /* NWPusher.h */,
-				B3C6BDB315FD253100F1F3F1 /* NWPusher.m */,
-				B3C6BDBB15FD257000F1F3F1 /* NWPushFeedback.h */,
-				B3C6BDBC15FD257000F1F3F1 /* NWPushFeedback.m */,
-				B3C6BDB815FD255500F1F3F1 /* NWSecTools.h */,
-				B3C6BDB915FD255500F1F3F1 /* NWSecTools.m */,
-				B3C6BDB515FD254900F1F3F1 /* NWSSLConnection.h */,
-				B3C6BDB615FD254900F1F3F1 /* NWSSLConnection.m */,
-				B37FA8DB1603690F00174E0D /* NWLCore.h */,
-				B37FA8DA1603690F00174E0D /* NWLCore.c */,
-				B3C6BDBF15FD259400F1F3F1 /* ioSock.h */,
-				B3C6BDBE15FD259400F1F3F1 /* ioSock.c */,
-				B3C6BD9115FD24D200F1F3F1 /* NWAppDelegate.h */,
-				B3C6BD9215FD24D200F1F3F1 /* NWAppDelegate.m */,
-				B3C6BDF615FD2CF800F1F3F1 /* MainMenu.xib */,
-				B3C6BD8615FD24D200F1F3F1 /* Supporting Files */,
-			);
-			path = Pusher;
-			sourceTree = "<group>";
-		};
-		B3C6BD8615FD24D200F1F3F1 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				B3C6BDF815FD2D4100F1F3F1 /* icon.icns */,
-				B3C6BD8715FD24D200F1F3F1 /* NWPusher-Info.plist */,
-				B3C6BD8B15FD24D200F1F3F1 /* main.m */,
-				B3C6BD8D15FD24D200F1F3F1 /* NWPusher-Prefix.pch */,
-			);
-			name = "Supporting Files";
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B3C6BD7A15FD24D200F1F3F1 /* Pusher */ = {
+		B33FB1D0172B1A66006529CE /* PusherTouch */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B3C6BD9915FD24D200F1F3F1 /* Build configuration list for PBXNativeTarget "Pusher" */;
+			buildConfigurationList = B33FB1EA172B1A66006529CE /* Build configuration list for PBXNativeTarget "PusherTouch" */;
+			buildPhases = (
+				B33FB1CD172B1A66006529CE /* Sources */,
+				B33FB1CE172B1A66006529CE /* Frameworks */,
+				B33FB1CF172B1A66006529CE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PusherTouch;
+			productName = PusherTouch;
+			productReference = B33FB1D1172B1A66006529CE /* PusherTouch.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B3C6BD7A15FD24D200F1F3F1 /* PusherMac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B3C6BD9915FD24D200F1F3F1 /* Build configuration list for PBXNativeTarget "PusherMac" */;
 			buildPhases = (
 				B3C6BD7715FD24D200F1F3F1 /* Sources */,
 				B3C6BD7815FD24D200F1F3F1 /* Frameworks */,
@@ -157,7 +254,7 @@
 			);
 			dependencies = (
 			);
-			name = Pusher;
+			name = PusherMac;
 			productName = Pusher;
 			productReference = B3C6BD7B15FD24D200F1F3F1 /* Pusher.app */;
 			productType = "com.apple.product-type.application";
@@ -184,45 +281,134 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B3C6BD7A15FD24D200F1F3F1 /* Pusher */,
+				B3C6BD7A15FD24D200F1F3F1 /* PusherMac */,
+				B33FB1D0172B1A66006529CE /* PusherTouch */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		B33FB1CF172B1A66006529CE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B33FB1F8172B1A7A006529CE /* Default-568h@2x.png in Resources */,
+				B33FB1F9172B1A7A006529CE /* Default.png in Resources */,
+				B33FB1FA172B1A7A006529CE /* Default@2x.png in Resources */,
+				B33FB214172B303D006529CE /* Icon-72.png in Resources */,
+				B33FB215172B303D006529CE /* Icon-72@2x.png in Resources */,
+				B33FB216172B303D006529CE /* icon.png in Resources */,
+				B33FB217172B303D006529CE /* Icon@2x.png in Resources */,
+				B395BA12172BC17A00631932 /* README.md in Resources */,
+				B395BA13172BC17A00631932 /* LICENSE.txt in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B3C6BD7915FD24D200F1F3F1 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				B3C6BDD515FD285600F1F3F1 /* configuration.plist in Resources */,
-				B3C6BDF715FD2CF800F1F3F1 /* MainMenu.xib in Resources */,
-				B3C6BDF915FD2D4100F1F3F1 /* icon.icns in Resources */,
 				B3C6BE0115FD30E900F1F3F1 /* README.md in Resources */,
 				B37FA8DF16036FF500174E0D /* LICENSE.txt in Resources */,
+				B33FB1C8172B185C006529CE /* icon.icns in Resources */,
+				B33FB1CA172B185C006529CE /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		B33FB1CD172B1A66006529CE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B33FB1FC172B1A7A006529CE /* main.m in Sources */,
+				B33FB1FD172B1A7A006529CE /* NWAppDelegate.m in Sources */,
+				B33FB208172B1EB7006529CE /* ioSock.c in Sources */,
+				B33FB20A172B1EB7006529CE /* NWPusher.m in Sources */,
+				B33FB20B172B1EB7006529CE /* NWPushFeedback.m in Sources */,
+				B33FB20C172B1EB7006529CE /* NWSecTools.m in Sources */,
+				B33FB20D172B1EB7006529CE /* NWSSLConnection.m in Sources */,
+				B3376A64172BB71200242EBB /* NWLCore.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B3C6BD7715FD24D200F1F3F1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B3C6BD8C15FD24D200F1F3F1 /* main.m in Sources */,
-				B3C6BD9315FD24D200F1F3F1 /* NWAppDelegate.m in Sources */,
-				B3C6BDB415FD253100F1F3F1 /* NWPusher.m in Sources */,
-				B3C6BDB715FD254900F1F3F1 /* NWSSLConnection.m in Sources */,
-				B3C6BDBA15FD255500F1F3F1 /* NWSecTools.m in Sources */,
-				B3C6BDBD15FD257100F1F3F1 /* NWPushFeedback.m in Sources */,
-				B3C6BDC015FD259400F1F3F1 /* ioSock.c in Sources */,
-				B37FA8DC1603690F00174E0D /* NWLCore.c in Sources */,
+				B33FB1C2172B185C006529CE /* ioSock.c in Sources */,
+				B33FB1C4172B185C006529CE /* NWPusher.m in Sources */,
+				B33FB1C5172B185C006529CE /* NWPushFeedback.m in Sources */,
+				B33FB1C6172B185C006529CE /* NWSecTools.m in Sources */,
+				B33FB1C7172B185C006529CE /* NWSSLConnection.m in Sources */,
+				B33FB1C9172B185C006529CE /* main.m in Sources */,
+				B33FB1CB172B185C006529CE /* NWAppDelegate.m in Sources */,
+				B3376A63172BB71200242EBB /* NWLCore.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		B33FB1EB172B1A66006529CE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Developer/Library/Frameworks\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Touch/PusherTouch-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"NWL_LIB=Pusher",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "Touch/PusherTouch-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		B33FB1EC172B1A66006529CE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Developer/Library/Frameworks\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Touch/PusherTouch-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = "NWL_LIB=Pusher";
+				INFOPLIST_FILE = "Touch/PusherTouch-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
 		B3C6BD9715FD24D200F1F3F1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -275,15 +461,15 @@
 		B3C6BD9A15FD24D200F1F3F1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Pusher/NWPusher-Prefix.pch";
+				GCC_PREFIX_HEADER = "Mac/PusherMac-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
 					"NWL_LIB=Pusher",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "Pusher/NWPusher-Info.plist";
+				INFOPLIST_FILE = "Mac/PusherMac-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = Pusher;
 				WRAPPER_EXTENSION = app;
@@ -293,14 +479,15 @@
 		B3C6BD9B15FD24D200F1F3F1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Pusher/NWPusher-Prefix.pch";
+				GCC_PREFIX_HEADER = "Mac/PusherMac-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"NWL_LIB=Pusher",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "Pusher/NWPusher-Info.plist";
+				INFOPLIST_FILE = "Mac/PusherMac-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = Pusher;
 				WRAPPER_EXTENSION = app;
@@ -310,6 +497,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		B33FB1EA172B1A66006529CE /* Build configuration list for PBXNativeTarget "PusherTouch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B33FB1EB172B1A66006529CE /* Debug */,
+				B33FB1EC172B1A66006529CE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		B3C6BD7515FD24D200F1F3F1 /* Build configuration list for PBXProject "NWPusher" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -319,7 +515,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B3C6BD9915FD24D200F1F3F1 /* Build configuration list for PBXNativeTarget "Pusher" */ = {
+		B3C6BD9915FD24D200F1F3F1 /* Build configuration list for PBXNativeTarget "PusherMac" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B3C6BD9A15FD24D200F1F3F1 /* Debug */,

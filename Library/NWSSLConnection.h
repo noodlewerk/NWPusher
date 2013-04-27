@@ -2,9 +2,10 @@
 //  NWSSLConnection.h
 //  Pusher
 //
-//  Created by Leo on 9/9/12.
 //  Copyright (c) 2012 noodlewerk. All rights reserved.
 //
+
+#import "NWPusher.h"
 
 @interface NWSSLConnection : NSObject
 
@@ -13,9 +14,9 @@
 @property (nonatomic, assign) SecIdentityRef identity;
 
 - (id)initWithHost:(NSString *)host port:(NSUInteger)port identity:(SecIdentityRef)identity;
-- (BOOL)connect;
-- (BOOL)read:(NSMutableData *)data length:(NSUInteger *)length;
-- (BOOL)write:(NSData *)data length:(NSUInteger *)length;
+- (NWPusherResult)connect;
+- (NWPusherResult)read:(NSMutableData *)data length:(NSUInteger *)length;
+- (NWPusherResult)write:(NSData *)data length:(NSUInteger *)length;
 - (void)disconnect;
 
 @end

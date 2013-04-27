@@ -2,11 +2,11 @@
 //  NWSecTools.m
 //  Pusher
 //
-//  Created by Leo on 9/9/12.
 //  Copyright (c) 2012 noodlewerk. All rights reserved.
 //
 
 #import "NWSecTools.h"
+
 
 static NSString * const NWDevelpmentPrefix = @"Apple Development IOS Push Services: ";
 static NSString * const NWProductionPrefix = @"Apple Production IOS Push Services: ";
@@ -20,34 +20,36 @@ typedef enum {
 
 @implementation NWSecTools
 
-+ (BOOL)identityWithCertificateData:(NSData *)certificate identity:(SecIdentityRef *)identity
+#if !TARGET_OS_IPHONE
+
++ (NWPusherResult)identityWithCertificateData:(NSData *)certificate identity:(SecIdentityRef *)identity
 {
     SecCertificateRef c = SecCertificateCreateWithData(kCFAllocatorDefault, (__bridge CFDataRef)certificate);
-    if (!c) {
-        NWLogWarn(@"Unable to read certificate");
-        return NO;
-    }
-    
-    BOOL result = [self identityWithCertificateRef:c identity:identity];
+    if (!c) return kNWPusherResultCertificateInvalid;
+    NWPusherResult result = [self identityWithCertificateRef:c identity:identity];
     return result;
 }
 
-+ (BOOL)identityWithCertificateRef:(SecCertificateRef)certificate identity:(SecIdentityRef *)identity
++ (NWPusherResult)identityWithCertificateRef:(SecCertificateRef)certificate identity:(SecIdentityRef *)identity
 {
     OSStatus status = SecIdentityCreateWithCertificate(NULL, certificate, identity);
     if (status != noErr) {
         switch (status) {
-            case errSecItemNotFound: NWLogWarn(@"Unable to create identitiy, private key missing"); break;
-            default: NWLogWarn(@"Unable to create identitiy (%i)", status); break;
+            case errSecItemNotFound: return kNWPusherResultCertificatePrivateKeyMissing;
         }
-        return NO;
+        return kNWPusherResultCertificateCreateIdentity;
     }
     
-    return YES;
+    return kNWPusherResultSuccess;
 }
 
-+ (BOOL)identityWithPKCS12Data:(NSData *)pkcs12 password:(NSString *)password identity:(SecIdentityRef *)identity
+#endif
+
++ (NWPusherResult)identityWithPKCS12Data:(NSData *)pkcs12 password:(NSString *)password identity:(SecIdentityRef *)identity
 {
+    if (!pkcs12.length) {
+        return kNWPusherResultPKCS12EmptyData;
+    }
     const void *keys[] = {kSecImportExportPassphrase};
     const void *values[] = {(__bridge const void *)password};
     CFDictionaryRef options = CFDictionaryCreate(NULL, keys, values, 1, NULL, NULL);
@@ -55,30 +57,31 @@ typedef enum {
     OSStatus status = SecPKCS12Import((__bridge CFDataRef)pkcs12, options, &items);
     CFRelease(options);
     if (status != noErr) {
-        NWLogWarn(@"Unable to import PKCS12 data (%i)", status);
-        return NO;
+        CFRelease(items);
+        return kNWPusherResultPKCS12InvalidData;
     }
     
     CFIndex count = CFArrayGetCount(items);
     if (!count) {
-        NWLogWarn(@"No items in PKCS12 data (%i)", status);
-        return NO;
+        CFRelease(items);
+        return kNWPusherResultPKCS12NoItems;
     }
     
     CFDictionaryRef dict = CFArrayGetValueAtIndex(items, 0);
-    *identity = (SecIdentityRef)CFDictionaryGetValue(dict, kSecImportItemIdentity);
-    if (!identity) {
-        NWLogWarn(@"No identity in PKCS12 data (%i)", status);
-        return NO;
+    SecIdentityRef ident = (SecIdentityRef)CFDictionaryGetValue(dict, kSecImportItemIdentity);
+    if (!ident) {
+        CFRelease(items);
+        return kNWPusherResultPKCS12NoIdentity;
     }
     
-    CFRetain(*identity);
+    CFRetain(ident);
     CFRelease(items);
+    if (identity) *identity = ident;
     
-    return YES;
+    return kNWPusherResultSuccess;
 }
 
-+ (BOOL)keychainCertificates:(NSArray **)certificates
++ (NSArray *)keychainCertificates
 {
     const void *keys[] = {kSecClass, kSecMatchLimit};
     int i = 1000;
@@ -90,22 +93,20 @@ typedef enum {
     OSStatus status = SecItemCopyMatching(options, (CFTypeRef *)&results);
     CFRelease(options);
     if (status != noErr) {
-        NWLogWarn(@"Unable to find certificate (%i)", status);
-        return NO;
+        return nil;
     }
     
-    NSMutableArray *certs = [[NSMutableArray alloc] init];
+    NSMutableArray *result = [[NSMutableArray alloc] init];
     NSArray *candidates = CFBridgingRelease(results);
     for (id c in candidates) {
         SecCertificateRef certificate = (__bridge SecCertificateRef)(c);
         NWCertificateType type = [self typeForCertificate:certificate identifier:nil];
         if (type == kNWCertificateTypeDevelopment || type == kNWCertificateTypeProduction) {
-            [certs addObject:c];
+            [result addObject:c];
         }
     }
-    if (certificates) *certificates = certs;
     
-    return YES;
+    return result;
 }
 
 + (BOOL)isDevelopmentCertificate:(SecCertificateRef)certificate
@@ -123,9 +124,7 @@ typedef enum {
 
 + (NWCertificateType)typeForCertificate:(SecCertificateRef)certificate identifier:(NSString **)identifier
 {
-    CFStringRef ref = NULL;
-    SecCertificateCopyCommonName(certificate, &ref);
-    NSString *name = CFBridgingRelease(ref);
+    NSString *name = CFBridgingRelease(SecCertificateCopySubjectSummary(certificate));
     if ([name hasPrefix:NWDevelpmentPrefix]) {
         if (identifier) *identifier = [name substringFromIndex:NWDevelpmentPrefix.length];
         return kNWCertificateTypeDevelopment;
