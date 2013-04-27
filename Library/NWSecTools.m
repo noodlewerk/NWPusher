@@ -74,9 +74,11 @@ typedef enum {
         return kNWPusherResultPKCS12NoIdentity;
     }
     
-    CFRetain(ident);
+    if (identity) {
+        CFRetain(ident);
+        *identity = ident;
+    }
     CFRelease(items);
-    if (identity) *identity = ident;
     
     return kNWPusherResultSuccess;
 }

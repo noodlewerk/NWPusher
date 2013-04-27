@@ -335,7 +335,6 @@ OSStatus SocketRead(
 	*dataLength = 0;
 
 	for(;;) {
-		bytesRead = 0;
 		rrtn = (int)read(sock, currData, bytesToGo);
 		if (rrtn <= 0) {
 			/* this is guesswork... */
