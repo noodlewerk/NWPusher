@@ -39,9 +39,9 @@
 		B37FA8DF16036FF500174E0D /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = B37FA8DE16036FF500174E0D /* LICENSE.txt */; };
 		B395BA12172BC17A00631932 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B3C6BE0015FD30E900F1F3F1 /* README.md */; };
 		B395BA13172BC17A00631932 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = B37FA8DE16036FF500174E0D /* LICENSE.txt */; };
+		B3AFABEF172C81910027346A /* configuration.plist in Resources */ = {isa = PBXBuildFile; fileRef = B3AFABEE172C81910027346A /* configuration.plist */; };
 		B3C6BD8015FD24D200F1F3F1 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3C6BD7F15FD24D200F1F3F1 /* Cocoa.framework */; };
 		B3C6BDD315FD27E900F1F3F1 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3C6BDD215FD27E900F1F3F1 /* Security.framework */; };
-		B3C6BDD515FD285600F1F3F1 /* configuration.plist in Resources */ = {isa = PBXBuildFile; fileRef = B3C6BDD415FD285600F1F3F1 /* configuration.plist */; };
 		B3C6BE0115FD30E900F1F3F1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B3C6BE0015FD30E900F1F3F1 /* README.md */; };
 /* End PBXBuildFile section */
 
@@ -83,12 +83,12 @@
 		B33FB212172B303D006529CE /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		B33FB213172B303D006529CE /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
 		B37FA8DE16036FF500174E0D /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		B3AFABEE172C81910027346A /* configuration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = configuration.plist; sourceTree = "<group>"; };
 		B3C6BD7B15FD24D200F1F3F1 /* Pusher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pusher.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3C6BD7F15FD24D200F1F3F1 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		B3C6BD8215FD24D200F1F3F1 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		B3C6BD8415FD24D200F1F3F1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		B3C6BDD215FD27E900F1F3F1 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
-		B3C6BDD415FD285600F1F3F1 /* configuration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = configuration.plist; path = ../configuration.plist; sourceTree = "<group>"; };
 		B3C6BE0015FD30E900F1F3F1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -164,7 +164,7 @@
 		B33FB1BA172B185C006529CE /* Mac */ = {
 			isa = PBXGroup;
 			children = (
-				B3C6BDD415FD285600F1F3F1 /* configuration.plist */,
+				B3AFABEE172C81910027346A /* configuration.plist */,
 				B33FB1BD172B185C006529CE /* MainMenu.xib */,
 				B33FB1BE172B185C006529CE /* NWAppDelegate.h */,
 				B33FB1BF172B185C006529CE /* NWAppDelegate.m */,
@@ -308,11 +308,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B3C6BDD515FD285600F1F3F1 /* configuration.plist in Resources */,
 				B3C6BE0115FD30E900F1F3F1 /* README.md in Resources */,
 				B37FA8DF16036FF500174E0D /* LICENSE.txt in Resources */,
 				B33FB1C8172B185C006529CE /* icon.icns in Resources */,
 				B33FB1CA172B185C006529CE /* MainMenu.xib in Resources */,
+				B3AFABEF172C81910027346A /* configuration.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -461,7 +461,7 @@
 		B3C6BD9A15FD24D200F1F3F1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Mac/PusherMac-Prefix.pch";
@@ -479,7 +479,7 @@
 		B3C6BD9B15FD24D200F1F3F1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Mac/PusherMac-Prefix.pch";

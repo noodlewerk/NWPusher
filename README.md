@@ -79,7 +79,7 @@ The combo box at the top lists the available SSL certificates in the keychain. S
 
 Now before you press *Push*, make sure the application you're *sending to* is in the *background*, e.g. by pressing the home button. This way you're sure the app is not going to interfere with the message, yet. Press push, wait a few seconds, and see.
 
-If things are not working as expected, then please send me a message on GitHub or post and issue.
+If things are not working as expected, send me a message on GitHub or post an issue.
 
 ### Push from iOS
 The ultimate experience is of course pushing from an iPhone to an iPhone, directly. This can be done with the Pusher iOS app. Before you run the PusherTouch target, make sure to include the *certificate, private key, and device token* inside the app. Take the PKCS12 file that you exported earlier and include it in the PusherTouch bundle. Then go to `NWAppDelegate.m` in the `Touch` folder and configure `pkcs12FileName`, `pkcs12Password`, and `deviceToken`. Now run the PusherTouch target:
@@ -88,7 +88,7 @@ The ultimate experience is of course pushing from an iPhone to an iPhone, direct
 
 If everything is set up correctly, you only need to *Connect* and *Push*. Then you should receive the *You did it!* push message on the device.
 
-Again, if things are not working as expected, then please send me a message on GitHub or post and issue.
+Again, if things are not working as expected, send me a message on GitHub or post an issue.
 
 
 Pushing from source
@@ -106,10 +106,10 @@ Next you need to link with `Foundation.framework` and `Security.framework`. Befo
 
 To create a connection directly from a PKCS12 (.p12) file:
 
-    NSURL *url = [NSBundle.mainBundle URLForResource:pkcs12FileName withExtension:nil];
+    NSURL *url = [NSBundle.mainBundle URLForResource:@"my-certificate.p12" withExtension:nil];
     NSData *pkcs12 = [NSData dataWithContentsOfURL:url];
     NWPusher *pusher = [[NWPusher alloc] init];
-    [pusher connectWithPKCS12Data:pkcs12 password:pkcs12Password
+    [pusher connectWithPKCS12Data:pkcs12 password:@"pa$$word"
         sandbox:YES block:^(NWPusherResult response) {
         if (response == kNWPusherResultSuccess) {
             NSLog(@"Connected to APN");
@@ -140,7 +140,7 @@ After selecting the right certificate, connect using:
 
     NWPusherResult connected = [pusher connectWithCertificateRef:certificate sandbox:YES];
 
-More variations on this approach are also available. Just take a look at the example project for the details.
+More variations on this approach are available. Just take a look at the example project for the details.
 
 Note that the example code above uses `sandbox:YES`. This means it's using development certificates and pushes to development apps. To push to production apps, set sandbox to `NO`.
 
