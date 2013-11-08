@@ -223,7 +223,7 @@ OSStatus MakeServerConnection(
 	
     peer->ipAddr = addr.sin_addr.s_addr;
     peer->port = htons((u_short)port);
-	*socketNo = (otSocket)sock;
+	*socketNo = (otSocket)(intptr_t)sock;
     return noErr;
 }
 
@@ -265,7 +265,7 @@ OSStatus ListenForClients(
 		perror("listen");
 		return ioErr;
     }
-	*socketNo = (otSocket)sock;
+	*socketNo = (otSocket)(intptr_t)sock;
     return noErr;
 }
 
@@ -295,7 +295,7 @@ OSStatus AcceptClientConnection(
 		perror("accept");
 		return ioErr;
     }
-	*acceptSock = (otSocket)sock;
+	*acceptSock = (otSocket)(intptr_t)sock;
     peer->ipAddr = addr.sin_addr.s_addr;
 	#if	FORCE_ACCEPT_PEER_PORT_ZERO
 	peer->port = 0;
