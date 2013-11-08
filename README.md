@@ -53,9 +53,7 @@ Now you need to obtain a device token, which is a 64 character hex string. This 
     - (void)application:(UIApplication *)application 
         didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token
     {
-        NSString *string = [[[token stringByReplacingOccurrencesOfString:@" " 
-            withString:@""] substringWithRange:NSMakeRange(1, 64)]uppercaseString];
-        NSLog(@"Device token: %@", string);
+        NSLog(@"Device token: %@", [NWPusher hexFromData:token]);
     }
 
     - (void)application:(UIApplication *)application 

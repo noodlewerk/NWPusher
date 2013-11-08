@@ -270,6 +270,16 @@ static NSUInteger const NWPayloadMaxSize = 256;
     return result;
 }
 
++ (NSString *)hexFromData:(NSData *)data
+{
+    NSUInteger length = data.length;
+    NSMutableString *result = [NSMutableString stringWithCapacity:length * 2];
+    for (const unsigned char *b = data.bytes, *end = b + length; b != end; b++) {
+        [result appendFormat:@"%02X", *b];
+    }
+    return result;
+}
+
 + (NSString *)stringFromResult:(NWPusherResult)result
 {
     switch (result) {

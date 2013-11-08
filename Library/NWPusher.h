@@ -77,4 +77,7 @@ typedef enum {
 - (void)disconnect;
 + (NSString *)stringFromResult:(NWPusherResult)result;
 
++ (NSData *)dataFromHex:(NSString *)hex;
++ (NSString *)hexFromData:(NSData *)data;
+
 @end
