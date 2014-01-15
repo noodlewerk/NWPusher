@@ -199,8 +199,7 @@
 {
     NSString *payload = _payloadField.string;
     NSString *token = _tokenCombo.stringValue;
-    NSDate *expires = [NSDate dateWithTimeIntervalSinceNow:86400];
-    NSUInteger identifier = [_pusher pushPayloadString:payload token:token expires:expires block:^(NWPusherResult result) {
+    NSUInteger identifier = [_pusher pushPayloadString:payload tokenString:token block:^(NWPusherResult result) {
         if (result == kNWPusherResultSuccess) {
             NWLogInfo(@"Payload has been pushed");
         } else {

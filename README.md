@@ -10,9 +10,9 @@ About
 -----
 Testing push notifications for your iOS app can be a pain. You might consider setting up your own server or use one of the many push webservices online. Either way it's a lot of work to get all these systems connected properly.
 
-Enter *Pusher*, a Mac and iPhone app for sending push notifications *directly* to the *Apple Push Notification Service*. No need to set up a server or create an account online. You only need the SSL certificate and a device token to start pushing directly from your Mac or iPhone.
+Enter *Pusher*, a Mac and iPhone app for sending push notifications *directly* to the *Apple Push Notification Service*. No need to set up a server or create an account online. You only need the SSL certificate and a device token to start pushing directly from your Mac, or even from an iPhone!
 
-Pusher comes with a small library for both OS X and iOS, that provides various tools to send notifications programmatically. On OS X it can use the keychain to retrieve push certificates and keys. Pusher can also be used without keychain, using a PKCS12 file.
+Pusher comes with a small library for both OS X and iOS, that provides various tools to send notifications programmatically. On OS X it can use the keychain to retrieve push certificates and keys. Pusher can also be used without keychain, using a PKCS12 file, e.g. when pushing from iOS.
 
 ![Pusher OS X](Docs/osx.png)
 
@@ -21,7 +21,7 @@ Getting started
 ---------------
 Before you can start sending push notification payloads, there are a few hurdles to take. First you'll need to obtain the *Apple Push Services SSL Certificate* of the app you want to send notifications to. This certificate is used by Pusher to set up the SSL connection through which the payloads will be sent to Apple.
 
-Second you'll need the *device token* of the device you want to send your payload to. Every device has its own unique token that can only be obtained from within the app. While this might sound very complicated, it all comes down to just a few clicks on Apple's Dev Center website, some hairs, and a bit of patience.
+Second you'll need the *device token* of the device you want to send your payload to. Every device has its own unique token that can only be obtained from within the app. While this might sound very complicated, it all comes down to just a few clicks on Apple's Dev Center website, some gray hairs, and a bit of patience.
 
 ### Certificate
 Let's start with the SSL certificate. The goal is to get both the certificate *and* the private key into your OS X keychain. If someone else already generated this certificate, you'll need to ask him or her to export these into a PKCS12 file. If there is no certificate generated yet, you can generate the certificate and the private key in the following steps:
@@ -50,19 +50,19 @@ Now you need to obtain a device token, which is a 64 character hex string. This 
             | UIRemoteNotificationTypeSound];
     }
 
-    - (void)application:(UIApplication *)application 
+    - (void)application:(UIApplication *)application
         didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token
     {
-        NSLog(@"Device token: %@", [NWPusher hexFromData:token]);
+        NSLog(@"Device token: %@", [NWNotification hexFromData:token]);
     }
 
-    - (void)application:(UIApplication *)application 
+    - (void)application:(UIApplication *)application
         didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
     {
         NSLog(@"Failed to get token: %@", error);
     }
 
-    - (void)application:(UIApplication *)application 
+    - (void)application:(UIApplication *)application
         didReceiveRemoteNotification:(NSDictionary *)notification
     {
         NSLog(@"Received push notification: %@", notification);
@@ -96,6 +96,7 @@ Pushing from source
 Pusher can also be used as a library to send notifications programmatically. The included Xcode project provides examples for both OS X and iOS. The easiest way include Pusher is by including all files from the `Library` folder:
 
  - NWPusher.h/m
+ - NWNotification.h/m
  - NWSSLConnection.h/m
  - NWSecTools.h/m
  - ioSock.h/c
@@ -122,8 +123,8 @@ When pusher is successfully connected, send a payload to your device:
 
     NSString *payload = @"{\"aps\":{\"alert\":\"You did it!\"}}";
     NSDate *expires = [NSDate dateWithTimeIntervalSinceNow:86400];
-    NSUInteger identifier = [_pusher pushPayloadString:payload 
-        token:deviceToken expires:expires block:^(NWPusherResult result) {
+    NSUInteger identifier = [_pusher pushPayloadString:payload
+        tokenString:deviceToken block:^(NWPusherResult result) {
         if (result == kNWPusherResultSuccess) {
             NWLogInfo(@"Payload has been pushed");
         } else {
@@ -135,7 +136,7 @@ When pusher is successfully connected, send a payload to your device:
 Alternatively on OS X you can also use the keychain to obtain the SSL certificate. In that case first collect all certificates:
 
     NSArray *certificates = [NWSecTools keychainCertificates];
-    
+
 After selecting the right certificate, connect using:
 
     NWPusherResult connected = [pusher connectWithCertificateRef:certificate sandbox:YES];

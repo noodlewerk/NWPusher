@@ -8,6 +8,7 @@
 #import "NWPusher.h"
 #import "NWSSLConnection.h"
 #import "NWSecTools.h"
+#import "NWNotification.h"
 
 
 // http://developer.apple.com/library/mac/#documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingWIthAPS/CommunicatingWIthAPS.html
@@ -15,8 +16,6 @@
 static NSString * const NWSandboxPushHost = @"gateway.sandbox.push.apple.com";
 static NSString * const NWPushHost = @"gateway.push.apple.com";
 static NSUInteger const NWPushPort = 2195;
-static NSUInteger const NWDeviceTokenSize = 32;
-static NSUInteger const NWPayloadMaxSize = 256;
 
 @implementation NWPusher {
     NWSSLConnection *_connection;
@@ -78,13 +77,7 @@ static NSUInteger const NWPayloadMaxSize = 256;
 
 #pragma mark - Apple push
 
-- (NWPusherResult)pushPayloadString:(NSString *)payload token:(NSString *)token
-{
-    NWPusherResult result = [self pushPayloadString:payload token:token identifier:0 expires:NULL];
-    return result;
-}
-
-- (NWPusherResult)pushPayloadString:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier expires:(NSDate *)expires
+- (NWPusherResult)pushPayloadString:(NSString *)payload tokenString:(NSString *)token identifier:(NSUInteger)identifier
 {
     if (!payload.length) {
         return kNWPusherResultEmptyPayload;
@@ -93,78 +86,22 @@ static NSUInteger const NWPayloadMaxSize = 256;
     if (![[NSJSONSerialization JSONObjectWithData:payloadData options:0 error:nil] count]) {
         return kNWPusherResultInvalidPayload;
     }
-    
-    if (!token.length) {
-        return kNWPusherResultEmptyToken;
-    }
-    NSString *normal = [self.class filterHex:token];
-    NSUInteger max = NWDeviceTokenSize * 2;
-    NSString *trunk = normal.length >= max ? [normal substringToIndex:max] : nil;
-    NSData *tokenData = [self.class dataFromHex:trunk];
-    if (!tokenData.length) {
-        return kNWPusherResultInvalidToken;
-    }
-    
-    NWPusherResult result = [self pushPayloadData:payloadData tokenData:tokenData identifier:identifier expires:expires];
-    return result;
+    return [self pushNotification:[[NWNotification alloc] initWithPayloadString:payload tokenString:token identifier:identifier expirationDate:nil priority:0]];
 }
 
-- (NWPusherResult)pushPayloadData:(NSData *)payload tokenData:(NSData *)token
+- (NWPusherResult)pushNotification:(NWNotification *)notification
 {
-    NWPusherResult result = [self pushPayloadData:payload tokenData:token enhance:NO identifier:0 expires:nil];
-    return result;
+    return [self pushNotification:notification type:kNWNotificationType2];
 }
 
-- (NWPusherResult)pushPayloadData:(NSData *)payload tokenData:(NSData *)token identifier:(NSUInteger)identifier expires:(NSDate *)expires
+- (NWPusherResult)pushNotification:(NWNotification *)notification type:(NWNotificationType)type
 {
-    NWPusherResult result = [self pushPayloadData:payload tokenData:token enhance:YES identifier:identifier expires:expires];
-    return result;
-}
-
-- (NWPusherResult)pushPayloadData:(NSData *)payload tokenData:(NSData *)token enhance:(BOOL)enhance identifier:(NSUInteger)identifier expires:(NSDate *)expires
-{
-    if (token.length != NWDeviceTokenSize) {
-        return kNWPusherResultInvalidToken;
+    NWPusherResult result = [notification validate];
+    if (result != kNWPusherResultSuccess) {
+        return result;
     }
-    if (payload.length > NWPayloadMaxSize) {
-        return kNWPusherResultPayloadTooLong;
-    }
-    
-    char buffer[sizeof(uint8_t) + sizeof(uint32_t) * 2 + sizeof(uint16_t) + NWDeviceTokenSize + sizeof(uint16_t) + NWPayloadMaxSize];
-    char *p = buffer;
-    
-    uint8_t command = enhance ? 1 : 0;
-    memcpy(p, &command, sizeof(uint8_t));
-    p += sizeof(uint8_t);
-    
-    if (enhance) {
-        uint32_t ID = htonl(identifier);
-        memcpy(p, &ID, sizeof(uint32_t));
-        p += sizeof(uint32_t);
-        
-        uint32_t exp = htonl((NSUInteger)expires.timeIntervalSince1970);
-        memcpy(p, &exp, sizeof(uint32_t));
-        p += sizeof(uint32_t);
-    }
-    
-    uint16_t tokenLength = htons(token.length);
-    memcpy(p, &tokenLength, sizeof(uint16_t));
-    p += sizeof(uint16_t);
-    
-    memcpy(p, token.bytes, token.length);
-    p += token.length;
-    
-    uint16_t payloadLength = htons(payload.length);
-    memcpy(p, &payloadLength, sizeof(uint16_t));
-    p += sizeof(uint16_t);
-    
-    memcpy(p, payload.bytes, payload.length);
-    p += payload.length;
-    
-    NSData *data = [NSData dataWithBytes:buffer length:p - buffer];
-    NWPusherResult result = [_connection write:data length:NULL];
-    
-    return result;
+    NSData *data = [notification dataWithType:type];
+    return [_connection write:data length:NULL];
 }
 
 - (NWPusherResult)fetchFailedIdentifier:(NSUInteger *)identifier
@@ -222,11 +159,11 @@ static NSUInteger const NWPayloadMaxSize = 256;
     
 }
 
-- (NSUInteger)pushPayloadString:(NSString *)payload token:(NSString *)token expires:(NSDate *)expires block:(void(^)(NWPusherResult response))block
+- (NSUInteger)pushPayloadString:(NSString *)payload tokenString:(NSString *)token block:(void(^)(NWPusherResult response))block
 {
     NSUInteger identifier = ++_index;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NWPusherResult pushed = [self pushPayloadString:payload token:token identifier:identifier expires:expires];
+        NWPusherResult pushed = [self pushPayloadString:payload tokenString:token identifier:identifier];
         if (pushed == kNWPusherResultSuccess) {
             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC);
             dispatch_after(popTime, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
@@ -243,42 +180,6 @@ static NSUInteger const NWPayloadMaxSize = 256;
 }
 
 #pragma mark - Helpers
-
-+ (NSString *)filterHex:(NSString *)hex
-{
-    hex = hex.lowercaseString;
-    NSMutableString *result = [[NSMutableString alloc] init];
-    for (NSUInteger i = 0; i < hex.length; i++) {
-        unichar c = [hex characterAtIndex:i];
-        if ((c >= 'a' && c <= 'f') || (c >= '0' && c <= '9')) {
-            [result appendString:[NSString stringWithCharacters:&c length:1]];
-        }
-    }
-    return result;
-}
-
-+ (NSData *)dataFromHex:(NSString *)hex
-{
-    NSMutableData *result = [[NSMutableData alloc] init];
-    char buffer[3] = {'\0','\0','\0'};
-    for (NSUInteger i = 0; i < hex.length / 2; i++) {
-        buffer[0] = [hex characterAtIndex:i * 2];
-        buffer[1] = [hex characterAtIndex:i * 2 + 1];
-        unsigned char b = strtol(buffer, NULL, 16);
-        [result appendBytes:&b length:1];
-    }
-    return result;
-}
-
-+ (NSString *)hexFromData:(NSData *)data
-{
-    NSUInteger length = data.length;
-    NSMutableString *result = [NSMutableString stringWithCapacity:length * 2];
-    for (const unsigned char *b = data.bytes, *end = b + length; b != end; b++) {
-        [result appendFormat:@"%02X", *b];
-    }
-    return result;
-}
 
 + (NSString *)stringFromResult:(NWPusherResult)result
 {
@@ -332,6 +233,44 @@ static NSUInteger const NWPayloadMaxSize = 256;
         case kNWPusherResultPKCS12NoIdentity: return @"No identity in PKCS12 data";
     }
     return @"Unkown";
+}
+
+
+#pragma mark - Deprecated
+
+- (NWPusherResult)pushPayloadString:(NSString *)payload token:(NSString *)token
+{
+    NWPusherResult result = [self pushPayloadString:payload token:token identifier:0 expires:NULL];
+    return result;
+}
+
+- (NWPusherResult)pushPayloadString:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier expires:(NSDate *)expires
+{
+    if (!payload.length) {
+        return kNWPusherResultEmptyPayload;
+    }
+    NSData *payloadData = [payload dataUsingEncoding:NSUTF8StringEncoding];
+    if (![[NSJSONSerialization JSONObjectWithData:payloadData options:0 error:nil] count]) {
+        return kNWPusherResultInvalidPayload;
+    }
+    return [self pushNotification:[[NWNotification alloc] initWithPayloadString:payload tokenString:token identifier:identifier expirationDate:expires priority:0]];
+}
+
+- (NWPusherResult)pushPayloadData:(NSData *)payload tokenData:(NSData *)token
+{
+    NWPusherResult result = [self pushPayloadData:payload tokenData:token enhance:NO identifier:0 expires:nil];
+    return result;
+}
+
+- (NWPusherResult)pushPayloadData:(NSData *)payload tokenData:(NSData *)token identifier:(NSUInteger)identifier expires:(NSDate *)expires
+{
+    NWPusherResult result = [self pushPayloadData:payload tokenData:token enhance:YES identifier:identifier expires:expires];
+    return result;
+}
+
+- (NWPusherResult)pushPayloadData:(NSData *)payload tokenData:(NSData *)token enhance:(BOOL)enhance identifier:(NSUInteger)identifier expires:(NSDate *)expires
+{
+    return [self pushNotification:[[NWNotification alloc] initWithPayload:payload token:token identifier:identifier expires:(NSUInteger)expires.timeIntervalSince1970 priority:0]];
 }
 
 @end

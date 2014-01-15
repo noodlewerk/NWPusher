@@ -59,6 +59,14 @@ typedef enum {
     kNWPusherResultPKCS12NoIdentity = 308,
 } NWPusherResult;
 
+typedef enum {
+    kNWNotificationType0 = 0,
+    kNWNotificationType1 = 1,
+    kNWNotificationType2 = 2,
+} NWNotificationType;
+
+@class NWNotification;
+
 
 @interface NWPusher : NSObject
 
@@ -67,17 +75,19 @@ typedef enum {
 #endif
 - (NWPusherResult)connectWithIdentityRef:(SecIdentityRef)identity sandbox:(BOOL)sandbox;
 - (NWPusherResult)connectWithPKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox;
-- (NWPusherResult)pushPayloadString:(NSString *)payload token:(NSString *)token;
-- (NWPusherResult)pushPayloadString:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier expires:(NSDate *)expires;
-- (NWPusherResult)pushPayloadData:(NSData *)payload tokenData:(NSData *)token;
-- (NWPusherResult)pushPayloadData:(NSData *)payload tokenData:(NSData *)token identifier:(NSUInteger)identifier expires:(NSDate *)expires;
+- (NWPusherResult)pushPayloadString:(NSString *)payload tokenString:(NSString *)token identifier:(NSUInteger)identifier;
+- (NWPusherResult)pushNotification:(NWNotification *)notification;
+- (NWPusherResult)pushNotification:(NWNotification *)notification type:(NWNotificationType)type;
 - (NWPusherResult)fetchFailedIdentifier:(NSUInteger *)identifier;
 - (void)connectWithPKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox block:(void(^)(NWPusherResult response))block;
-- (NSUInteger)pushPayloadString:(NSString *)payload token:(NSString *)token expires:(NSDate *)expires block:(void(^)(NWPusherResult response))block;
+- (NSUInteger)pushPayloadString:(NSString *)payload tokenString:(NSString *)token block:(void(^)(NWPusherResult response))block;
 - (void)disconnect;
 + (NSString *)stringFromResult:(NWPusherResult)result;
 
-+ (NSData *)dataFromHex:(NSString *)hex;
-+ (NSString *)hexFromData:(NSData *)data;
+// deprecated
+- (NWPusherResult)pushPayloadString:(NSString *)payload token:(NSString *)token __attribute__((deprecated));
+- (NWPusherResult)pushPayloadString:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier expires:(NSDate *)expires __attribute__((deprecated));
+- (NWPusherResult)pushPayloadData:(NSData *)payload tokenData:(NSData *)token __attribute__((deprecated));
+- (NWPusherResult)pushPayloadData:(NSData *)payload tokenData:(NSData *)token identifier:(NSUInteger)identifier expires:(NSDate *)expires __attribute__((deprecated));
 
 @end

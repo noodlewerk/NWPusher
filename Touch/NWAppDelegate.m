@@ -88,8 +88,7 @@ static NWPusherViewController *controller = nil;
 - (void)push
 {
     NSString *payload = [NSString stringWithFormat:@"{\"aps\":{\"alert\":\"%@\"}}", _textField.text];
-    NSDate *expires = [NSDate dateWithTimeIntervalSinceNow:86400];
-    NSUInteger identifier = [_pusher pushPayloadString:payload token:deviceToken expires:expires block:^(NWPusherResult result) {
+    NSUInteger identifier = [_pusher pushPayloadString:payload tokenString:deviceToken block:^(NWPusherResult result) {
         if (result == kNWPusherResultSuccess) {
             NWLogInfo(@"Payload has been pushed");
         } else {
