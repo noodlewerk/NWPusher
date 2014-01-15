@@ -39,6 +39,7 @@
     NSString *payload = [_configuration valueForKey:@"payload"];
     _payloadField.string = payload.length ? payload : @"";
     _payloadField.font = [NSFont fontWithName:@"Courier" size:10];
+    _payloadField.enabledTextCheckingTypes = 0;
     [self textDidChange:nil];
     _index = 1;
 }
