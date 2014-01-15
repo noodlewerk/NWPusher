@@ -133,6 +133,12 @@
     return kNWPusherResultSuccess;
 }
 
+- (NWPusherResult)reconnect
+{
+    [self disconnect];
+    return [self connect];
+}
+
 - (void)disconnect
 {
     if (_context) SSLClose(_context);

@@ -17,6 +17,7 @@
     IBOutlet NSTextField *_countField;
     IBOutlet NSTextField *_infoField;
     IBOutlet NSButton *_pushButton;
+    IBOutlet NSButton *_reconnectButton;
     
     NWPusher *_pusher;
     NSDictionary *_configuration;
@@ -80,6 +81,15 @@
 {
     if (_pusher) {
         [self push];
+    } else {
+        NWLogWarn(@"No certificate selected");
+    }
+}
+
+- (IBAction)reconnect:(NSButton *)sender
+{
+    if (_pusher) {
+        [self reconnect];
     } else {
         NWLogWarn(@"No certificate selected");
     }
@@ -170,6 +180,7 @@
     if (_pusher) {
         [_pusher disconnect]; _pusher = nil;
         _pushButton.enabled = NO;
+        _reconnectButton.enabled = NO;
         NWLogInfo(@"Disconnected from APN");
     }
     
@@ -187,6 +198,7 @@
                 NWLogInfo(@"Connected established to APN%@", sandbox ? @" (sandbox)" : @"");
                 _pusher = p;
                 _pushButton.enabled = YES;
+                _reconnectButton.enabled = YES;
             } else {
                 NWLogWarn(@"Unable to connect: %@", [NWPusher stringFromResult:connected]);
                 [p disconnect];
@@ -208,6 +220,23 @@
         }
     }];
     NWLogInfo(@"Pushing payload #%i..", (int)identifier);
+}
+
+- (void)reconnect
+{
+    NWLogInfo(@"Reconnecting..");
+    _pushButton.enabled = NO;
+    _reconnectButton.enabled = NO;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NWPusherResult connected = [_pusher reconnect];
+        if (connected == kNWPusherResultSuccess) {
+            NWLogInfo(@"Reconnected");
+            _pushButton.enabled = YES;
+            _reconnectButton.enabled = YES;
+        } else {
+            NWLogWarn(@"Unable to reconnect: %@", [NWPusher stringFromResult:connected]);
+        }
+    });
 }
 
 - (void)deselectCombo

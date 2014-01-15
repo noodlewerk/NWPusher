@@ -30,6 +30,7 @@ typedef enum {
     kNWPusherResultUnexpectedResponseLength = 108,
     kNWPusherResultUnexpectedTokenLength = 109,
     kNWPusherResultIDOutOfSync = 110,
+    kNWPusherResultNotConnected = 111,
     // Socket error codes
     kNWPusherResultIOConnectFailed = 201,
     kNWPusherResultIOConnectSSLContext = 202,
@@ -81,6 +82,7 @@ typedef enum {
 - (NWPusherResult)fetchFailedIdentifier:(NSUInteger *)identifier;
 - (void)connectWithPKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox block:(void(^)(NWPusherResult response))block;
 - (NSUInteger)pushPayloadString:(NSString *)payload tokenString:(NSString *)token block:(void(^)(NWPusherResult response))block;
+- (NWPusherResult)reconnect;
 - (void)disconnect;
 + (NSString *)stringFromResult:(NWPusherResult)result;
 

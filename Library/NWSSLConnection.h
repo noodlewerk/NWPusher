@@ -17,6 +17,7 @@
 - (NWPusherResult)connect;
 - (NWPusherResult)read:(NSMutableData *)data length:(NSUInteger *)length;
 - (NWPusherResult)write:(NSData *)data length:(NSUInteger *)length;
+- (NWPusherResult)reconnect;
 - (void)disconnect;
 
 @end

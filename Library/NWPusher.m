@@ -69,6 +69,12 @@ static NSUInteger const NWPushPort = 2195;
     return result;
 }
 
+- (NWPusherResult)reconnect
+{
+    if (!_connection) return kNWPusherResultNotConnected;
+    return [_connection reconnect];
+}
+
 - (void)disconnect
 {
     [_connection disconnect]; _connection = nil;
@@ -206,6 +212,7 @@ static NSUInteger const NWPushPort = 2195;
         case kNWPusherResultUnexpectedResponseLength: return @"Unexpected response length";
         case kNWPusherResultUnexpectedTokenLength: return @"Unexpected token length";
         case kNWPusherResultIDOutOfSync: return @"Push identifier out-of-sync :(";
+        case kNWPusherResultNotConnected: return @"Not connected, connect first";
         case kNWPusherResultIOConnectFailed: return @"Unable to create connection to server";
         case kNWPusherResultIOConnectSSLContext: return @"Unable create SSL context";
         case kNWPusherResultIOConnectSocketCallbacks: return @"Unable to set socket callbacks";
