@@ -109,7 +109,7 @@ static NWPusherViewController *controller = nil;
 {
     NSUInteger identifier = ++_index;
     dispatch_async(_serial, ^{
-        NWPusherResult pushed = [_pusher pushPayloadString:payload tokenString:token identifier:identifier];
+        NWPusherResult pushed = [_pusher pushPayload:payload token:token identifier:identifier];
         if (pushed == kNWPusherResultSuccess) {
             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC);
             dispatch_after(popTime, _serial, ^(void){

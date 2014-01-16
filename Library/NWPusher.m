@@ -83,7 +83,7 @@ static NSUInteger const NWPushPort = 2195;
 
 #pragma mark - Apple push
 
-- (NWPusherResult)pushPayloadString:(NSString *)payload tokenString:(NSString *)token identifier:(NSUInteger)identifier
+- (NWPusherResult)pushPayload:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier
 {
     if (!payload.length) {
         return kNWPusherResultEmptyPayload;
@@ -262,7 +262,7 @@ static NSUInteger const NWPushPort = 2195;
 {
     NSUInteger identifier = ++_index;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NWPusherResult pushed = [self pushPayloadString:payload tokenString:token identifier:identifier];
+        NWPusherResult pushed = [self pushPayload:payload token:token identifier:identifier];
         if (pushed == kNWPusherResultSuccess) {
             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC);
             dispatch_after(popTime, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){

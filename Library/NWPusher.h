@@ -79,7 +79,7 @@ typedef enum {
 #endif
 - (NWPusherResult)connectWithIdentityRef:(SecIdentityRef)identity sandbox:(BOOL)sandbox;
 - (NWPusherResult)connectWithPKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox;
-- (NWPusherResult)pushPayloadString:(NSString *)payload tokenString:(NSString *)token identifier:(NSUInteger)identifier;
+- (NWPusherResult)pushPayload:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier;
 - (NWPusherResult)pushNotification:(NWNotification *)notification;
 - (NWPusherResult)pushNotification:(NWNotification *)notification type:(NWNotificationType)type;
 - (NWPusherResult)fetchFailedIdentifier:(NSUInteger *)identifier;
