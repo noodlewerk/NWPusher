@@ -7,9 +7,13 @@
 
 #import "NWAppDelegate.h"
 #import "NWPusher.h"
+#import "NWHub.h"
+#import "NWNotification.h"
 #import "NWSecTools.h"
 #import "NWLCore.h"
 
+
+@interface NWAppDelegate () <NWHubDelegate> @end
 
 @implementation NWAppDelegate {
     IBOutlet NSPopUpButton *_certificatePopup;
@@ -20,7 +24,7 @@
     IBOutlet NSButton *_pushButton;
     IBOutlet NSButton *_reconnectButton;
     
-    NWPusher *_pusher;
+    NWHub *_hub;
     NSDictionary *_configuration;
     NSArray *_certificates;
     NSUInteger _index;
@@ -53,7 +57,7 @@
 {
     NWLRemovePrinter("NWPusher");
     NWLog(@"Application will terminate");
-    [_pusher disconnect]; _pusher = nil;
+    [_hub disconnect]; _hub.delegate = nil; _hub = nil;
 }
 
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)application
@@ -83,7 +87,7 @@
 
 - (IBAction)push:(NSButton *)sender
 {
-    if (_pusher) {
+    if (_hub) {
         [self push];
     } else {
         NWLogWarn(@"No certificate selected");
@@ -92,11 +96,19 @@
 
 - (IBAction)reconnect:(NSButton *)sender
 {
-    if (_pusher) {
+    if (_hub) {
         [self reconnect];
     } else {
         NWLogWarn(@"No certificate selected");
     }
+}
+
+- (void)notification:(NWNotification *)notification didFailWithResult:(NWPusherResult)result
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        //NSLog(@"failed notification: %@ %@ %lu %lu %lu", notification.payload, notification.token, notification.identifier, notification.expires, notification.priority);
+        NWLogWarn(@"Notification could not be pushed: %@", [NWPusher stringFromResult:result]);
+    });
 }
 
 
@@ -181,8 +193,8 @@
 
 - (void)selectCertificate:(id)certificate
 {
-    if (_pusher) {
-        [_pusher disconnect]; _pusher = nil;
+    if (_hub) {
+        [_hub disconnect]; _hub = nil;
         _pushButton.enabled = NO;
         _reconnectButton.enabled = NO;
         NWLogInfo(@"Disconnected from APN");
@@ -201,7 +213,7 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (connected == kNWPusherResultSuccess) {
                     NWLogInfo(@"Connected established to APN%@", sandbox ? @" (sandbox)" : @"");
-                    _pusher = p;
+                    _hub = [[NWHub alloc] initWithPusher:p delegate:self];
                     _pushButton.enabled = YES;
                     _reconnectButton.enabled = YES;
                 } else {
@@ -218,34 +230,15 @@
 {
     NSString *payload = _payloadField.string;
     NSString *token = _tokenCombo.stringValue;
-    NSUInteger identifier = [self pushPayloadString:payload tokenString:token block:^(NWPusherResult result) {
-        if (result == kNWPusherResultSuccess) {
-            NWLogInfo(@"Payload has been pushed");
-        } else {
-            NWLogWarn(@"Payload could not be pushed: %@", [NWPusher stringFromResult:result]);
-        }
-    }];
-    NWLogInfo(@"Pushing payload #%i..", (int)identifier);
-}
-
-- (NSUInteger)pushPayloadString:(NSString *)payload tokenString:(NSString *)token block:(void(^)(NWPusherResult response))block
-{
-    NSUInteger identifier = ++_index;
+    NWLogInfo(@"Pushing..");
     dispatch_async(_serial, ^{
-        NWPusherResult pushed = [_pusher pushPayload:payload token:token identifier:identifier];
-        if (pushed == kNWPusherResultSuccess) {
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC);
-            dispatch_after(popTime, _serial, ^(void){
-                NSUInteger identifier2 = 0;
-                NWPusherResult response = [_pusher fetchFailedIdentifier:&identifier2];
-                if (identifier2 && identifier != identifier2) response = kNWPusherResultIDOutOfSync;
-                if (block) dispatch_async(dispatch_get_main_queue(), ^{block(response);});
-            });
-        } else {
-            if (block) dispatch_async(dispatch_get_main_queue(), ^{block(pushed);});
-        }
+        NSUInteger failed = [_hub pushPayload:payload token:token];
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC));
+        dispatch_after(popTime, _serial, ^(void){
+            NSUInteger failed2 = failed + [_hub flushFailed];
+            if (!failed2) NWLogInfo(@"Payload has been pushed");
+        });
     });
-    return identifier;
 }
 
 - (void)reconnect
@@ -254,15 +247,15 @@
     _pushButton.enabled = NO;
     _reconnectButton.enabled = NO;
     dispatch_async(_serial, ^{
-        NWPusherResult connected = [_pusher reconnect];
+        NWPusherResult connected = [_hub reconnect];
         dispatch_async(dispatch_get_main_queue(), ^{
             if (connected == kNWPusherResultSuccess) {
                 NWLogInfo(@"Reconnected");
                 _pushButton.enabled = YES;
-                _reconnectButton.enabled = YES;
             } else {
                 NWLogWarn(@"Unable to reconnect: %@", [NWPusher stringFromResult:connected]);
             }
+            _reconnectButton.enabled = YES;
         });
     });
 }
@@ -280,7 +273,7 @@
 
 static void NWPusherPrinter(NWLContext context, CFStringRef message, void *info) {
     BOOL warning = strncmp(context.tag, "warn", 5) == 0;
-    NWAppDelegate *delegate = NSApplication.sharedApplication.delegate;
+    id delegate = NSApplication.sharedApplication.delegate;
     [delegate log:(__bridge NSString *)(message) warning:warning];
 }
 

@@ -7,6 +7,8 @@
 
 #import "NWAppDelegate.h"
 #import "NWPusher.h"
+#import "NWHub.h"
+#import "NWNotification.h"
 #import "NWLCore.h"
 
 
@@ -16,12 +18,14 @@ static NSString * const deviceToken = @"ABCDEF0123456789ABCDEF0123456789ABCDEF01
 
 static NWPusherViewController *controller = nil;
 
+@interface NWPusherViewController () <NWHubDelegate> @end
+
 @implementation NWPusherViewController {
     UIButton *_connectButton;
     UITextField *_textField;
     UIButton *_pushButton;
     UILabel *_infoLabel;
-    NWPusher *_pusher;
+    NWHub *_hub;
     NSUInteger _index;
     dispatch_queue_t _serial;
 }
@@ -64,7 +68,7 @@ static NWPusherViewController *controller = nil;
 
 - (void)connect
 {
-    if (!_pusher) {
+    if (!_hub) {
         NWLogInfo(@"Connecting..");
         _connectButton.enabled = NO;
         NWPusher *p = [[NWPusher alloc] init];
@@ -75,7 +79,7 @@ static NWPusherViewController *controller = nil;
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (connected == kNWPusherResultSuccess) {
                     NWLogInfo(@"Connected to APN");
-                    _pusher = p;
+                    _hub = [[NWHub alloc] initWithPusher:p delegate:self];
                     _pushButton.enabled = YES;
                     [_connectButton setTitle:@"Disconnect" forState:UIControlStateNormal];
                 } else {
@@ -86,7 +90,7 @@ static NWPusherViewController *controller = nil;
         });
     } else {
         _pushButton.enabled = NO;
-        [_pusher disconnect]; _pusher = nil;
+        [_hub disconnect]; _hub = nil;
         NWLogInfo(@"Disconnected");
         [_connectButton setTitle:@"Connect" forState:UIControlStateNormal];
     }
@@ -95,34 +99,24 @@ static NWPusherViewController *controller = nil;
 - (void)push
 {
     NSString *payload = [NSString stringWithFormat:@"{\"aps\":{\"alert\":\"%@\"}}", _textField.text];
-    NSUInteger identifier = [self pushPayloadString:payload tokenString:deviceToken block:^(NWPusherResult result) {
-        if (result == kNWPusherResultSuccess) {
-            NWLogInfo(@"Payload has been pushed");
-        } else {
-            NWLogWarn(@"Payload could not be pushed: %@", [NWPusher stringFromResult:result]);
-        }
-    }];
-    NWLogInfo(@"Pushing payload #%i..", (int)identifier);
+    NSString *token = deviceToken;
+    NWLogInfo(@"Pushing..");
+    dispatch_async(_serial, ^{
+        NSUInteger failed = [_hub pushPayload:payload token:token];
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC));
+        dispatch_after(popTime, _serial, ^(void){
+            NSUInteger failed2 = failed + [_hub flushFailed];
+            if (!failed2) NWLogInfo(@"Payload has been pushed");
+        });
+    });
 }
 
-- (NSUInteger)pushPayloadString:(NSString *)payload tokenString:(NSString *)token block:(void(^)(NWPusherResult response))block
+- (void)notification:(NWNotification *)notification didFailWithResult:(NWPusherResult)result
 {
-    NSUInteger identifier = ++_index;
-    dispatch_async(_serial, ^{
-        NWPusherResult pushed = [_pusher pushPayload:payload token:token identifier:identifier];
-        if (pushed == kNWPusherResultSuccess) {
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC);
-            dispatch_after(popTime, _serial, ^(void){
-                NSUInteger identifier2 = 0;
-                NWPusherResult response = [_pusher fetchFailedIdentifier:&identifier2];
-                if (identifier2 && identifier != identifier2) response = kNWPusherResultIDOutOfSync;
-                if (block) dispatch_async(dispatch_get_main_queue(), ^{block(response);});
-            });
-        } else {
-            if (block) dispatch_async(dispatch_get_main_queue(), ^{block(pushed);});
-        }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        //NSLog(@"failed notification: %@ %@ %lu %lu %lu", notification.payload, notification.token, notification.identifier, notification.expires, notification.priority);
+        NWLogWarn(@"Notification could not be pushed: %@", [NWPusher stringFromResult:result]);
     });
-    return identifier;
 }
 
 
