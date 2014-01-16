@@ -6,6 +6,8 @@
 //
 
 #import "NWPusher.h"
+#import <Foundation/Foundation.h>
+
 
 @interface NWSecTools : NSObject
 

@@ -7,6 +7,8 @@
 
 #import "NWAppDelegate.h"
 #import "NWPusher.h"
+#import "NWLCore.h"
+
 
 static NSString * const pkcs12FileName = @"pusher.p12";
 static NSString * const pkcs12Password = @"pusher";

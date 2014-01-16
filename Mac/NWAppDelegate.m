@@ -8,6 +8,7 @@
 #import "NWAppDelegate.h"
 #import "NWPusher.h"
 #import "NWSecTools.h"
+#import "NWLCore.h"
 
 
 @implementation NWAppDelegate {

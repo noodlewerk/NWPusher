@@ -7,6 +7,7 @@
 
 #import "NWNotification.h"
 
+
 static NSUInteger const NWDeviceTokenSize = 32;
 static NSUInteger const NWPayloadMaxSize = 256;
 
