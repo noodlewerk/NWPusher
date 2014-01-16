@@ -31,7 +31,7 @@
 - (NSUInteger)pushPayload:(NSString *)payload token:(NSString *)token
 {
     NSUInteger identifier = _index++;
-    NWNotification *notification = [[NWNotification alloc] initWithPayloadString:payload tokenString:token identifier:identifier expirationDate:nil priority:0];
+    NWNotification *notification = [[NWNotification alloc] initWithPayload:payload token:token identifier:identifier expiration:nil priority:0];
     return [self pushNotifications:@[notification]];
 }
 
@@ -40,7 +40,7 @@
     NSMutableArray *notifications = @[].mutableCopy;
     for (NSString *token in tokens) {
         NSUInteger identifier = _index++;
-        NWNotification *notification = [[NWNotification alloc] initWithPayloadString:payload tokenString:token identifier:identifier expirationDate:nil priority:0];
+        NWNotification *notification = [[NWNotification alloc] initWithPayload:payload token:token identifier:identifier expiration:nil priority:0];
         [notifications addObject:notification];
     }
     return [self pushNotifications:notifications];
@@ -51,7 +51,7 @@
     NSMutableArray *notifications = @[].mutableCopy;
     for (NSString *payload in payloads) {
         NSUInteger identifier = _index++;
-        NWNotification *notification = [[NWNotification alloc] initWithPayloadString:payload tokenString:token identifier:identifier expirationDate:nil priority:0];
+        NWNotification *notification = [[NWNotification alloc] initWithPayload:payload token:token identifier:identifier expiration:nil priority:0];
         [notifications addObject:notification];
     }
     return [self pushNotifications:notifications];

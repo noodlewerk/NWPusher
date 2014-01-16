@@ -16,47 +16,66 @@ static NSUInteger const NWPayloadMaxSize = 256;
 
 #pragma mark - Init
 
-- (id)initWithPayloadString:(NSString *)payload tokenString:(NSString *)token identifier:(NSUInteger)identifier expirationDate:(NSDate *)date priority:(NSUInteger)priority
+- (id)initWithPayload:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier expiration:(NSDate *)date priority:(NSUInteger)priority
 {
     self = [super init];
     if (self) {
-        self.payloadString = payload;
-        self.tokenString = token;
+        self.payload = payload;
+        self.token = token;
         _identifier = identifier;
-        self.expirationDate = date;
+        self.expiration = date;
         _priority = priority;
     }
     return self;
 }
 
-- (id)initWithPayload:(NSData *)payload token:(NSData *)token identifier:(NSUInteger)identifier expires:(NSUInteger)expires priority:(NSUInteger)priority
+- (id)initWithPayloadData:(NSData *)payload tokenData:(NSData *)token identifier:(NSUInteger)identifier expirationStamp:(NSUInteger)expirationStamp priority:(NSUInteger)priority
 {
     self = [super init];
     if (self) {
-        _payload = payload;
-        _token = token;
+        _payloadData = payload;
+        _tokenData = token;
         _identifier = identifier;
-        _expires = expires;
+        _expirationStamp = expirationStamp;
         _priority = priority;
     }
     return self;
 }
 
-- (void)setPayloadString:(NSString *)string
+- (NSString *)payload
 {
-    _payload = [string dataUsingEncoding:NSUTF8StringEncoding];
+    return _payloadData ? [[NSString alloc] initWithData:_payloadData encoding:NSUTF8StringEncoding] : nil;
 }
 
-- (void)setTokenString:(NSString *)hex
+- (void)setPayload:(NSString *)payload
 {
-    NSString *normal = [self.class filterHex:hex];
-    NSString *trunk = normal.length >= 64 ? [normal substringToIndex:64] : nil;
-    _token = [self.class dataFromHex:trunk];
+    _payloadData = [payload dataUsingEncoding:NSUTF8StringEncoding];
 }
 
-- (void)setExpirationDate:(NSDate *)date
+- (NSString *)token
 {
-    _expires = (NSUInteger)date.timeIntervalSince1970;
+    return _tokenData ? [self.class hexFromData:_tokenData] : nil;
+}
+
+- (void)setToken:(NSString *)token
+{
+    if (token) {
+        NSString *normal = [self.class filterHex:token];
+        NSString *trunk = normal.length >= 64 ? [normal substringToIndex:64] : nil;
+        _tokenData = [self.class dataFromHex:trunk];
+    } else {
+        _tokenData = nil;
+    }
+}
+
+- (NSDate *)expiration
+{
+    return _expirationStamp ? [NSDate dateWithTimeIntervalSince1970:_expirationStamp] : nil;
+}
+
+- (void)setExpiration:(NSDate *)date
+{
+    _expirationStamp = (NSUInteger)date.timeIntervalSince1970;
 }
 
 
@@ -100,10 +119,10 @@ static NSUInteger const NWPayloadMaxSize = 256;
 
 - (NWPusherResult)validate
 {
-    if (_token.length != NWDeviceTokenSize) {
+    if (_tokenData.length != NWDeviceTokenSize) {
         return kNWPusherResultInvalidToken;
     }
-    if (_payload.length > NWPayloadMaxSize) {
+    if (_payloadData.length > NWPayloadMaxSize) {
         return kNWPusherResultPayloadTooLong;
     }
     return kNWPusherResultSuccess;
@@ -131,19 +150,19 @@ static NSUInteger const NWPayloadMaxSize = 256;
     memcpy(p, &command, sizeof(uint8_t));
     p += sizeof(uint8_t);
     
-    uint16_t tokenLength = htons(_token.length);
+    uint16_t tokenLength = htons(_tokenData.length);
     memcpy(p, &tokenLength, sizeof(uint16_t));
     p += sizeof(uint16_t);
     
-    memcpy(p, _token.bytes, _token.length);
-    p += _token.length;
+    memcpy(p, _tokenData.bytes, _tokenData.length);
+    p += _tokenData.length;
     
-    uint16_t payloadLength = htons(_payload.length);
+    uint16_t payloadLength = htons(_payloadData.length);
     memcpy(p, &payloadLength, sizeof(uint16_t));
     p += sizeof(uint16_t);
     
-    memcpy(p, _payload.bytes, _payload.length);
-    p += _payload.length;
+    memcpy(p, _payloadData.bytes, _payloadData.length);
+    p += _payloadData.length;
     
     return [NSData dataWithBytes:buffer length:p - buffer];
 }
@@ -161,23 +180,23 @@ static NSUInteger const NWPayloadMaxSize = 256;
     memcpy(p, &ID, sizeof(uint32_t));
     p += sizeof(uint32_t);
     
-    uint32_t exp = htonl(_expires);
+    uint32_t exp = htonl(_expirationStamp);
     memcpy(p, &exp, sizeof(uint32_t));
     p += sizeof(uint32_t);
     
-    uint16_t tokenLength = htons(_token.length);
+    uint16_t tokenLength = htons(_tokenData.length);
     memcpy(p, &tokenLength, sizeof(uint16_t));
     p += sizeof(uint16_t);
     
-    memcpy(p, _token.bytes, _token.length);
-    p += _token.length;
+    memcpy(p, _tokenData.bytes, _tokenData.length);
+    p += _tokenData.length;
     
-    uint16_t payloadLength = htons(_payload.length);
+    uint16_t payloadLength = htons(_payloadData.length);
     memcpy(p, &payloadLength, sizeof(uint16_t));
     p += sizeof(uint16_t);
     
-    memcpy(p, _payload.bytes, _payload.length);
-    p += _payload.length;
+    memcpy(p, _payloadData.bytes, _payloadData.length);
+    p += _payloadData.length;
     
     return [NSData dataWithBytes:buffer length:p - buffer];
 }
@@ -186,11 +205,11 @@ static NSUInteger const NWPayloadMaxSize = 256;
 {
     NSMutableData *result = [[NSMutableData alloc] initWithLength:5];
     
-    if (_token) [self.class appendTo:result identifier:1 bytes:_token.bytes length:_token.length];
-    if (_payload) [self.class appendTo:result identifier:2 bytes:_payload.bytes length:_payload.length];
+    if (_tokenData) [self.class appendTo:result identifier:1 bytes:_tokenData.bytes length:_tokenData.length];
+    if (_payloadData) [self.class appendTo:result identifier:2 bytes:_payloadData.bytes length:_payloadData.length];
     
     uint32_t identifier = htonl(_identifier);
-    uint32_t expires = htonl(_expires);
+    uint32_t expires = htonl(_expirationStamp);
     uint8_t priority = _priority;
     
     if (identifier) [self.class appendTo:result identifier:3 bytes:&identifier length:4];

@@ -11,18 +11,17 @@
 
 @interface NWNotification : NSObject
 
-@property (nonatomic, strong) NSData *payload;
-@property (nonatomic, strong) NSData *token;
+@property (nonatomic, strong) NSString *payload;
+@property (nonatomic, strong) NSData *payloadData;
+@property (nonatomic, strong) NSString *token;
+@property (nonatomic, strong) NSData *tokenData;
 @property (nonatomic, assign) NSUInteger identifier;
-@property (nonatomic, assign) NSUInteger expires;
+@property (nonatomic, strong) NSDate *expiration;
+@property (nonatomic, assign) NSUInteger expirationStamp;
 @property (nonatomic, assign) NSUInteger priority;
 
-- (id)initWithPayloadString:(NSString *)payload tokenString:(NSString *)token identifier:(NSUInteger)identifier expirationDate:(NSDate *)date priority:(NSUInteger)priority;
-- (id)initWithPayload:(NSData *)payload token:(NSData *)token identifier:(NSUInteger)identifier expires:(NSUInteger)expires priority:(NSUInteger)priority;
-
-- (void)setPayloadString:(NSString *)string;
-- (void)setTokenString:(NSString *)hex;
-- (void)setExpirationDate:(NSDate *)date;
+- (id)initWithPayload:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier expiration:(NSDate *)date priority:(NSUInteger)priority;
+- (id)initWithPayloadData:(NSData *)payload tokenData:(NSData *)token identifier:(NSUInteger)identifier expirationStamp:(NSUInteger)expirationStamp priority:(NSUInteger)priority;
 
 - (NSData *)dataWithType:(NWNotificationType)type;
 - (NWPusherResult)validate;

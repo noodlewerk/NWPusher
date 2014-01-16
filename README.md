@@ -122,7 +122,7 @@ When pusher is successfully connected, send a payload to your device:
     NSString *payload = @"{\"aps\":{\"alert\":\"You did it!\"}}";
     NSString *token = @"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
     NSUInteger identifier = rand();
-    NWPusherResult pushed = [self pushPayloadString:payload tokenString:token identifier:identifier];
+    NWPusherResult pushed = [self pushPayload:payload token:token identifier:identifier];
     if (pushed == kNWPusherResultSuccess) {
         NSLog(@"Notification sending");
     } else {

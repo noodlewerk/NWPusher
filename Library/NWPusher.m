@@ -92,7 +92,7 @@ static NSUInteger const NWPushPort = 2195;
     if (![[NSJSONSerialization JSONObjectWithData:payloadData options:0 error:nil] count]) {
         return kNWPusherResultInvalidPayload;
     }
-    return [self pushNotification:[[NWNotification alloc] initWithPayloadString:payload tokenString:token identifier:identifier expirationDate:nil priority:0] type:kNWNotificationType2];
+    return [self pushNotification:[[NWNotification alloc] initWithPayload:payload token:token identifier:identifier expiration:nil priority:0] type:kNWNotificationType2];
 }
 
 - (NWPusherResult)pushNotification:(NWNotification *)notification type:(NWNotificationType)type
@@ -222,7 +222,7 @@ static NSUInteger const NWPushPort = 2195;
     if (![[NSJSONSerialization JSONObjectWithData:payloadData options:0 error:nil] count]) {
         return kNWPusherResultInvalidPayload;
     }
-    return [self pushNotification:[[NWNotification alloc] initWithPayloadString:payload tokenString:token identifier:identifier expirationDate:expires priority:0] type:kNWNotificationType2];
+    return [self pushNotification:[[NWNotification alloc] initWithPayload:payload token:token identifier:identifier expiration:expires priority:0] type:kNWNotificationType2];
 }
 
 - (NWPusherResult)pushPayloadData:(NSData *)payload tokenData:(NSData *)token
@@ -239,7 +239,7 @@ static NSUInteger const NWPushPort = 2195;
 
 - (NWPusherResult)pushPayloadData:(NSData *)payload tokenData:(NSData *)token enhance:(BOOL)enhance identifier:(NSUInteger)identifier expires:(NSDate *)expires
 {
-    return [self pushNotification:[[NWNotification alloc] initWithPayload:payload token:token identifier:identifier expires:(NSUInteger)expires.timeIntervalSince1970 priority:0] type:kNWNotificationType2];
+    return [self pushNotification:[[NWNotification alloc] initWithPayloadData:payload tokenData:token identifier:identifier expirationStamp:(NSUInteger)expires.timeIntervalSince1970 priority:0] type:kNWNotificationType2];
 }
 
 - (void)connectWithPKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox block:(void(^)(NWPusherResult response))block
