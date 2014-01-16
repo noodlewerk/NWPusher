@@ -186,7 +186,7 @@
     
     NSArray *tokens = [self tokensForCertificate:certificate];
     [_tokenCombo removeAllItems];
-    _tokenCombo.stringValue = @"";
+    //_tokenCombo.stringValue = @"";
     [_tokenCombo addItemsWithObjectValues:tokens];
     
     if (certificate) {
