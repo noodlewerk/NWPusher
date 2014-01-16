@@ -110,28 +110,34 @@ To create a connection directly from a PKCS12 (.p12) file:
     NSURL *url = [NSBundle.mainBundle URLForResource:@"my-certificate.p12" withExtension:nil];
     NSData *pkcs12 = [NSData dataWithContentsOfURL:url];
     NWPusher *pusher = [[NWPusher alloc] init];
-    [pusher connectWithPKCS12Data:pkcs12 password:@"pa$$word"
-        sandbox:YES block:^(NWPusherResult response) {
-        if (response == kNWPusherResultSuccess) {
-            NSLog(@"Connected to APN");
-        } else {
-            NSLog(@"Unable to connect: %@", [NWPusher stringFromResult:response]);
-        }
-    }];
+    NWPusherResult connected = [pusher connectWithPKCS12Data:pkcs12 password:@"pa$$word" sandbox:YES];
+    if (connected == kNWPusherResultSuccess) {
+        NSLog(@"Connected to APN");
+    } else {
+        NSLog(@"Unable to connect: %@", [NWPusher stringFromResult:connected]);
+    }
 
 When pusher is successfully connected, send a payload to your device:
 
     NSString *payload = @"{\"aps\":{\"alert\":\"You did it!\"}}";
-    NSDate *expires = [NSDate dateWithTimeIntervalSinceNow:86400];
-    NSUInteger identifier = [_pusher pushPayloadString:payload
-        tokenString:deviceToken block:^(NWPusherResult result) {
-        if (result == kNWPusherResultSuccess) {
-            NWLogInfo(@"Payload has been pushed");
-        } else {
-            NWLogWarn(@"Unable to push: %@", [NWPusher stringFromResult:result]);
-        }
-    }];
-    NWLogInfo(@"Pushing payload #%i..", (int)identifier);
+    NSString *token = @"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
+    NSUInteger identifier = rand();
+    NWPusherResult pushed = [self pushPayloadString:payload tokenString:token identifier:identifier];
+    if (pushed == kNWPusherResultSuccess) {
+        NSLog(@"Notification sending");
+    } else {
+        NSLog(@"Unable to sent: %@", [NWPusher stringFromResult:pushed]);
+    }
+
+After a second or so, we can take a look to see if the notification was accepted by Apple:
+
+    NSUInteger identifier2 = 0;
+    NWPusherResult accepted = [self fetchFailedIdentifier:&identifier2];
+    if (accepted == kNWPusherResultSuccess) {
+        NSLog(@"Notification sent successfully");
+    } else {
+        NSLog(@"Notification with identifier %i rejected: %@", (int)identifier2, [NWPusher stringFromResult:accepted]);
+    }
 
 Alternatively on OS X you can also use the keychain to obtain the SSL certificate. In that case first collect all certificates:
 
