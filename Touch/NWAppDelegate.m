@@ -23,6 +23,7 @@ static NWPusherViewController *controller = nil;
     UILabel *_infoLabel;
     NWPusher *_pusher;
     NSUInteger _index;
+    dispatch_queue_t _serial;
 }
 
 - (void)viewDidLoad
@@ -32,6 +33,7 @@ static NWPusherViewController *controller = nil;
     controller = self;
     NWLAddPrinter("NWPusher", NWPusherPrinter, 0);
     NWLPrintInfo();
+    _serial = dispatch_queue_create("NWAppDelegate", DISPATCH_QUEUE_SERIAL);
     
     _connectButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     _connectButton.frame = CGRectMake(20, 20, self.view.bounds.size.width - 40, 40);
@@ -68,34 +70,26 @@ static NWPusherViewController *controller = nil;
         NWPusher *p = [[NWPusher alloc] init];
         NSURL *url = [NSBundle.mainBundle URLForResource:pkcs12FileName withExtension:nil];
         NSData *pkcs12 = [NSData dataWithContentsOfURL:url];
-        [self connectWithPusher:p PKCS12Data:pkcs12 password:pkcs12Password sandbox:YES block:^(NWPusherResult response) {
-            if (response == kNWPusherResultSuccess) {
-                NWLogInfo(@"Connected to APN");
-                _pusher = p;
-                _pushButton.enabled = YES;
-                [_connectButton setTitle:@"Disconnect" forState:UIControlStateNormal];
-            } else {
-                NWLogWarn(@"Unable to connect: %@", [NWPusher stringFromResult:response]);
-            }
-            _connectButton.enabled = YES;
-        }];
+        dispatch_async(_serial, ^{
+            NWPusherResult connected = [p connectWithPKCS12Data:pkcs12 password:pkcs12Password sandbox:YES];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (connected == kNWPusherResultSuccess) {
+                    NWLogInfo(@"Connected to APN");
+                    _pusher = p;
+                    _pushButton.enabled = YES;
+                    [_connectButton setTitle:@"Disconnect" forState:UIControlStateNormal];
+                } else {
+                    NWLogWarn(@"Unable to connect: %@", [NWPusher stringFromResult:connected]);
+                }
+                _connectButton.enabled = YES;
+            });
+        });
     } else {
         _pushButton.enabled = NO;
         [_pusher disconnect]; _pusher = nil;
         NWLogInfo(@"Disconnected");
         [_connectButton setTitle:@"Connect" forState:UIControlStateNormal];
     }
-}
-
-- (void)connectWithPusher:(NWPusher *)pusher PKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox block:(void(^)(NWPusherResult response))block
-{
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NWPusherResult connected = [pusher connectWithPKCS12Data:data password:password sandbox:YES];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (block) dispatch_async(dispatch_get_main_queue(), ^{block(connected);});
-        });
-    });
-    
 }
 
 - (void)push
@@ -114,11 +108,11 @@ static NWPusherViewController *controller = nil;
 - (NSUInteger)pushPayloadString:(NSString *)payload tokenString:(NSString *)token block:(void(^)(NWPusherResult response))block
 {
     NSUInteger identifier = ++_index;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(_serial, ^{
         NWPusherResult pushed = [_pusher pushPayloadString:payload tokenString:token identifier:identifier];
         if (pushed == kNWPusherResultSuccess) {
             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC);
-            dispatch_after(popTime, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+            dispatch_after(popTime, _serial, ^(void){
                 NSUInteger identifier2 = 0;
                 NWPusherResult response = [_pusher fetchFailedIdentifier:&identifier2];
                 if (identifier2 && identifier != identifier2) response = kNWPusherResultIDOutOfSync;

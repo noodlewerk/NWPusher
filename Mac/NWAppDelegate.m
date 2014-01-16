@@ -24,6 +24,8 @@
     NSDictionary *_configuration;
     NSArray *_certificates;
     NSUInteger _index;
+    
+    dispatch_queue_t _serial;
 }
 
 
@@ -34,6 +36,7 @@
     NWLog(@"Application did finish launching");
     NWLAddPrinter("NWPusher", NWPusherPrinter, 0);
     NWLPrintInfo();
+    _serial = dispatch_queue_create("NWAppDelegate", DISPATCH_QUEUE_SERIAL);
     
     [self loadCertificatesFromKeychain];
     [self loadConfiguration];
@@ -191,20 +194,22 @@
     [_tokenCombo addItemsWithObjectValues:tokens];
     
     if (certificate) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(_serial, ^{
             NWPusher *p = [[NWPusher alloc] init];
             BOOL sandbox = [NWSecTools isDevelopmentCertificate:(__bridge SecCertificateRef)(certificate)];
             NWPusherResult connected = [p connectWithCertificateRef:(__bridge SecCertificateRef)(certificate) sandbox:sandbox];
-            if (connected == kNWPusherResultSuccess) {
-                NWLogInfo(@"Connected established to APN%@", sandbox ? @" (sandbox)" : @"");
-                _pusher = p;
-                _pushButton.enabled = YES;
-                _reconnectButton.enabled = YES;
-            } else {
-                NWLogWarn(@"Unable to connect: %@", [NWPusher stringFromResult:connected]);
-                [p disconnect];
-                [self deselectCombo];
-            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (connected == kNWPusherResultSuccess) {
+                    NWLogInfo(@"Connected established to APN%@", sandbox ? @" (sandbox)" : @"");
+                    _pusher = p;
+                    _pushButton.enabled = YES;
+                    _reconnectButton.enabled = YES;
+                } else {
+                    NWLogWarn(@"Unable to connect: %@", [NWPusher stringFromResult:connected]);
+                    [p disconnect];
+                    [_certificatePopup selectItemAtIndex:0];
+                }
+            });
         });
     }
 }
@@ -226,11 +231,11 @@
 - (NSUInteger)pushPayloadString:(NSString *)payload tokenString:(NSString *)token block:(void(^)(NWPusherResult response))block
 {
     NSUInteger identifier = ++_index;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(_serial, ^{
         NWPusherResult pushed = [_pusher pushPayloadString:payload tokenString:token identifier:identifier];
         if (pushed == kNWPusherResultSuccess) {
             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC);
-            dispatch_after(popTime, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+            dispatch_after(popTime, _serial, ^(void){
                 NSUInteger identifier2 = 0;
                 NWPusherResult response = [_pusher fetchFailedIdentifier:&identifier2];
                 if (identifier2 && identifier != identifier2) response = kNWPusherResultIDOutOfSync;
@@ -248,22 +253,17 @@
     NWLogInfo(@"Reconnecting..");
     _pushButton.enabled = NO;
     _reconnectButton.enabled = NO;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(_serial, ^{
         NWPusherResult connected = [_pusher reconnect];
-        if (connected == kNWPusherResultSuccess) {
-            NWLogInfo(@"Reconnected");
-            _pushButton.enabled = YES;
-            _reconnectButton.enabled = YES;
-        } else {
-            NWLogWarn(@"Unable to reconnect: %@", [NWPusher stringFromResult:connected]);
-        }
-    });
-}
-
-- (void)deselectCombo
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [_certificatePopup selectItemAtIndex:0];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (connected == kNWPusherResultSuccess) {
+                NWLogInfo(@"Reconnected");
+                _pushButton.enabled = YES;
+                _reconnectButton.enabled = YES;
+            } else {
+                NWLogWarn(@"Unable to reconnect: %@", [NWPusher stringFromResult:connected]);
+            }
+        });
     });
 }
 
