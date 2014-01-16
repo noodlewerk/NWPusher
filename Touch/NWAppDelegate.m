@@ -66,7 +66,7 @@ static NWPusherViewController *controller = nil;
         NWPusher *p = [[NWPusher alloc] init];
         NSURL *url = [NSBundle.mainBundle URLForResource:pkcs12FileName withExtension:nil];
         NSData *pkcs12 = [NSData dataWithContentsOfURL:url];
-        [p connectWithPKCS12Data:pkcs12 password:pkcs12Password sandbox:YES block:^(NWPusherResult response) {
+        [self connectWithPusher:p PKCS12Data:pkcs12 password:pkcs12Password sandbox:YES block:^(NWPusherResult response) {
             if (response == kNWPusherResultSuccess) {
                 NWLogInfo(@"Connected to APN");
                 _pusher = p;
@@ -85,10 +85,21 @@ static NWPusherViewController *controller = nil;
     }
 }
 
+- (void)connectWithPusher:(NWPusher *)pusher PKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox block:(void(^)(NWPusherResult response))block
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NWPusherResult connected = [pusher connectWithPKCS12Data:data password:password sandbox:YES];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (block) dispatch_async(dispatch_get_main_queue(), ^{block(connected);});
+        });
+    });
+    
+}
+
 - (void)push
 {
     NSString *payload = [NSString stringWithFormat:@"{\"aps\":{\"alert\":\"%@\"}}", _textField.text];
-    NSUInteger identifier = [_pusher pushPayloadString:payload tokenString:deviceToken block:^(NWPusherResult result) {
+    NSUInteger identifier = [self pushPayloadString:payload tokenString:deviceToken block:^(NWPusherResult result) {
         if (result == kNWPusherResultSuccess) {
             NWLogInfo(@"Payload has been pushed");
         } else {
@@ -97,6 +108,27 @@ static NWPusherViewController *controller = nil;
     }];
     NWLogInfo(@"Pushing payload #%i..", (int)identifier);
 }
+
+- (NSUInteger)pushPayloadString:(NSString *)payload tokenString:(NSString *)token block:(void(^)(NWPusherResult response))block
+{
+    NSUInteger identifier = ++_index;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NWPusherResult pushed = [_pusher pushPayloadString:payload tokenString:token identifier:identifier];
+        if (pushed == kNWPusherResultSuccess) {
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC);
+            dispatch_after(popTime, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+                NSUInteger identifier2 = 0;
+                NWPusherResult response = [_pusher fetchFailedIdentifier:&identifier2];
+                if (identifier2 && identifier != identifier2) response = kNWPusherResultIDOutOfSync;
+                if (block) dispatch_async(dispatch_get_main_queue(), ^{block(response);});
+            });
+        } else {
+            if (block) dispatch_async(dispatch_get_main_queue(), ^{block(pushed);});
+        }
+    });
+    return identifier;
+}
+
 
 #pragma mark - NWLogging
 

@@ -80,8 +80,6 @@ typedef enum {
 - (NWPusherResult)pushNotification:(NWNotification *)notification;
 - (NWPusherResult)pushNotification:(NWNotification *)notification type:(NWNotificationType)type;
 - (NWPusherResult)fetchFailedIdentifier:(NSUInteger *)identifier;
-- (void)connectWithPKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox block:(void(^)(NWPusherResult response))block;
-- (NSUInteger)pushPayloadString:(NSString *)payload tokenString:(NSString *)token block:(void(^)(NWPusherResult response))block;
 - (NWPusherResult)reconnect;
 - (void)disconnect;
 + (NSString *)stringFromResult:(NWPusherResult)result;
@@ -91,5 +89,7 @@ typedef enum {
 - (NWPusherResult)pushPayloadString:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier expires:(NSDate *)expires __attribute__((deprecated));
 - (NWPusherResult)pushPayloadData:(NSData *)payload tokenData:(NSData *)token __attribute__((deprecated));
 - (NWPusherResult)pushPayloadData:(NSData *)payload tokenData:(NSData *)token identifier:(NSUInteger)identifier expires:(NSDate *)expires __attribute__((deprecated));
+- (void)connectWithPKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox block:(void(^)(NWPusherResult response))block __attribute__((deprecated));
+- (NSUInteger)pushPayloadString:(NSString *)payload tokenString:(NSString *)token block:(void(^)(NWPusherResult response))block __attribute__((deprecated));
 
 @end

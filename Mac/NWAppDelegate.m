@@ -212,7 +212,7 @@
 {
     NSString *payload = _payloadField.string;
     NSString *token = _tokenCombo.stringValue;
-    NSUInteger identifier = [_pusher pushPayloadString:payload tokenString:token block:^(NWPusherResult result) {
+    NSUInteger identifier = [self pushPayloadString:payload tokenString:token block:^(NWPusherResult result) {
         if (result == kNWPusherResultSuccess) {
             NWLogInfo(@"Payload has been pushed");
         } else {
@@ -220,6 +220,26 @@
         }
     }];
     NWLogInfo(@"Pushing payload #%i..", (int)identifier);
+}
+
+- (NSUInteger)pushPayloadString:(NSString *)payload tokenString:(NSString *)token block:(void(^)(NWPusherResult response))block
+{
+    NSUInteger identifier = ++_index;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NWPusherResult pushed = [_pusher pushPayloadString:payload tokenString:token identifier:identifier];
+        if (pushed == kNWPusherResultSuccess) {
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC);
+            dispatch_after(popTime, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+                NSUInteger identifier2 = 0;
+                NWPusherResult response = [_pusher fetchFailedIdentifier:&identifier2];
+                if (identifier2 && identifier != identifier2) response = kNWPusherResultIDOutOfSync;
+                if (block) dispatch_async(dispatch_get_main_queue(), ^{block(response);});
+            });
+        } else {
+            if (block) dispatch_async(dispatch_get_main_queue(), ^{block(pushed);});
+        }
+    });
+    return identifier;
 }
 
 - (void)reconnect

@@ -152,39 +152,6 @@ static NSUInteger const NWPushPort = 2195;
 }
 
 
-#pragma mark - Blocked
-
-- (void)connectWithPKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox block:(void(^)(NWPusherResult response))block
-{
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NWPusherResult connected = [self connectWithPKCS12Data:data password:password sandbox:YES];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (block) dispatch_async(dispatch_get_main_queue(), ^{block(connected);});
-        });
-    });
-    
-}
-
-- (NSUInteger)pushPayloadString:(NSString *)payload tokenString:(NSString *)token block:(void(^)(NWPusherResult response))block
-{
-    NSUInteger identifier = ++_index;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NWPusherResult pushed = [self pushPayloadString:payload tokenString:token identifier:identifier];
-        if (pushed == kNWPusherResultSuccess) {
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC);
-            dispatch_after(popTime, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-                NSUInteger identifier2 = 0;
-                NWPusherResult response = [self fetchFailedIdentifier:&identifier2];
-                if (identifier2 && identifier != identifier2) response = kNWPusherResultIDOutOfSync;
-                if (block) dispatch_async(dispatch_get_main_queue(), ^{block(response);});
-            });
-        } else {
-            if (block) dispatch_async(dispatch_get_main_queue(), ^{block(pushed);});
-        }
-    });
-    return identifier;
-}
-
 #pragma mark - Helpers
 
 + (NSString *)stringFromResult:(NWPusherResult)result
@@ -199,7 +166,7 @@ static NSUInteger const NWPushPort = 2195;
         case kNWPusherResultAPNInvalidTokenSize: return @"APN: Invalid token size";
         case kNWPusherResultAPNInvalidTopicSize: return @"APN: Invalid topic size";
         case kNWPusherResultAPNInvalidPayloadSize: return @"APN: Invalid payload size";
-        case kNWPusherResultAPNInvalidToken: return @"APN: Invalid token";
+        case kNWPusherResultAPNInvalidToken: return @"APN: Invalid token (you might need to reconnect now)";
         case kNWPusherResultAPNUnknownReason: return @"APN: Unkown reason";
         case kNWPusherResultAPNShutdown: return @"APN: Shutdown";
         case kNWPusherResultEmptyPayload: return @"Payload is empty";
@@ -278,6 +245,37 @@ static NSUInteger const NWPushPort = 2195;
 - (NWPusherResult)pushPayloadData:(NSData *)payload tokenData:(NSData *)token enhance:(BOOL)enhance identifier:(NSUInteger)identifier expires:(NSDate *)expires
 {
     return [self pushNotification:[[NWNotification alloc] initWithPayload:payload token:token identifier:identifier expires:(NSUInteger)expires.timeIntervalSince1970 priority:0]];
+}
+
+- (void)connectWithPKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox block:(void(^)(NWPusherResult response))block
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NWPusherResult connected = [self connectWithPKCS12Data:data password:password sandbox:YES];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (block) dispatch_async(dispatch_get_main_queue(), ^{block(connected);});
+        });
+    });
+    
+}
+
+- (NSUInteger)pushPayloadString:(NSString *)payload tokenString:(NSString *)token block:(void(^)(NWPusherResult response))block
+{
+    NSUInteger identifier = ++_index;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NWPusherResult pushed = [self pushPayloadString:payload tokenString:token identifier:identifier];
+        if (pushed == kNWPusherResultSuccess) {
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC);
+            dispatch_after(popTime, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+                NSUInteger identifier2 = 0;
+                NWPusherResult response = [self fetchFailedIdentifier:&identifier2];
+                if (identifier2 && identifier != identifier2) response = kNWPusherResultIDOutOfSync;
+                if (block) dispatch_async(dispatch_get_main_queue(), ^{block(response);});
+            });
+        } else {
+            if (block) dispatch_async(dispatch_get_main_queue(), ^{block(pushed);});
+        }
+    });
+    return identifier;
 }
 
 @end
