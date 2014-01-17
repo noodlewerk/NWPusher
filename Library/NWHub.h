@@ -23,7 +23,7 @@
 - (NSUInteger)pushPayload:(NSString *)payload token:(NSString *)token;
 - (NSUInteger)pushPayload:(NSString *)payload tokens:(NSArray *)tokens;
 - (NSUInteger)pushPayloads:(NSArray *)payloads token:(NSString *)token;
-- (NSUInteger)pushNotifications:(NSArray *)notifications;
+- (NSUInteger)pushNotifications:(NSArray *)notifications autoReconnect:(BOOL)reconnect;
 - (NSUInteger)flushFailed;
 - (NWPusherResult)reconnect;
 - (void)disconnect;

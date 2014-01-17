@@ -32,7 +32,7 @@
 {
     NSUInteger identifier = _index++;
     NWNotification *notification = [[NWNotification alloc] initWithPayload:payload token:token identifier:identifier expiration:nil priority:0];
-    return [self pushNotifications:@[notification]];
+    return [self pushNotifications:@[notification] autoReconnect:NO];
 }
 
 - (NSUInteger)pushPayload:(NSString *)payload tokens:(NSArray *)tokens
@@ -43,7 +43,7 @@
         NWNotification *notification = [[NWNotification alloc] initWithPayload:payload token:token identifier:identifier expiration:nil priority:0];
         [notifications addObject:notification];
     }
-    return [self pushNotifications:notifications];
+    return [self pushNotifications:notifications autoReconnect:NO];
 }
 
 - (NSUInteger)pushPayloads:(NSArray *)payloads token:(NSString *)token
@@ -54,25 +54,28 @@
         NWNotification *notification = [[NWNotification alloc] initWithPayload:payload token:token identifier:identifier expiration:nil priority:0];
         [notifications addObject:notification];
     }
-    return [self pushNotifications:notifications];
+    return [self pushNotifications:notifications autoReconnect:NO];
 }
 
-- (NSUInteger)pushNotifications:(NSArray *)notifications
+- (NSUInteger)pushNotifications:(NSArray *)notifications autoReconnect:(BOOL)reconnect
 {
     NSUInteger count = 0;
     for (NWNotification *notification in notifications) {
         if (!notification.identifier) notification.identifier = _index++;
-        BOOL failed = [self pushNotification:notification];
+        BOOL failed = [self pushNotification:notification autoReconnect:reconnect];
         if (failed) count++;
     }
     return count;
 }
 
-- (BOOL)pushNotification:(NWNotification *)notification
+- (BOOL)pushNotification:(NWNotification *)notification autoReconnect:(BOOL)reconnect
 {
     NWPusherResult pushed = [_pusher pushNotification:notification type:_type];
     if (pushed != kNWPusherResultSuccess) {
         [_delegate notification:notification didFailWithResult:pushed];
+    }
+    if (reconnect && pushed == kNWPusherResultIOWriteConnectionClosed) {
+        [self reconnect];
     }
     _notificationForIdentifier[@(notification.identifier)] = @[notification, NSDate.date];
     return pushed != kNWPusherResultSuccess;
