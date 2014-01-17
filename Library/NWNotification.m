@@ -117,17 +117,6 @@ static NSUInteger const NWPayloadMaxSize = 256;
     return result;
 }
 
-- (NWPusherResult)validate
-{
-    if (_tokenData.length != NWDeviceTokenSize) {
-        return kNWPusherResultInvalidToken;
-    }
-    if (_payloadData.length > NWPayloadMaxSize) {
-        return kNWPusherResultPayloadTooLong;
-    }
-    return kNWPusherResultSuccess;
-}
-
 
 #pragma mark - Types
 
@@ -231,6 +220,33 @@ static NSUInteger const NWPayloadMaxSize = 256;
     [buffer appendBytes:&i length:1];
     [buffer appendBytes:&l length:2];
     [buffer appendBytes:bytes length:length];
+}
+
++ (NWPusherResult)parseResponse:(NSData *)data identifier:(NSUInteger *)identifier
+{
+    uint8_t command = 0;
+    [data getBytes:&command range:NSMakeRange(0, 1)];
+    if (command != 8) {
+        return kNWPusherResultUnexpectedResponseCommand;
+    }
+    uint8_t status = 0;
+    [data getBytes:&status range:NSMakeRange(1, 1)];
+    uint32_t ID = 0;
+    [data getBytes:&ID range:NSMakeRange(2, 4)];
+    if (identifier) *identifier = htonl(ID);
+    switch (status) {
+        case 0: return kNWPusherResultAPNNoErrorsEncountered;
+        case 1: return kNWPusherResultAPNProcessingError;
+        case 2: return kNWPusherResultAPNMissingDeviceToken;
+        case 3: return kNWPusherResultAPNMissingTopic;
+        case 4: return kNWPusherResultAPNMissingPayload;
+        case 5: return kNWPusherResultAPNInvalidTokenSize;
+        case 6: return kNWPusherResultAPNInvalidTopicSize;
+        case 7: return kNWPusherResultAPNInvalidPayloadSize;
+        case 8: return kNWPusherResultAPNInvalidToken;
+        case 10: return kNWPusherResultAPNShutdown;
+    }
+    return kNWPusherResultAPNUnknownReason;
 }
 
 @end

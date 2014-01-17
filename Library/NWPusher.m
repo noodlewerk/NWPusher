@@ -85,24 +85,12 @@ static NSUInteger const NWPushPort = 2195;
 
 - (NWPusherResult)pushPayload:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier
 {
-    if (!payload.length) {
-        return kNWPusherResultEmptyPayload;
-    }
-    NSData *payloadData = [payload dataUsingEncoding:NSUTF8StringEncoding];
-    if (![[NSJSONSerialization JSONObjectWithData:payloadData options:0 error:nil] count]) {
-        return kNWPusherResultInvalidPayload;
-    }
     return [self pushNotification:[[NWNotification alloc] initWithPayload:payload token:token identifier:identifier expiration:nil priority:0] type:kNWNotificationType2];
 }
 
 - (NWPusherResult)pushNotification:(NWNotification *)notification type:(NWNotificationType)type
 {
-    NWPusherResult result = [notification validate];
-    if (result != kNWPusherResultSuccess) {
-        return result;
-    }
-    NSData *data = [notification dataWithType:type];
-    return [_connection write:data length:NULL];
+    return [_connection write:[notification dataWithType:type] length:NULL];
 }
 
 - (NWPusherResult)fetchFailedIdentifier:(NSUInteger *)identifier
@@ -110,40 +98,9 @@ static NSUInteger const NWPushPort = 2195;
     NSMutableData *data = [NSMutableData dataWithLength:sizeof(uint8_t) * 2 + sizeof(uint32_t)];
     NSUInteger length = 0;
     NWPusherResult read = [_connection read:data length:&length];
-    if (read != kNWPusherResultSuccess) {
-        return kNWPusherResultUnableToReadResponse;
-    }
-    
-    if (length) {
-        uint8_t command = 0;
-        [data getBytes:&command range:NSMakeRange(0, 1)];
-        if (command != 8) {
-            return kNWPusherResultUnexpectedResponseCommand;
-        }
-        if (length != data.length) {
-            return kNWPusherResultUnexpectedResponseLength;
-        }
-        uint8_t status = 0;
-        [data getBytes:&status range:NSMakeRange(1, 1)];
-        uint32_t ID = 0;
-        [data getBytes:&ID range:NSMakeRange(2, 4)];
-        if (identifier) *identifier = htonl(ID);
-        switch (status) {
-            case 0: return kNWPusherResultAPNNoErrorsEncountered;
-            case 1: return kNWPusherResultAPNProcessingError;
-            case 2: return kNWPusherResultAPNMissingDeviceToken;
-            case 3: return kNWPusherResultAPNMissingTopic;
-            case 4: return kNWPusherResultAPNMissingPayload;
-            case 5: return kNWPusherResultAPNInvalidTokenSize;
-            case 6: return kNWPusherResultAPNInvalidTopicSize;
-            case 7: return kNWPusherResultAPNInvalidPayloadSize;
-            case 8: return kNWPusherResultAPNInvalidToken;
-            case 10: return kNWPusherResultAPNShutdown;
-        }
-        return kNWPusherResultAPNUnknownReason;
-    }
-    
-    return kNWPusherResultSuccess;
+    if (read != kNWPusherResultSuccess) return kNWPusherResultUnableToReadResponse;
+    if (!length) return kNWPusherResultSuccess;
+    return [NWNotification parseResponse:data identifier:identifier];
 }
 
 

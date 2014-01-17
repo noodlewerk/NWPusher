@@ -80,9 +80,10 @@
 
 - (void)textDidChange:(NSNotification *)notification
 {
-    NSUInteger length = _payloadField.string.length;
-    _countField.stringValue = [NSString stringWithFormat:@"%lu", length];
-    _countField.textColor = length > 256 ? NSColor.redColor : NSColor.darkGrayColor;
+    NSString *payload = _payloadField.string;
+    BOOL isJSON = !![NSJSONSerialization JSONObjectWithData:[payload dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+    _countField.stringValue = [NSString stringWithFormat:@"%@  %lu", isJSON ? @"" : @"malformed", payload.length];
+    _countField.textColor = payload.length > 256 || !isJSON ? NSColor.redColor : NSColor.darkGrayColor;
 }
 
 - (IBAction)push:(NSButton *)sender

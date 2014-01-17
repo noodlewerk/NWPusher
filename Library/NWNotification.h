@@ -24,7 +24,7 @@
 - (id)initWithPayloadData:(NSData *)payload tokenData:(NSData *)token identifier:(NSUInteger)identifier expirationStamp:(NSUInteger)expirationStamp priority:(NSUInteger)priority;
 
 - (NSData *)dataWithType:(NWNotificationType)type;
-- (NWPusherResult)validate;
++ (NWPusherResult)parseResponse:(NSData *)data identifier:(NSUInteger *)identifier;
 
 + (NSData *)dataFromHex:(NSString *)hex;
 + (NSString *)hexFromData:(NSData *)data;
