@@ -45,6 +45,7 @@
 		B3C6BD8015FD24D200F1F3F1 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3C6BD7F15FD24D200F1F3F1 /* Cocoa.framework */; };
 		B3C6BDD315FD27E900F1F3F1 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3C6BDD215FD27E900F1F3F1 /* Security.framework */; };
 		B3C6BE0115FD30E900F1F3F1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B3C6BE0015FD30E900F1F3F1 /* README.md */; };
+		B3F23256189657DA0043DA98 /* pusher.p12 in Resources */ = {isa = PBXBuildFile; fileRef = B3F23255189657DA0043DA98 /* pusher.p12 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -95,6 +96,7 @@
 		B3C6BD8415FD24D200F1F3F1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		B3C6BDD215FD27E900F1F3F1 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		B3C6BE0015FD30E900F1F3F1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		B3F23255189657DA0043DA98 /* pusher.p12 */ = {isa = PBXFileReference; lastKnownFileType = file; path = pusher.p12; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -185,6 +187,7 @@
 		B33FB1ED172B1A7A006529CE /* Touch */ = {
 			isa = PBXGroup;
 			children = (
+				B3F23255189657DA0043DA98 /* pusher.p12 */,
 				B3376A62172BB71200242EBB /* NWLCore.h */,
 				B3376A61172BB71200242EBB /* NWLCore.c */,
 				B33FB1F4172B1A7A006529CE /* NWAppDelegate.h */,
@@ -301,6 +304,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B33FB1F8172B1A7A006529CE /* Default-568h@2x.png in Resources */,
+				B3F23256189657DA0043DA98 /* pusher.p12 in Resources */,
 				B33FB1F9172B1A7A006529CE /* Default.png in Resources */,
 				B33FB1FA172B1A7A006529CE /* Default@2x.png in Resources */,
 				B33FB214172B303D006529CE /* Icon-72.png in Resources */,
