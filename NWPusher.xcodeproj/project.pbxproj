@@ -97,6 +97,7 @@
 		B3C6BDD215FD27E900F1F3F1 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		B3C6BE0015FD30E900F1F3F1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		B3F23255189657DA0043DA98 /* pusher.p12 */ = {isa = PBXFileReference; lastKnownFileType = file; path = pusher.p12; sourceTree = SOURCE_ROOT; };
+		B3F232991896766B0043DA98 /* NWPusher.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = NWPusher.podspec; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -201,6 +202,7 @@
 			isa = PBXGroup;
 			children = (
 				B3C6BE0015FD30E900F1F3F1 /* README.md */,
+				B3F232991896766B0043DA98 /* NWPusher.podspec */,
 				B33FB1AD172B185C006529CE /* Library */,
 				B33FB1BA172B185C006529CE /* Mac */,
 				B33FB1ED172B1A7A006529CE /* Touch */,
