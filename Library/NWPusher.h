@@ -69,10 +69,12 @@ typedef enum {
     kNWNotificationType2 = 2,
 } NWNotificationType;
 
-@class NWNotification;
+@class NWNotification, NWSSLConnection;
 
 
 @interface NWPusher : NSObject
+
+@property (nonatomic, readonly) NWSSLConnection *connection;
 
 #if !TARGET_OS_IPHONE
 - (NWPusherResult)connectWithCertificateRef:(SecCertificateRef)certificate sandbox:(BOOL)sandbox;

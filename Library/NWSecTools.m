@@ -15,6 +15,7 @@ typedef enum {
     kNWCertificateTypeNone = 0,
     kNWCertificateTypeDevelopment = 1,
     kNWCertificateTypeProduction = 2,
+    kNWCertificateTypeUnknown = 3,
 } NWCertificateType;
 
 
@@ -135,7 +136,16 @@ typedef enum {
         if (identifier) *identifier = [name substringFromIndex:NWProductionPrefix.length];
         return kNWCertificateTypeProduction;
     }
-    return kNWCertificateTypeNone;
+    if (identifier) *identifier = name;
+    return kNWCertificateTypeUnknown;
+}
+
++ (SecCertificateRef)certificateForIdentity:(SecIdentityRef)identity
+{
+    SecCertificateRef result = NULL;
+    OSStatus status = SecIdentityCopyCertificate(identity, &result);
+    if (status != noErr) return nil;
+    return result;
 }
 
 @end

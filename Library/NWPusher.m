@@ -18,7 +18,6 @@ static NSString * const NWPushHost = @"gateway.push.apple.com";
 static NSUInteger const NWPushPort = 2195;
 
 @implementation NWPusher {
-    NWSSLConnection *_connection;
     NSUInteger _index;
 }
 

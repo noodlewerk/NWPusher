@@ -20,5 +20,6 @@
 + (NSArray *)keychainCertificates;
 + (BOOL)isDevelopmentCertificate:(SecCertificateRef)certificate;
 + (NSString *)identifierForCertificate:(SecCertificateRef)certificate;
++ (SecCertificateRef)certificateForIdentity:(SecIdentityRef)identity;
 
 @end

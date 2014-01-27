@@ -14,6 +14,7 @@
 @property (nonatomic, strong) NSString *host;
 @property (nonatomic, assign) NSUInteger port;
 @property (nonatomic, assign) SecIdentityRef identity;
+@property (nonatomic, readonly) SecCertificateRef certificate;
 
 - (id)initWithHost:(NSString *)host port:(NSUInteger)port identity:(SecIdentityRef)identity;
 - (NWPusherResult)connect;

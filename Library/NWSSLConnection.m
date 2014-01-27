@@ -147,4 +147,12 @@
     if (_context) CFRelease(_context); _context = NULL;
 }
 
+- (SecCertificateRef)certificate
+{
+    SecCertificateRef result = NULL;
+    OSStatus status = SecIdentityCopyCertificate(_identity, &result);
+    if (status != noErr) return nil;
+    return result;
+}
+
 @end
