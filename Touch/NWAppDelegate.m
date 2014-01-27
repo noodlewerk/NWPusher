@@ -98,7 +98,7 @@ static NWPusherViewController *controller = nil;
 
 - (void)push
 {
-    NSString *payload = [NSString stringWithFormat:@"{\"aps\":{\"alert\":\"%@\"}}", _textField.text];
+    NSString *payload = [NSString stringWithFormat:@"{\"aps\":{\"alert\":\"%@\",\"badge\":1,\"sound\":\"default\"}}", _textField.text];
     NSString *token = deviceToken;
     NWLogInfo(@"Pushing..");
     dispatch_async(_serial, ^{
