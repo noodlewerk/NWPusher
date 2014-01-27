@@ -10,5 +10,6 @@ Pod::Spec.new do |s|
   s.osx.deployment_target = '10.8'
   s.requires_arc  = true
   s.source        = { git: 'https://github.com/noodlewerk/NWPusher.git', tag: s.version.to_s }
-  s.source_files  = 'Library/*.{h,m,c}'
+  s.source_files  = 'Classes/*.{h,m,c}'
+  s.framework     = 'Security'
 end

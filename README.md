@@ -93,15 +93,22 @@ Again, if things are not working as expected, send me a message on GitHub or pos
 
 Pushing from source
 -------------------
-Pusher can also be used as a library to send notifications programmatically. The included Xcode project provides examples for both OS X and iOS. The easiest way include Pusher is by including all files from the `Library` folder:
+Pusher can also be used as a library to send notifications programmatically. The included Xcode project provides examples for both OS X and iOS. The easiest way include Pusher is by including just the files you need from the `Classes` folder:
 
+ - NWHub.h/m
  - NWPusher.h/m
  - NWNotification.h/m
  - NWSSLConnection.h/m
  - NWSecTools.h/m
  - ioSock.h/c
 
-Next you need to link with `Foundation.framework` and `Security.framework`. Before any notification can be sent, you first need to create a connection. When this connections established, any number of payload can be sent.
+Make sure you link with `Foundation.framework` and `Security.framework`.
+
+Alternatively you can use CocoaPods to handle configuration for you. Add to your `Podfile`:
+
+    pod 'NWPusher', git: 'https://github.com/noodlewerk/NWPusher.git'
+
+Before any notification can be sent, you first need to create a connection. When this connections established, any number of payload can be sent.
 
 *Note that Apple doesn't like it when you create a connection for every push.* Therefore be careful to reuse a connection as much as possible in order to prevent Apple from blocking.
 
