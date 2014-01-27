@@ -110,7 +110,7 @@ To create a connection directly from a PKCS12 (.p12) file:
     NSURL *url = [NSBundle.mainBundle URLForResource:@"my-certificate.p12" withExtension:nil];
     NSData *pkcs12 = [NSData dataWithContentsOfURL:url];
     NWPusher *pusher = [[NWPusher alloc] init];
-    NWPusherResult connected = [pusher connectWithPKCS12Data:pkcs12 password:@"pa$$word" sandbox:YES];
+    NWPusherResult connected = [pusher connectWithPKCS12Data:pkcs12 password:@"pa$$word"];
     if (connected == kNWPusherResultSuccess) {
         NSLog(@"Connected to APN");
     } else {
@@ -145,11 +145,9 @@ Alternatively on OS X you can also use the keychain to obtain the SSL certificat
 
 After selecting the right certificate, connect using:
 
-    NWPusherResult connected = [pusher connectWithCertificateRef:certificate sandbox:YES];
+    NWPusherResult connected = [pusher connectWithCertificateRef:certificate];
 
 More variations on this approach are available. Just take a look at the example project for the details.
-
-Note that the example code above uses `sandbox:YES`. This means it's using development certificates and pushes to development apps. To push to production apps, set sandbox to `NO`.
 
 
 Troubleshooting
@@ -158,7 +156,7 @@ Apple's Push Notification Service is not very forgiving in nature. If things are
 
 Some tips on what to look out for:
 
-- A device token is unique to both the device, the developer's certificate, and to whether the app was built with a production or development certificate. Therefore make sure that the push certificate matches the app's provisioning profile exactly. This doesn't mean the tokens are always different; device tokens can be the same for different bundle identifiers.
+- A device token is unique to both the device, the developer's certificate, and to whether the app was built with a production or development (sandbox) certificate. Therefore make sure that the push certificate matches the app's provisioning profile exactly. This doesn't mean the tokens are always different; device tokens can be the same for different bundle identifiers.
 
 - When an incorrect device token is used, Apple will close the connection without notifying the client. Unfortunately the client will be unaware of this until the next notification is sent. This can lead to confusing behavior where you might put the blame on the wrong device token. It's therefore important to only use device tokens that are guaranteed to come from within the app, using `application:didRegisterForRemoteNotificationsWithDeviceToken:`. Pusher does *not* automatically reconnect in such cases.
 

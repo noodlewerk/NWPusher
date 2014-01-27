@@ -77,10 +77,10 @@ typedef enum {
 @property (nonatomic, readonly) NWSSLConnection *connection;
 
 #if !TARGET_OS_IPHONE
-- (NWPusherResult)connectWithCertificateRef:(SecCertificateRef)certificate sandbox:(BOOL)sandbox;
+- (NWPusherResult)connectWithCertificateRef:(SecCertificateRef)certificate;
 #endif
-- (NWPusherResult)connectWithIdentityRef:(SecIdentityRef)identity sandbox:(BOOL)sandbox;
-- (NWPusherResult)connectWithPKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox;
+- (NWPusherResult)connectWithIdentityRef:(SecIdentityRef)identity;
+- (NWPusherResult)connectWithPKCS12Data:(NSData *)data password:(NSString *)password;
 - (NWPusherResult)pushPayload:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier;
 - (NWPusherResult)pushNotification:(NWNotification *)notification type:(NWNotificationType)type;
 - (NWPusherResult)fetchFailedIdentifier:(NSUInteger *)identifier;
@@ -89,6 +89,11 @@ typedef enum {
 + (NSString *)stringFromResult:(NWPusherResult)result;
 
 // deprecated
+#if !TARGET_OS_IPHONE
+- (NWPusherResult)connectWithCertificateRef:(SecCertificateRef)certificate sandbox:(BOOL)sandbox __attribute__((deprecated));
+#endif
+- (NWPusherResult)connectWithIdentityRef:(SecIdentityRef)identity sandbox:(BOOL)sandbox __attribute__((deprecated));
+- (NWPusherResult)connectWithPKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox __attribute__((deprecated));
 - (NWPusherResult)pushPayloadString:(NSString *)payload token:(NSString *)token __attribute__((deprecated));
 - (NWPusherResult)pushPayloadString:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier expires:(NSDate *)expires __attribute__((deprecated));
 - (NWPusherResult)pushPayloadData:(NSData *)payload tokenData:(NSData *)token __attribute__((deprecated));

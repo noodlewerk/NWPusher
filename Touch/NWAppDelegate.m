@@ -10,7 +10,8 @@
 #import "NWHub.h"
 #import "NWNotification.h"
 #import "NWLCore.h"
-
+#import "NWSSLConnection.h"
+#import "NWSecTools.h"
 
 static NSString * const pkcs12FileName = @"pusher.p12";
 static NSString * const pkcs12Password = @"pusher";
@@ -75,10 +76,13 @@ static NWPusherViewController *controller = nil;
         NSURL *url = [NSBundle.mainBundle URLForResource:pkcs12FileName withExtension:nil];
         NSData *pkcs12 = [NSData dataWithContentsOfURL:url];
         dispatch_async(_serial, ^{
-            NWPusherResult connected = [p connectWithPKCS12Data:pkcs12 password:pkcs12Password sandbox:YES];
+            NWPusherResult connected = [p connectWithPKCS12Data:pkcs12 password:pkcs12Password];
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (connected == kNWPusherResultSuccess) {
-                    NWLogInfo(@"Connected to APN");
+                    SecCertificateRef certificate = p.connection.certificate;
+                    BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
+                    NSString *identifier = [NWSecTools identifierForCertificate:certificate];
+                    NWLogInfo(@"Connected to APN: %@%@", identifier, sandbox ? @" (sandbox)" : @"");
                     _hub = [[NWHub alloc] initWithPusher:p delegate:self];
                     _pushButton.enabled = YES;
                     [_connectButton setTitle:@"Disconnect" forState:UIControlStateNormal];

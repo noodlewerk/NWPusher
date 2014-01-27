@@ -148,8 +148,8 @@
         NWLogWarn(@"No push certificates in keychain.");
     }
     certs = [certs sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
-        BOOL adev = [NWSecTools isDevelopmentCertificate:(__bridge SecCertificateRef)(a)];
-        BOOL bdev = [NWSecTools isDevelopmentCertificate:(__bridge SecCertificateRef)(b)];
+        BOOL adev = [NWSecTools isSandboxCertificate:(__bridge SecCertificateRef)(a)];
+        BOOL bdev = [NWSecTools isSandboxCertificate:(__bridge SecCertificateRef)(b)];
         if (adev != bdev) {
             return adev ? NSOrderedAscending : NSOrderedDescending;
         }
@@ -162,16 +162,16 @@
     [_certificatePopup removeAllItems];
     [_certificatePopup addItemWithTitle:@"Select Push Certificate"];
     for (id c in _certificates) {
-        BOOL development = [NWSecTools isDevelopmentCertificate:(__bridge SecCertificateRef)(c)];
+        BOOL sandbox = [NWSecTools isSandboxCertificate:(__bridge SecCertificateRef)(c)];
         NSString *name = [NWSecTools identifierForCertificate:(__bridge SecCertificateRef)(c)];
-        [_certificatePopup addItemWithTitle:[NSString stringWithFormat:@"%@ (%@)", name, development ? @"development" : @"production"]];
+        [_certificatePopup addItemWithTitle:[NSString stringWithFormat:@"%@%@", name, sandbox ? @" (sandbox)" : @""]];
     }
 }
 
 - (NSArray *)tokensForCertificate:(id)certificate
 {
     NSMutableArray *result = [[NSMutableArray alloc] init];
-    BOOL development = [NWSecTools isDevelopmentCertificate:(__bridge SecCertificateRef)certificate];
+    BOOL sandbox = [NWSecTools isSandboxCertificate:(__bridge SecCertificateRef)certificate];
     NSString *identifier = [NWSecTools identifierForCertificate:(__bridge SecCertificateRef)certificate];
     for (NSDictionary *dict in [_configuration valueForKey:@"tokens"]) {
         NSArray *identifiers = [dict valueForKey:@"identifiers"];
@@ -183,7 +183,7 @@
             }
         }
         if (match) {
-            NSArray *tokens = development ? [dict valueForKey:@"development"] : [dict valueForKey:@"production"];
+            NSArray *tokens = sandbox ? [dict valueForKey:@"development"] : [dict valueForKey:@"production"];
             if (tokens.count) {
                 [result addObjectsFromArray:tokens];
             }
@@ -209,11 +209,12 @@
     if (certificate) {
         dispatch_async(_serial, ^{
             NWPusher *p = [[NWPusher alloc] init];
-            BOOL sandbox = [NWSecTools isDevelopmentCertificate:(__bridge SecCertificateRef)(certificate)];
-            NWPusherResult connected = [p connectWithCertificateRef:(__bridge SecCertificateRef)(certificate) sandbox:sandbox];
+            BOOL sandbox = [NWSecTools isSandboxCertificate:(__bridge SecCertificateRef)certificate];
+            NSString *identifier = [NWSecTools identifierForCertificate:(__bridge SecCertificateRef)certificate];
+            NWPusherResult connected = [p connectWithCertificateRef:(__bridge SecCertificateRef)certificate];
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (connected == kNWPusherResultSuccess) {
-                    NWLogInfo(@"Connected established to APN%@", sandbox ? @" (sandbox)" : @"");
+                    NWLogInfo(@"Connected to APN: %@%@", identifier, sandbox ? @" (sandbox)" : @"");
                     _hub = [[NWHub alloc] initWithPusher:p delegate:self];
                     _pushButton.enabled = YES;
                     _reconnectButton.enabled = YES;

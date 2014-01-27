@@ -26,22 +26,24 @@ static NSUInteger const NWTokenMaxSize = 32;
 
 #if !TARGET_OS_IPHONE
 
-- (NWPusherResult)connectWithCertificateData:(NSData *)certificateData sandbox:(BOOL)sandbox
+- (NWPusherResult)connectWithCertificateData:(NSData *)certificateData
 {
     SecIdentityRef identity = NULL;
     NWPusherResult result = [NWSecTools identityWithCertificateData:certificateData identity:&identity];
     if (result != kNWPusherResultSuccess) {
         return result;
     }
-    result = [self connectWithIdentity:identity sandbox:sandbox];
+    result = [self connectWithIdentity:identity];
     CFRelease(identity);
     return result;
 }
 
 #endif
 
-- (NWPusherResult)connectWithIdentity:(SecIdentityRef)identity sandbox:(BOOL)sandbox
+- (NWPusherResult)connectWithIdentity:(SecIdentityRef)identity
 {
+    SecCertificateRef certificate = [NWSecTools certificateForIdentity:identity];
+    BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
     NSString *host = sandbox ? NWSandboxPushHost : NWPushHost;
     
     if (_connection) [_connection disconnect]; _connection = nil;
@@ -54,14 +56,14 @@ static NSUInteger const NWTokenMaxSize = 32;
     return result;
 }
 
-- (NWPusherResult)connectWithPKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox
+- (NWPusherResult)connectWithPKCS12Data:(NSData *)data password:(NSString *)password
 {
     SecIdentityRef identity = NULL;
     NWPusherResult result = [NWSecTools identityWithPKCS12Data:data password:password identity:&identity];
     if (result != kNWPusherResultSuccess) {
         return result;
     }
-    result = [self connectWithIdentity:identity sandbox:sandbox];
+    result = [self connectWithIdentity:identity];
     CFRelease(identity);
     return result;
 }
@@ -103,6 +105,26 @@ static NSUInteger const NWTokenMaxSize = 32;
     }
     
     return kNWPusherResultSuccess;
+}
+
+
+#pragma mark - Deprecated
+
+#if !TARGET_OS_IPHONE
+- (NWPusherResult)connectWithCertificateData:(NSData *)certificate sandbox:(BOOL)sandbox
+{
+    return [self connectWithCertificateData:certificate];
+}
+
+#endif
+- (NWPusherResult)connectWithIdentity:(SecIdentityRef)identity sandbox:(BOOL)sandbox
+{
+    return [self connectWithIdentity:identity];
+}
+
+- (NWPusherResult)connectWithPKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox
+{
+    return [self connectWithPKCS12Data:data password:password];
 }
 
 @end

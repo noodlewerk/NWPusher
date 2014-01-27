@@ -112,7 +112,7 @@ typedef enum {
     return result;
 }
 
-+ (BOOL)isDevelopmentCertificate:(SecCertificateRef)certificate
++ (BOOL)isSandboxCertificate:(SecCertificateRef)certificate
 {
     BOOL result = [self typeForCertificate:certificate identifier:nil] == kNWCertificateTypeDevelopment;
     return result;
@@ -146,6 +146,15 @@ typedef enum {
     OSStatus status = SecIdentityCopyCertificate(identity, &result);
     if (status != noErr) return nil;
     return result;
+}
+
+
+#pragma mark - Deprecated
+
+
++ (BOOL)isDevelopmentCertificate:(SecCertificateRef)certificate
+{
+    return [self isSandboxCertificate:certificate];
 }
 
 @end

@@ -26,7 +26,7 @@ static NSUInteger const NWPushPort = 2195;
 
 #if !TARGET_OS_IPHONE
 
-- (NWPusherResult)connectWithCertificateRef:(SecCertificateRef)certificate sandbox:(BOOL)sandbox
+- (NWPusherResult)connectWithCertificateRef:(SecCertificateRef)certificate
 {
     SecIdentityRef identity = NULL;
     NWPusherResult result = [NWSecTools identityWithCertificateRef:certificate identity:&identity];
@@ -34,15 +34,17 @@ static NSUInteger const NWPushPort = 2195;
         if (identity) CFRelease(identity);
         return result;
     }
-    result = [self connectWithIdentityRef:identity sandbox:sandbox];
+    result = [self connectWithIdentityRef:identity];
     if (identity) CFRelease(identity);
     return result;
 }
 
 #endif
 
-- (NWPusherResult)connectWithIdentityRef:(SecIdentityRef)identity sandbox:(BOOL)sandbox
+- (NWPusherResult)connectWithIdentityRef:(SecIdentityRef)identity
 {
+    SecCertificateRef certificate = [NWSecTools certificateForIdentity:identity];
+    BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
     NSString *host = sandbox ? NWSandboxPushHost : NWPushHost;
     
     if (_connection) [_connection disconnect]; _connection = nil;
@@ -55,7 +57,7 @@ static NSUInteger const NWPushPort = 2195;
     return result;
 }
 
-- (NWPusherResult)connectWithPKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox
+- (NWPusherResult)connectWithPKCS12Data:(NSData *)data password:(NSString *)password
 {
     SecIdentityRef identity = NULL;
     NWPusherResult result = [NWSecTools identityWithPKCS12Data:data password:password identity:&identity];
@@ -63,7 +65,7 @@ static NSUInteger const NWPushPort = 2195;
         if (identity) CFRelease(identity);
         return result;
     }
-    result = [self connectWithIdentityRef:identity sandbox:sandbox];
+    result = [self connectWithIdentityRef:identity];
     if (identity) CFRelease(identity);
     return result;
 }
@@ -163,6 +165,23 @@ static NSUInteger const NWPushPort = 2195;
 
 #pragma mark - Deprecated
 
+#if !TARGET_OS_IPHONE
+- (NWPusherResult)connectWithCertificateRef:(SecCertificateRef)certificate sandbox:(BOOL)sandbox
+{
+    return [self connectWithCertificateRef:certificate];
+}
+#endif
+
+- (NWPusherResult)connectWithIdentityRef:(SecIdentityRef)identity sandbox:(BOOL)sandbox
+{
+    return [self connectWithIdentityRef:identity];
+}
+
+- (NWPusherResult)connectWithPKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox
+{
+    return [self connectWithPKCS12Data:data password:password];
+}
+
 - (NWPusherResult)pushPayloadString:(NSString *)payload token:(NSString *)token
 {
     NWPusherResult result = [self pushPayloadString:payload token:token identifier:0 expires:NULL];
@@ -201,7 +220,7 @@ static NSUInteger const NWPushPort = 2195;
 - (void)connectWithPKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox block:(void(^)(NWPusherResult response))block
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NWPusherResult connected = [self connectWithPKCS12Data:data password:password sandbox:YES];
+        NWPusherResult connected = [self connectWithPKCS12Data:data password:password];
         dispatch_async(dispatch_get_main_queue(), ^{
             if (block) dispatch_async(dispatch_get_main_queue(), ^{block(connected);});
         });
