@@ -14,7 +14,7 @@ Enter *Pusher*, a Mac and iPhone app for sending push notifications *directly* t
 
 Pusher comes with a small library for both OS X and iOS, that provides various tools to send notifications programmatically. On OS X it can use the keychain to retrieve push certificates and keys. Pusher can also be used without keychain, using a PKCS12 file, e.g. when pushing from iOS.
 
-![Pusher OS X](Docs/osx.png)
+<img src="Docs/osx.png" alt="Pusher OS X" width="591"/>
 
 
 Getting started
@@ -33,11 +33,11 @@ Let's start with the SSL certificate. The goal is to get both the certificate *a
 
 Keep in mind that you will eventually be downloading a certificate, which you will need to install in your keychain together with the private key. This should look something like this:
 
-![Keychain export](Docs/keychain1.png)
+<img src="Docs/keychain1.png" alt="Keychain export" width="681"/>
 
 Both can be exported into a PKCS12 file, which allows you to share these with fellow developers:
 
-![PKCS12 file](Docs/keychain2.png)
+<img src="Docs/keychain2.png" alt="PKCS12 file" width="679"/>
 
 ### Device token
 Now you need to obtain a device token, which is a 64 character hex string. This should be done from within the iOS app you're going to push to. Add the following lines to your application delegate:
@@ -73,7 +73,7 @@ Now, when you run the application, the 64 character push string will be logged t
 ### Push from OS X
 With the SSL certificate and private key in the keychain and the device token on the pasteboard, you're finally ready to send some push notifications. Let's start by sending a notification using the Pusher OS X app. Open the Pusher Xcode project and run the PusherMac target:
 
-![Pusher OS X](Docs/osx.png)
+<img src="Docs/osx.png" alt="Pusher OS X" width="591"/>
 
 The combo box at the top lists the available SSL certificates in the keychain. Select the certificate you want to use and paste the device token of the device you're pushing to. The text field below shows the JSON formatted payload text that you're sending. Read more about this format in the Apple documentation under *Apple Push Notification Service*.
 
@@ -84,7 +84,7 @@ If things are not working as expected, send me a message on GitHub or post an is
 ### Push from iOS
 The ultimate experience is of course pushing from an iPhone to an iPhone, directly. This can be done with the Pusher iOS app. Before you run the PusherTouch target, make sure to include the *certificate, private key, and device token* inside the app. Take the PKCS12 file that you exported earlier and include it in the PusherTouch bundle. Then go to `NWAppDelegate.m` in the `Touch` folder and configure `pkcs12FileName`, `pkcs12Password`, and `deviceToken`. Now run the PusherTouch target:
 
-![Pusher iOS](Docs/ios.png)
+<img src="Docs/ios.png" alt="Pusher iOS" width="414"/>
 
 If everything is set up correctly, you only need to *Connect* and *Push*. Then you should receive the *You did it!* push message on the device.
 
