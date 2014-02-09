@@ -3,7 +3,30 @@
 Pusher
 ======
 
-*iOS/OS X application for playing with the Apple Push Notification Service.*
+*iOS/OS X application and library for playing with the Apple Push Notification Service (APNS).*
+
+<img src="Docs/osx.png" alt="Pusher OS X" width="591"/>
+
+
+Installation
+------------
+Install de Mac app using Homebrew cask:
+
+```shell
+brew cask install pusher
+```
+
+Or download the latest `Pusher.app` binary:
+
+- [Download latest binary](https://github.com/noodlewerk/NWPusher/releases/latest)
+
+Alternatively, you can include NWPusher as a library, using CocoaPods:
+
+```ruby
+pod 'NWPusher', '~> 0.3.0'
+```
+
+Or simply include the source files you need. NWPusher has a modular architecture and does not have any external dependencies, so use what you like.
 
 
 About
@@ -14,7 +37,20 @@ Enter *Pusher*, a Mac and iPhone app for sending push notifications *directly* t
 
 Pusher comes with a small library for both OS X and iOS, that provides various tools to send notifications programmatically. On OS X it can use the keychain to retrieve push certificates and keys. Pusher can also be used without keychain, using a PKCS12 file, e.g. when pushing from iOS.
 
-<img src="Docs/osx.png" alt="Pusher OS X" width="591"/>
+
+Features
+--------
+Mac OS X application for sending push notifications through the APN service:
+- Takes certificates and keys directly from the keychain
+- Preconfigure your device tokens so you don't have to copy-paste them every time
+- Fully customizable payload
+- Automatic configuration for sandbox
+- Reports error messages returned by APNS
+
+OS X/iOS library for sending pushes from your own application:
+- iOS compatible, so you can also push directly from your iPhone :o
+- Modular, no dependencies, use what you like
+- Demo applications for both platforms
 
 
 Getting started
@@ -42,31 +78,33 @@ Both can be exported into a PKCS12 file, which allows you to share these with fe
 ### Device token
 Now you need to obtain a device token, which is a 64 character hex string. This should be done from within the iOS app you're going to push to. Add the following lines to your application delegate:
 
-    - (BOOL)application:(UIApplication *)application
-        didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-    {
-        [UIApplication.sharedApplication  registerForRemoteNotificationTypes:
-            UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge
-            | UIRemoteNotificationTypeSound];
-    }
+```objective-c
+- (BOOL)application:(UIApplication *)application
+    didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    [UIApplication.sharedApplication  registerForRemoteNotificationTypes:
+        UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge
+        | UIRemoteNotificationTypeSound];
+}
 
-    - (void)application:(UIApplication *)application
-        didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token
-    {
-        NSLog(@"Device token: %@", [NWNotification hexFromData:token]);
-    }
+- (void)application:(UIApplication *)application
+    didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token
+{
+    NSLog(@"Device token: %@", [NWNotification hexFromData:token]);
+}
 
-    - (void)application:(UIApplication *)application
-        didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
-    {
-        NSLog(@"Failed to get token: %@", error);
-    }
+- (void)application:(UIApplication *)application
+    didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+    NSLog(@"Failed to get token: %@", error);
+}
 
-    - (void)application:(UIApplication *)application
-        didReceiveRemoteNotification:(NSDictionary *)notification
-    {
-        NSLog(@"Received push notification: %@", notification);
-    }
+- (void)application:(UIApplication *)application
+    didReceiveRemoteNotification:(NSDictionary *)notification
+{
+    NSLog(@"Received push notification: %@", notification);
+}
+```
 
 Now, when you run the application, the 64 character push string will be logged to the console.
 
@@ -106,7 +144,9 @@ Make sure you link with `Foundation.framework` and `Security.framework`.
 
 Alternatively you can use CocoaPods to handle configuration for you. Add to your `Podfile`:
 
-    pod 'NWPusher', git: 'https://github.com/noodlewerk/NWPusher.git'
+```ruby
+pod 'NWPusher', '~> 0.3.0'
+```
 
 Before any notification can be sent, you first need to create a connection. When this connections established, any number of payload can be sent.
 
@@ -114,6 +154,7 @@ Before any notification can be sent, you first need to create a connection. When
 
 To create a connection directly from a PKCS12 (.p12) file:
 
+```objective-c
     NSURL *url = [NSBundle.mainBundle URLForResource:@"my-certificate.p12" withExtension:nil];
     NSData *pkcs12 = [NSData dataWithContentsOfURL:url];
     NWPusher *pusher = [[NWPusher alloc] init];
@@ -123,9 +164,11 @@ To create a connection directly from a PKCS12 (.p12) file:
     } else {
         NSLog(@"Unable to connect: %@", [NWPusher stringFromResult:connected]);
     }
+```
 
 When pusher is successfully connected, send a payload to your device:
 
+```objective-c
     NSString *payload = @"{\"aps\":{\"alert\":\"You did it!\"}}";
     NSString *token = @"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
     NSUInteger identifier = rand();
@@ -135,9 +178,11 @@ When pusher is successfully connected, send a payload to your device:
     } else {
         NSLog(@"Unable to sent: %@", [NWPusher stringFromResult:pushed]);
     }
+```
 
 After a second or so, we can take a look to see if the notification was accepted by Apple:
 
+```objective-c
     NSUInteger identifier2 = 0;
     NWPusherResult accepted = [self fetchFailedIdentifier:&identifier2];
     if (accepted == kNWPusherResultSuccess) {
@@ -145,14 +190,19 @@ After a second or so, we can take a look to see if the notification was accepted
     } else {
         NSLog(@"Notification with identifier %i rejected: %@", (int)identifier2, [NWPusher stringFromResult:accepted]);
     }
+```
 
 Alternatively on OS X you can also use the keychain to obtain the SSL certificate. In that case first collect all certificates:
 
+```objective-c
     NSArray *certificates = [NWSecTools keychainCertificates];
+```
 
 After selecting the right certificate, connect using:
 
+```objective-c
     NWPusherResult connected = [pusher connectWithCertificateRef:certificate];
+```
 
 More variations on this approach are available. Just take a look at the example project for the details.
 
