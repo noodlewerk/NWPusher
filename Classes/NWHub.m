@@ -13,7 +13,17 @@
     NSUInteger _index;
     NSMutableDictionary *_notificationForIdentifier;
 }
+    
+- (id)init
+{
+    return [self initWithPusher:[[NWPusher alloc] init] delegate:nil];
+}
 
+- (id)initWithDelegate:(id<NWHubDelegate>)delegate
+{
+    return [self initWithPusher:[[NWPusher alloc] init] delegate:delegate];
+}
+    
 - (id)initWithPusher:(NWPusher *)pusher delegate:(id<NWHubDelegate>)delegate
 {
     self = [super init];
@@ -27,7 +37,40 @@
     }
     return self;
 }
+    
+    
+#pragma mark - Connecting
 
+#if !TARGET_OS_IPHONE
+- (NWPusherResult)connectWithCertificateRef:(SecCertificateRef)certificate
+{
+    return [_pusher connectWithCertificateRef:certificate];
+}
+#endif
+    
+- (NWPusherResult)connectWithIdentityRef:(SecIdentityRef)identity
+{
+    return [_pusher connectWithIdentityRef:identity];
+}
+
+- (NWPusherResult)connectWithPKCS12Data:(NSData *)data password:(NSString *)password
+{
+    return [_pusher connectWithPKCS12Data:data password:password];
+}
+
+- (NWPusherResult)reconnect
+{
+    return [_pusher reconnect];
+}
+
+- (void)disconnect
+{
+    [_pusher disconnect];
+}
+    
+
+#pragma mark - Pushing
+    
 - (NSUInteger)pushPayload:(NSString *)payload token:(NSString *)token
 {
     NSUInteger identifier = _index++;
@@ -109,16 +152,6 @@
     }
     [self collectGarbage];
     return count - 1;
-}
-
-- (NWPusherResult)reconnect
-{
-    return [_pusher reconnect];
-}
-
-- (void)disconnect
-{
-    [_pusher disconnect];
 }
 
 @end

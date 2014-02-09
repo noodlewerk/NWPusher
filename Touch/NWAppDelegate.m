@@ -6,7 +6,6 @@
 //
 
 #import "NWAppDelegate.h"
-#import "NWPusher.h"
 #import "NWHub.h"
 #import "NWNotification.h"
 #import "NWLCore.h"
@@ -72,18 +71,18 @@ static NWPusherViewController *controller = nil;
     if (!_hub) {
         NWLogInfo(@"Connecting..");
         _connectButton.enabled = NO;
-        NWPusher *p = [[NWPusher alloc] init];
-        NSURL *url = [NSBundle.mainBundle URLForResource:pkcs12FileName withExtension:nil];
-        NSData *pkcs12 = [NSData dataWithContentsOfURL:url];
         dispatch_async(_serial, ^{
-            NWPusherResult connected = [p connectWithPKCS12Data:pkcs12 password:pkcs12Password];
+            NSURL *url = [NSBundle.mainBundle URLForResource:pkcs12FileName withExtension:nil];
+            NSData *pkcs12 = [NSData dataWithContentsOfURL:url];
+            NWHub *hub = [[NWHub alloc] initWithDelegate:self];
+            NWPusherResult connected = [hub connectWithPKCS12Data:pkcs12 password:pkcs12Password];
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (connected == kNWPusherResultSuccess) {
-                    SecCertificateRef certificate = p.connection.certificate;
+                    SecCertificateRef certificate = hub.pusher.connection.certificate;
                     BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
                     NSString *identifier = [NWSecTools identifierForCertificate:certificate];
                     NWLogInfo(@"Connected to APN: %@%@", identifier, sandbox ? @" (sandbox)" : @"");
-                    _hub = [[NWHub alloc] initWithPusher:p delegate:self];
+                    _hub = hub;
                     _pushButton.enabled = YES;
                     [_connectButton setTitle:@"Disconnect" forState:UIControlStateNormal];
                 } else {

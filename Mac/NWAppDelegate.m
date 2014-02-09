@@ -6,7 +6,6 @@
 //
 
 #import "NWAppDelegate.h"
-#import "NWPusher.h"
 #import "NWHub.h"
 #import "NWNotification.h"
 #import "NWSecTools.h"
@@ -208,19 +207,19 @@
     
     if (certificate) {
         dispatch_async(_serial, ^{
-            NWPusher *p = [[NWPusher alloc] init];
-            BOOL sandbox = [NWSecTools isSandboxCertificate:(__bridge SecCertificateRef)certificate];
-            NSString *identifier = [NWSecTools identifierForCertificate:(__bridge SecCertificateRef)certificate];
-            NWPusherResult connected = [p connectWithCertificateRef:(__bridge SecCertificateRef)certificate];
+            NWHub *hub = [[NWHub alloc] initWithDelegate:self];
+            NWPusherResult connected = [hub connectWithCertificateRef:(__bridge SecCertificateRef)certificate];
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (connected == kNWPusherResultSuccess) {
+                    BOOL sandbox = [NWSecTools isSandboxCertificate:(__bridge SecCertificateRef)certificate];
+                    NSString *identifier = [NWSecTools identifierForCertificate:(__bridge SecCertificateRef)certificate];
                     NWLogInfo(@"Connected to APN: %@%@", identifier, sandbox ? @" (sandbox)" : @"");
-                    _hub = [[NWHub alloc] initWithPusher:p delegate:self];
+                    _hub = hub;
                     _pushButton.enabled = YES;
                     _reconnectButton.enabled = YES;
                 } else {
                     NWLogWarn(@"Unable to connect: %@", [NWPusher stringFromResult:connected]);
-                    [p disconnect];
+                    [hub disconnect];
                     [_certificatePopup selectItemAtIndex:0];
                 }
             });
