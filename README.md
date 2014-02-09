@@ -90,7 +90,7 @@ Now you need to obtain a device token, which is a 64 character hex string. This 
 - (void)application:(UIApplication *)application
     didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token
 {
-    NSLog(@"Device token: %@", [NWNotification hexFromData:token]);
+    NSLog(@"Device token: %@", token);
 }
 
 - (void)application:(UIApplication *)application
@@ -131,7 +131,13 @@ Again, if things are not working as expected, send me a message on GitHub or pos
 
 Pushing from source
 -------------------
-Pusher can also be used as a library to send notifications programmatically. The included Xcode project provides examples for both OS X and iOS. The easiest way include Pusher is by including just the files you need from the `Classes` folder:
+Pusher can also be used as a library to send notifications programmatically. The included Xcode project provides examples for both OS X and iOS. The easiest way to include NWPusher is though CocoaPods:
+
+```ruby
+pod 'NWPusher', '~> 0.3.0'
+```
+
+Alternatively you can include just the files you need from the `Classes` folder:
 
  - NWHub.h/m
  - NWPusher.h/m
@@ -142,20 +148,14 @@ Pusher can also be used as a library to send notifications programmatically. The
 
 Make sure you link with `Foundation.framework` and `Security.framework`.
 
-Alternatively you can use CocoaPods to handle configuration for you. Add to your `Podfile`:
-
-```ruby
-pod 'NWPusher', '~> 0.3.0'
-```
-
-Before any notification can be sent, you first need to create a connection. When this connections established, any number of payload can be sent.
+Before any notification can be sent, you first need to create a connection. When this connection is established, any number of payload can be sent.
 
 *Note that Apple doesn't like it when you create a connection for every push.* Therefore be careful to reuse a connection as much as possible in order to prevent Apple from blocking.
 
 To create a connection directly from a PKCS12 (.p12) file:
 
 ```objective-c
-    NSURL *url = [NSBundle.mainBundle URLForResource:@"my-certificate.p12" withExtension:nil];
+    NSURL *url = [NSBundle.mainBundle URLForResource:@"pusher.p12" withExtension:nil];
     NSData *pkcs12 = [NSData dataWithContentsOfURL:url];
     NWPusher *pusher = [[NWPusher alloc] init];
     NWPusherResult connected = [pusher connectWithPKCS12Data:pkcs12 password:@"pa$$word"];
@@ -171,8 +171,7 @@ When pusher is successfully connected, send a payload to your device:
 ```objective-c
     NSString *payload = @"{\"aps\":{\"alert\":\"You did it!\"}}";
     NSString *token = @"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
-    NSUInteger identifier = rand();
-    NWPusherResult pushed = [self pushPayload:payload token:token identifier:identifier];
+    NWPusherResult pushed = [pusher pushPayload:payload token:token identifier:rand()];
     if (pushed == kNWPusherResultSuccess) {
         NSLog(@"Notification sending");
     } else {
@@ -183,12 +182,12 @@ When pusher is successfully connected, send a payload to your device:
 After a second or so, we can take a look to see if the notification was accepted by Apple:
 
 ```objective-c
-    NSUInteger identifier2 = 0;
-    NWPusherResult accepted = [self fetchFailedIdentifier:&identifier2];
+    NSUInteger identifier = 0;
+    NWPusherResult accepted = [self fetchFailedIdentifier:&identifier];
     if (accepted == kNWPusherResultSuccess) {
         NSLog(@"Notification sent successfully");
     } else {
-        NSLog(@"Notification with identifier %i rejected: %@", (int)identifier2, [NWPusher stringFromResult:accepted]);
+        NSLog(@"Notification with identifier %i rejected: %@", (int)identifier, [NWPusher stringFromResult:accepted]);
     }
 ```
 
