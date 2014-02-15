@@ -12,18 +12,23 @@
 @interface NWPushFeedback : NSObject
 
 #if !TARGET_OS_IPHONE
-- (NWPusherResult)connectWithCertificateData:(NSData *)certificate;
+- (NWPusherResult)connectWithCertificateRef:(SecCertificateRef)certificate;
 #endif
-- (NWPusherResult)connectWithIdentity:(SecIdentityRef)identity;
+- (NWPusherResult)connectWithIdentityRef:(SecIdentityRef)identity;
 - (NWPusherResult)connectWithPKCS12Data:(NSData *)data password:(NSString *)password;
-- (NWPusherResult)readDate:(NSDate **)date token:(NSData **)token;
+- (NWPusherResult)readTokenData:(NSData **)token date:(NSDate **)date;
+- (NWPusherResult)readToken:(NSString **)token date:(NSDate **)date;
+- (NWPusherResult)readTokenDatePairs:(NSArray **)pairs max:(NSUInteger)max;
 - (void)disconnect;
 
 // deprecated
 #if !TARGET_OS_IPHONE
 - (NWPusherResult)connectWithCertificateData:(NSData *)certificate sandbox:(BOOL)sandbox __attribute__((deprecated));
+- (NWPusherResult)connectWithCertificateData:(NSData *)certificate;
 #endif
 - (NWPusherResult)connectWithIdentity:(SecIdentityRef)identity sandbox:(BOOL)sandbox __attribute__((deprecated));
+- (NWPusherResult)connectWithIdentity:(SecIdentityRef)identity;
 - (NWPusherResult)connectWithPKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox __attribute__((deprecated));
+- (NWPusherResult)readDate:(NSDate **)date token:(NSData **)token;
 
 @end
