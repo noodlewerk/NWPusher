@@ -205,6 +205,13 @@ After selecting the right certificate, connect using:
 
 More variations on this approach are available. Just take a look at the example project for the details.
 
+Feedback Service
+---------------
+The feedback service is part of the Apple Push Notification Service. The feedback service is basically a list containing  device tokens which became invalid. Apple recommends that you talk to the feedback service at least once every 24 hours and no longer send notifications to devices listed in the feedback service. NWPusher comes with a class that allows you to talk to the feedback service. This class is called `NWPushFeedback`. Using `NWPushFeedback` is done in three easy steps:
+
+1. Create an instance of `NWPushFeedback` and establish a connection to the feedback service. You can use `+new` to create an instance of `NWPushFeedback` and then you use one of the `-connect*`-methods to establish the connection.
+2. Read the entries by using `-readDate:token:`. You do this in a loop for as long as the method returns `kNWPusherResultSuccess`. The out parameters contain the date of the invalidation and the actual device token. The method returns `kNWPusherResultIOReadConnectionClosed` if the list is empty.
+3. Disconnect from the feedback service by using `-disconnect`.
 
 Troubleshooting
 ---------------
