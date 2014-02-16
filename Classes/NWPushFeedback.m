@@ -87,25 +87,22 @@ static NSUInteger const NWTokenMaxSize = 32;
     if (read != kNWPusherResultSuccess) {
         return read;
     }
-    
-    if (length) {
-        if (length != data.length) {
-            return kNWPusherResultUnexpectedResponseLength;
-        }
-        
-        uint32_t time = 0;
-        [data getBytes:&time range:NSMakeRange(0, 4)];
-        if (date) *date = [NSDate dateWithTimeIntervalSince1970:htonl(time)];
-        
-        uint16_t l = 0;
-        [data getBytes:&l range:NSMakeRange(4, 2)];
-        NSUInteger tokenLength = htons(l);
-        if (tokenLength != NWTokenMaxSize) {
-            return kNWPusherResultUnexpectedTokenLength;
-        }
-        
-        if (token) *token = [data subdataWithRange:NSMakeRange(6, length - 6)];
+    if (length != data.length) {
+        return kNWPusherResultUnexpectedResponseLength;
     }
+    
+    uint32_t time = 0;
+    [data getBytes:&time range:NSMakeRange(0, 4)];
+    if (date) *date = [NSDate dateWithTimeIntervalSince1970:htonl(time)];
+    
+    uint16_t l = 0;
+    [data getBytes:&l range:NSMakeRange(4, 2)];
+    NSUInteger tokenLength = htons(l);
+    if (tokenLength != NWTokenMaxSize) {
+        return kNWPusherResultUnexpectedTokenLength;
+    }
+    
+    if (token) *token = [data subdataWithRange:NSMakeRange(6, length - 6)];
     
     return kNWPusherResultSuccess;
 }
