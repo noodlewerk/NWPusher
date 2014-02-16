@@ -10,7 +10,7 @@ Pusher
 
 Installation
 ------------
-Install de Mac app using Homebrew cask:
+Install de Mac app using [Homebrew cask](https://github.com/phinze/homebrew-cask):
 
 ```shell
 brew cask install pusher
@@ -20,7 +20,7 @@ Or download the latest `Pusher.app` binary:
 
 - [Download latest binary](https://github.com/noodlewerk/NWPusher/releases/latest)
 
-Alternatively, you can include NWPusher as a library, using CocoaPods:
+Alternatively, you can include NWPusher as a library, using [CocoaPods](http://cocoapods.org/):
 
 ```ruby
 pod 'NWPusher', '~> 0.3.0'
@@ -128,9 +128,10 @@ If everything is set up correctly, you only need to *Connect* and *Push*. Then y
 
 Again, if things are not working as expected, send me a message on GitHub or post an issue.
 
+Consult Apple's documentation for more info on the APNS architecture: [Apple Push Notification Service](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html)
 
-Pushing from source
--------------------
+Pushing from code
+-----------------
 Pusher can also be used as a library to send notifications programmatically. The included Xcode project provides examples for both OS X and iOS. The easiest way to include NWPusher is though CocoaPods:
 
 ```ruby
@@ -203,7 +204,9 @@ After selecting the right certificate, connect using:
     NWPusherResult connected = [pusher connectWithCertificateRef:certificate];
 ```
 
-More variations on this approach are available. Just take a look at the example project for the details.
+Take a look at the example project for variations on this approach.
+
+Consult Apple's documentation for more info on the client-server communication: [Provider Communication](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/CommunicatingWIthAPS.html)
 
 Feedback Service
 ---------------
@@ -225,6 +228,7 @@ Some tips on what to look out for:
 
 - There are two channels through which Apple responds to sent notifications: the notification connection and the feedback connection. Both operate asynchronously, so for example after the second push has been sent, we might get a response to the first push, saying it has an invalid payload. Use a new identifier for every notification so these responses can be linked to the right notification.
 
+Consult Apple's documentation for more troubleshooting tips: [Troubleshooting Push Notifications](https://developer.apple.com/library/mac/technotes/tn2265/_index.html)
 
 License
 -------
