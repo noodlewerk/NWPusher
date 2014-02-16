@@ -184,7 +184,7 @@ After a second or so, we can take a look to see if the notification was accepted
 
 ```objective-c
     NSUInteger identifier = 0;
-    NWPusherResult accepted = [self fetchFailedIdentifier:&identifier];
+    NWPusherResult accepted = [pusher fetchFailedIdentifier:&identifier];
     if (accepted == kNWPusherResultSuccess) {
         NSLog(@"Notification sent successfully");
     } else {
@@ -209,12 +209,37 @@ Take a look at the example project for variations on this approach.
 Consult Apple's documentation for more info on the client-server communication: [Provider Communication](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/CommunicatingWIthAPS.html)
 
 Feedback Service
----------------
-The feedback service is part of the Apple Push Notification Service. The feedback service is basically a list containing  device tokens which became invalid. Apple recommends that you talk to the feedback service at least once every 24 hours and no longer send notifications to devices listed in the feedback service. NWPusher comes with a class that allows you to talk to the feedback service. This class is called `NWPushFeedback`. Using `NWPushFeedback` is done in three easy steps:
+----------------
+The feedback service is part of the Apple Push Notification Service. The feedback service is basically a list containing device tokens that became invalid. Apple recommends that you read from the feedback service once every 24 hours, and no longer send notifications to listed devices. Communication with the feedback service can be done with the `NWPushFeedback` class. First connect using one of the `-connect*` methods:
 
-1. Create an instance of `NWPushFeedback` and establish a connection to the feedback service. You can use `+new` to create an instance of `NWPushFeedback` and then you use one of the `-connect*`-methods to establish the connection.
-2. Read the entries by using `-readDate:token:`. You do this in a loop for as long as the method returns `kNWPusherResultSuccess`. The out parameters contain the date of the invalidation and the actual device token. The method returns `kNWPusherResultIOReadConnectionClosed` if the list is empty.
-3. Disconnect from the feedback service by using `-disconnect`.
+```objective-c
+    NSURL *url = [NSBundle.mainBundle URLForResource:@"pusher.p12" withExtension:nil];
+    NSData *pkcs12 = [NSData dataWithContentsOfURL:url];
+    NWPushFeedback *feedback = [[NWPushFeedback alloc] init];
+    NWPusherResult connected = [feedback connectWithPKCS12Data:pkcs12 password:@"pa$$word"];
+    if (connected == kNWPusherResultSuccess) {
+        NSLog(@"Connected to feedback service");
+    } else {
+        NSLog(@"Unable to connect to feedback service: %@", [NWPusher stringFromResult:connected]);
+    }
+```
+
+When connected read the device token and date of invalidation:
+
+```objective-c
+    NSString *token = nil;
+    NSDate *date = nil;
+    NWPusherResult read = [feedback readToken:&token date:&date];
+    if (read == kNWPusherResultIOReadConnectionClosed) {
+        NSLog(@"All tokens have been read, connection closed");
+    } else if (read == kNWPusherResultSuccess) {
+        NSLog(@"Feedback services invalidated token and date: %@ %@", token, date);
+    } else {
+        NSLog(@"Unable to read feedback: %@", [NWPusher stringFromResult:read]);
+    }
+```
+
+Apple closes the connection after the last device token is read. Use `-readTokenDatePairs:max:` to read all device tokens in one method call.
 
 Troubleshooting
 ---------------
