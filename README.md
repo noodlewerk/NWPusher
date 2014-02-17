@@ -35,7 +35,7 @@ Testing push notifications for your iOS app can be a pain. You might consider se
 
 Enter *Pusher*, a Mac and iPhone app for sending push notifications *directly* to the *Apple Push Notification Service*. No need to set up a server or create an account online. You only need the SSL certificate and a device token to start pushing directly from your Mac, or even from an iPhone!
 
-Pusher comes with a small library for both OS X and iOS, that provides various tools to send notifications programmatically. On OS X it can use the keychain to retrieve push certificates and keys. Pusher can also be used without keychain, using a PKCS12 file, e.g. when pushing from iOS.
+Pusher comes with a small library for both OS X and iOS, that provides various tools for sending notifications programmatically. On OS X it can use the keychain to retrieve push certificates and keys. Pusher can also be used without keychain, using a PKCS12 file, e.g. when pushing from iOS.
 
 
 Features
@@ -65,7 +65,7 @@ Let's start with the SSL certificate. The goal is to get both the certificate *a
 1. Log in to [Apple's Dev Center](https://developer.apple.com)
 2. Go to the *Provisioning Portal* or *Certificates, Identifiers & Profiles*
 3. Go to *Certificates* and create a *Apple Push Notification service SSL*
-4. From here on you will be guided though the certificate generation process.
+4. From here on you will be guided through the certificate generation process.
 
 Keep in mind that you will eventually be downloading a certificate, which you will need to install in your keychain together with the private key. This should look something like this:
 
@@ -132,7 +132,7 @@ Consult Apple's documentation for more info on the APNS architecture: [Apple Pus
 
 Pushing from code
 -----------------
-Pusher can also be used as a library to send notifications programmatically. The included Xcode project provides examples for both OS X and iOS. The easiest way to include NWPusher is though CocoaPods:
+Pusher can also be used as a library to send notifications programmatically. The included Xcode project provides examples for both OS X and iOS. The easiest way to include NWPusher is through CocoaPods:
 
 ```ruby
 pod 'NWPusher', '~> 0.3.0'
@@ -233,7 +233,7 @@ When connected read the device token and date of invalidation:
     if (read == kNWPusherResultIOReadConnectionClosed) {
         NSLog(@"All tokens have been read, connection closed");
     } else if (read == kNWPusherResultSuccess) {
-        NSLog(@"Feedback services invalidated token and date: %@ %@", token, date);
+        NSLog(@"Feedback service invalidated token: %@ on date: %@", token, date);
     } else {
         NSLog(@"Unable to read feedback: %@", [NWPusher stringFromResult:read]);
     }
