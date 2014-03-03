@@ -111,6 +111,19 @@
     });
 }
 
+- (void)upPayloadTextIndex
+{
+    NSString *payload = _payloadField.string;
+    NSRange range = [payload rangeOfString:@"Testing.. \\([0-9]+\\)" options:NSRegularExpressionSearch];
+    if (range.location != NSNotFound) {
+        range.location += 11;
+        range.length -= 12;
+        NSString *before = [payload substringToIndex:range.location];
+        NSUInteger value = [payload substringWithRange:range].integerValue + 1;
+        NSString *after = [payload substringFromIndex:range.location + range.length];
+        _payloadField.string = [NSString stringWithFormat:@"%@%lu%@", before, value, after];
+    }
+}
 
 #pragma mark - Actions
 
@@ -238,6 +251,9 @@
         dispatch_after(popTime, _serial, ^(void){
             NSUInteger failed2 = failed + [_hub flushFailed];
             if (!failed2) NWLogInfo(@"Payload has been pushed");
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self upPayloadTextIndex];
+            });
         });
     });
 }

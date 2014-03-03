@@ -47,7 +47,7 @@ static NWPusherViewController *controller = nil;
     
     _textField = [[UITextField alloc] init];
     _textField.frame = CGRectMake(20, 70, self.view.bounds.size.width - 40, 26);
-    _textField.text = @"You did it!";
+    _textField.text = @"Testing..";
     _textField.borderStyle = UITextBorderStyleBezel;
     [self.view addSubview:_textField];
     

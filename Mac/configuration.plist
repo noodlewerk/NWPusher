@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>payload</key>
-	<string>{&quot;aps&quot;:{&quot;alert&quot;:&quot;You did it!&quot;,&quot;badge&quot;:1,&quot;sound&quot;:&quot;default&quot;}}</string>
+	<string>{&quot;aps&quot;:{&quot;alert&quot;:&quot;Testing.. (0)&quot;,&quot;badge&quot;:1,&quot;sound&quot;:&quot;default&quot;}}</string>
 	<key>tokens</key>
 	<array>
 		<dict>

@@ -124,7 +124,7 @@ The ultimate experience is of course pushing from an iPhone to an iPhone, direct
 
 <img src="Docs/ios.png" alt="Pusher iOS" width="414"/>
 
-If everything is set up correctly, you only need to *Connect* and *Push*. Then you should receive the *You did it!* push message on the device.
+If everything is set up correctly, you only need to *Connect* and *Push*. Then you should receive the `Testing..` push message on the device.
 
 Again, if things are not working as expected, send me a message on GitHub or post an issue.
 
@@ -170,7 +170,7 @@ To create a connection directly from a PKCS12 (.p12) file:
 When pusher is successfully connected, send a payload to your device:
 
 ```objective-c
-    NSString *payload = @"{\"aps\":{\"alert\":\"You did it!\"}}";
+    NSString *payload = @"{\"aps\":{\"alert\":\"Testing..\"}}";
     NSString *token = @"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
     NWPusherResult pushed = [pusher pushPayload:payload token:token identifier:rand()];
     if (pushed == kNWPusherResultSuccess) {
