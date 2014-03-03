@@ -75,7 +75,7 @@
     }
     
     status = errSSLWouldBlock;
-    for (NSUInteger i = 0; i < 4 && status == errSSLWouldBlock; i++) {
+    for (NSUInteger i = 0; i < 1 << 26 && status == errSSLWouldBlock; i++) {
         status = SSLHandshake(_context);
     }
     if (status != noErr) {
