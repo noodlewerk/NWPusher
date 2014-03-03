@@ -22,7 +22,9 @@
     IBOutlet NSTextField *_infoField;
     IBOutlet NSButton *_pushButton;
     IBOutlet NSButton *_reconnectButton;
-    
+    IBOutlet NSPopUpButton *_expiryPopup;
+    IBOutlet NSPopUpButton *_priorityPopup;
+
     NWHub *_hub;
     NSDictionary *_configuration;
     NSArray *_certificates;
@@ -75,6 +77,29 @@
     } else {
         [self selectCertificate:nil];
     }
+}
+
+- (NSDate *)expirySelected
+{
+    switch(_expiryPopup.indexOfSelectedItem) {
+        case 1: return [NSDate dateWithTimeIntervalSince1970:0];
+        case 2: return [NSDate dateWithTimeIntervalSinceNow:60];
+        case 3: return [NSDate dateWithTimeIntervalSince1970:300];
+        case 4: return [NSDate dateWithTimeIntervalSinceNow:3600];
+        case 5: return [NSDate dateWithTimeIntervalSinceNow:86400];
+        case 6: return [NSDate dateWithTimeIntervalSince1970:1];
+        case 7: return [NSDate dateWithTimeIntervalSince1970:UINT32_MAX];
+    }
+    return nil;
+}
+
+- (NSUInteger)prioritySelected
+{
+    switch(_priorityPopup.indexOfSelectedItem) {
+        case 1: return 5;
+        case 2: return 10;
+    }
+    return 0;
 }
 
 - (void)textDidChange:(NSNotification *)notification
@@ -244,9 +269,12 @@
 {
     NSString *payload = _payloadField.string;
     NSString *token = _tokenCombo.stringValue;
+    NSDate *expiry = self.expirySelected;
+    NSUInteger priority = self.prioritySelected;
     NWLogInfo(@"Pushing..");
     dispatch_async(_serial, ^{
-        NSUInteger failed = [_hub pushPayload:payload token:token];
+        NWNotification *notification = [[NWNotification alloc] initWithPayload:payload token:token identifier:0 expiration:expiry priority:priority];
+        NSUInteger failed = [_hub pushNotifications:@[notification] autoReconnect:NO];
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC));
         dispatch_after(popTime, _serial, ^(void){
             NSUInteger failed2 = failed + [_hub flushFailed];
