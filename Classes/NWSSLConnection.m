@@ -74,14 +74,16 @@
         return kNWPusherResultIOConnectAssignCertificate;
     }
     
-    do {
+    status = errSSLWouldBlock;
+    for (NSUInteger i = 0; i < 4 && status == errSSLWouldBlock; i++) {
         status = SSLHandshake(_context);
-    } while(status == errSSLWouldBlock);
+    }
     if (status != noErr) {
         [self disconnect];
         switch (status) {
             case ioErr: return kNWPusherResultIOConnectSSLHandshakeConnection;
             case errSecAuthFailed: return kNWPusherResultIOConnectSSLHandshakeAuthentication;
+            case errSSLWouldBlock: return kNWPusherResultIOConnectTimeout;
         }
         return kNWPusherResultIOConnectSSLHandshakeError;
     }

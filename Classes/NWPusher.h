@@ -44,6 +44,7 @@ typedef enum {
     kNWPusherResultIOConnectSSLHandshakeConnection = 207,
     kNWPusherResultIOConnectSSLHandshakeAuthentication = 208,
     kNWPusherResultIOConnectSSLHandshakeError = 209,
+    kNWPusherResultIOConnectTimeout = 218,
     kNWPusherResultIOReadDroppedByServer = 210,
     kNWPusherResultIOReadConnectionError = 211,
     kNWPusherResultIOReadConnectionClosed = 212,

@@ -142,6 +142,7 @@ static NSUInteger const NWPushPort = 2195;
         case kNWPusherResultIOConnectSSLHandshakeConnection: return @"Unable to perform SSL handshake, no connection";
         case kNWPusherResultIOConnectSSLHandshakeAuthentication: return @"Unable to perform SSL handshake, authentication failed";
         case kNWPusherResultIOConnectSSLHandshakeError: return @"Unable to perform SSL handshake";
+        case kNWPusherResultIOConnectTimeout: return @"Timeout SSL handshake";
         case kNWPusherResultIOReadDroppedByServer: return @"Failed to read, connection dropped by server";
         case kNWPusherResultIOReadConnectionError: return @"Failed to read, connection error";
         case kNWPusherResultIOReadConnectionClosed: return @"Failed to read, connection closed";
