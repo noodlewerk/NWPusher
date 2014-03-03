@@ -19,9 +19,10 @@
 @property (nonatomic, strong) NSDate *expiration;
 @property (nonatomic, assign) NSUInteger expirationStamp;
 @property (nonatomic, assign) NSUInteger priority;
+@property (nonatomic, assign) BOOL addExpiration;
 
 - (id)initWithPayload:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier expiration:(NSDate *)date priority:(NSUInteger)priority;
-- (id)initWithPayloadData:(NSData *)payload tokenData:(NSData *)token identifier:(NSUInteger)identifier expirationStamp:(NSUInteger)expirationStamp priority:(NSUInteger)priority;
+- (id)initWithPayloadData:(NSData *)payload tokenData:(NSData *)token identifier:(NSUInteger)identifier expirationStamp:(NSUInteger)expirationStamp addExpiration:(BOOL)addExpiration priority:(NSUInteger)priority;
 
 - (NSData *)dataWithType:(NWNotificationType)type;
 + (NWPusherResult)parseResponse:(NSData *)data identifier:(NSUInteger *)identifier;

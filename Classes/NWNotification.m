@@ -29,7 +29,7 @@ static NSUInteger const NWPayloadMaxSize = 256;
     return self;
 }
 
-- (id)initWithPayloadData:(NSData *)payload tokenData:(NSData *)token identifier:(NSUInteger)identifier expirationStamp:(NSUInteger)expirationStamp priority:(NSUInteger)priority
+- (id)initWithPayloadData:(NSData *)payload tokenData:(NSData *)token identifier:(NSUInteger)identifier expirationStamp:(NSUInteger)expirationStamp addExpiration:(BOOL)addExpiration priority:(NSUInteger)priority
 {
     self = [super init];
     if (self) {
@@ -37,6 +37,7 @@ static NSUInteger const NWPayloadMaxSize = 256;
         _tokenData = token;
         _identifier = identifier;
         _expirationStamp = expirationStamp;
+        _addExpiration = addExpiration;
         _priority = priority;
     }
     return self;
@@ -70,12 +71,13 @@ static NSUInteger const NWPayloadMaxSize = 256;
 
 - (NSDate *)expiration
 {
-    return _expirationStamp ? [NSDate dateWithTimeIntervalSince1970:_expirationStamp] : nil;
+    return _addExpiration ? [NSDate dateWithTimeIntervalSince1970:_expirationStamp] : nil;
 }
 
 - (void)setExpiration:(NSDate *)date
 {
     _expirationStamp = (NSUInteger)date.timeIntervalSince1970;
+    _addExpiration = !!date;
 }
 
 
@@ -202,7 +204,7 @@ static NSUInteger const NWPayloadMaxSize = 256;
     uint8_t priority = _priority;
     
     if (identifier) [self.class appendTo:result identifier:3 bytes:&identifier length:4];
-    if (expires) [self.class appendTo:result identifier:4 bytes:&expires length:4];
+    if (_addExpiration) [self.class appendTo:result identifier:4 bytes:&expires length:4];
     if (priority) [self.class appendTo:result identifier:5 bytes:&priority length:1];
 
     uint8_t command = 2;

@@ -215,7 +215,7 @@ static NSUInteger const NWPushPort = 2195;
 
 - (NWPusherResult)pushPayloadData:(NSData *)payload tokenData:(NSData *)token enhance:(BOOL)enhance identifier:(NSUInteger)identifier expires:(NSDate *)expires
 {
-    return [self pushNotification:[[NWNotification alloc] initWithPayloadData:payload tokenData:token identifier:identifier expirationStamp:(NSUInteger)expires.timeIntervalSince1970 priority:0] type:kNWNotificationType2];
+    return [self pushNotification:[[NWNotification alloc] initWithPayloadData:payload tokenData:token identifier:identifier expirationStamp:(NSUInteger)expires.timeIntervalSince1970 addExpiration:!!expires priority:0] type:kNWNotificationType2];
 }
 
 - (void)connectWithPKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox block:(void(^)(NWPusherResult response))block
