@@ -155,23 +155,30 @@ OSStatus NWSSLClose(SSLConnectionRef connection);
 @end
 
 
-OSStatus NWSSLConnect(const char *hostName, int port, SSLConnectionRef *connection) {
-    *connection = 0;
+int NWSSLResolve(const char *hostName, int port, struct sockaddr_in *addr) {
+    memset(addr, 0, sizeof(struct sockaddr_in));
     struct hostent *entr = gethostbyname(hostName);
     if (!entr) return errSecIO;
     struct in_addr host;
     memcpy(&host, entr->h_addr, sizeof(struct in_addr));
+    addr->sin_addr = host;
+    addr->sin_port = htons((u_short)port);
+    addr->sin_family = AF_INET;
+    return 0;
+}
+
+OSStatus NWSSLConnect(const char *hostName, int port, SSLConnectionRef *connection) {
+    *connection = 0;
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     struct sockaddr_in addr;
-    addr.sin_addr = host;
-    addr.sin_port = htons((u_short)port);
-    addr.sin_family = AF_INET;
-    int conn = connect(sock, (struct sockaddr *) &addr, sizeof(struct sockaddr_in));
+    int rslv = NWSSLResolve(hostName, port, &addr);
+    if (rslv < 0) return errSecIO;
+    int conn = connect(sock, (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
     if (conn < 0) return errSecIO;
     int cntl = fcntl(sock, F_SETFL, O_NONBLOCK);
     if (cntl < 0) return errSecIO;
-    int set = 1;
-    setsockopt(sock, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int));
+    int set = 1, sopt = setsockopt(sock, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int));
+    if (sopt < 0) return errSecIO;
     *connection = (SSLConnectionRef)(long)sock;
     return errSecSuccess;
 }
@@ -186,7 +193,7 @@ OSStatus NWSSLRead(SSLConnectionRef connection, void *data, size_t *length) {
         if (rcvd <= 0) break;
     }
     *length = read;
-    if (rcvd > 0) return errSecSuccess;
+    if (rcvd > 0 || !leng) return errSecSuccess;
     if (!rcvd) return errSSLClosedGraceful;
     switch (errno) {
         case EAGAIN: return errSSLWouldBlock;
@@ -205,7 +212,7 @@ OSStatus NWSSLWrite(SSLConnectionRef connection, const void *data, size_t *lengt
         if (wrtn <= 0) break;
     }
     *length = sent;
-    if (wrtn > 0) return errSecSuccess;
+    if (wrtn > 0 || !leng) return errSecSuccess;
     switch (errno) {
         case EAGAIN: return errSSLWouldBlock;
         case EPIPE: return errSSLClosedAbort;
