@@ -99,10 +99,7 @@ OSStatus NWSSLClose(SSLConnectionRef connection);
 {
     size_t processed = 0;
     void *bytes = data.mutableBytes;
-    OSStatus status = errSSLWouldBlock;
-    for (NSUInteger i = 0; i < 4 && status == errSSLWouldBlock; i++) {
-        status = SSLRead(_context, bytes, data.length, &processed);
-    }
+    OSStatus status = SSLRead(_context, bytes, data.length, &processed);
     if (status != errSecSuccess && status != errSSLWouldBlock) {
         switch (status) {
             case errSecIO: return kNWPusherResultIOReadDroppedByServer;
@@ -120,10 +117,7 @@ OSStatus NWSSLClose(SSLConnectionRef connection);
 {
     size_t processed = 0;
     const void *bytes = data.bytes;
-    OSStatus status = errSSLWouldBlock;
-    for (NSUInteger i = 0; i < 4 && status == errSSLWouldBlock; i++) {
-        status = SSLWrite(_context, bytes, data.length, &processed);
-    }
+    OSStatus status = SSLWrite(_context, bytes, data.length, &processed);
     if (status != errSecSuccess && status != errSSLWouldBlock) {
         switch (status) {
             case errSecIO: return kNWPusherResultIOWriteDroppedByServer;
