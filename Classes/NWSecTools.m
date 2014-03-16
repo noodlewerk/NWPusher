@@ -8,8 +8,10 @@
 #import "NWSecTools.h"
 
 
-static NSString * const NWDevelpmentPrefix = @"Apple Development IOS Push Services: ";
-static NSString * const NWProductionPrefix = @"Apple Production IOS Push Services: ";
+static NSString * const NWDevelopmentiOSPrefix = @"Apple Development IOS Push Services: ";
+static NSString * const NWProductioniOSPrefix = @"Apple Production IOS Push Services: ";
+static NSString * const NWDevelopmentMacPrefix = @"Apple Development Mac Push Services: ";
+static NSString * const NWProductionMacPrefix = @"Apple Production Mac Push Services: ";
 
 typedef enum {
     kNWCertificateTypeNone = 0,
@@ -128,14 +130,17 @@ typedef enum {
 + (NWCertificateType)typeForCertificate:(SecCertificateRef)certificate identifier:(NSString **)identifier
 {
     NSString *name = CFBridgingRelease(SecCertificateCopySubjectSummary(certificate));
-    if ([name hasPrefix:NWDevelpmentPrefix]) {
-        if (identifier) *identifier = [name substringFromIndex:NWDevelpmentPrefix.length];
-        return kNWCertificateTypeDevelopment;
+    
+    NSArray *prefixes = @[NWDevelopmentiOSPrefix, NWProductioniOSPrefix, NWDevelopmentMacPrefix, NWProductionMacPrefix];
+    for (NSString *prefix in prefixes) {
+        if ([name hasPrefix:prefix]) {
+            if (identifier) *identifier = [name substringFromIndex:prefix.length];
+            
+            BOOL development = (prefix == NWDevelopmentiOSPrefix || prefix == NWDevelopmentMacPrefix);
+            return (development ? kNWCertificateTypeDevelopment : kNWCertificateTypeProduction);
+        }
     }
-    if ([name hasPrefix:NWProductionPrefix]) {
-        if (identifier) *identifier = [name substringFromIndex:NWProductionPrefix.length];
-        return kNWCertificateTypeProduction;
-    }
+    
     if (identifier) *identifier = name;
     return kNWCertificateTypeUnknown;
 }
