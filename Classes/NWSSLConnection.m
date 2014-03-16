@@ -6,12 +6,17 @@
 //
 
 #import "NWSSLConnection.h"
-#import "ioSock.h"
-#include <sys/socket.h>
+#include <netdb.h>
+
+
+OSStatus NWSSLConnect(const char *host, int port, SSLConnectionRef *connection);
+OSStatus NWSSLRead(SSLConnectionRef connection, void *data, size_t *length);
+OSStatus NWSSLWrite(SSLConnectionRef connection, const void *data, size_t *length);
+OSStatus NWSSLClose(SSLConnectionRef connection);
 
 
 @implementation NWSSLConnection {
-    otSocket _connection;
+    SSLConnectionRef _connection;
     SSLContextRef _context;
 }
 
@@ -35,8 +40,7 @@
 
 - (NWPusherResult)connect
 {
-    PeerSpec spec;
-    OSStatus status = MakeServerConnection(_host.UTF8String, (int)_port, true, &_connection, &spec);
+    OSStatus status = NWSSLConnect(_host.UTF8String, (int)_port, &_connection);
     if (status != errSecSuccess) {
         [self disconnect];
         return kNWPusherResultIOConnectFailed;
@@ -48,7 +52,7 @@
         return kNWPusherResultIOConnectSSLContext;
     }
     
-    status = SSLSetIOFuncs(_context, SocketRead, SocketWrite);
+    status = SSLSetIOFuncs(_context, NWSSLRead, NWSSLWrite);
     if (status != errSecSuccess) {
         [self disconnect];
         return kNWPusherResultIOConnectSocketCallbacks;
@@ -87,9 +91,6 @@
         }
         return kNWPusherResultIOConnectSSLHandshakeError;
     }
-    
-    int set = 1;
-    setsockopt(_connection, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int));
     
     return kNWPusherResultSuccess;
 }
@@ -145,7 +146,7 @@
 - (void)disconnect
 {
     if (_context) SSLClose(_context);
-    if (_connection) close(_connection); _connection = 0;
+    if (_connection) NWSSLClose(_connection); _connection = NULL;
     if (_context) CFRelease(_context); _context = NULL;
 }
 
@@ -158,3 +159,68 @@
 }
 
 @end
+
+
+OSStatus NWSSLConnect(const char *hostName, int port, SSLConnectionRef *connection) {
+    *connection = 0;
+    struct hostent *entr = gethostbyname(hostName);
+    if (!entr) return errSecIO;
+    struct in_addr host;
+    memcpy(&host, entr->h_addr, sizeof(struct in_addr));
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in addr;
+    addr.sin_addr = host;
+    addr.sin_port = htons((u_short)port);
+    addr.sin_family = AF_INET;
+    int conn = connect(sock, (struct sockaddr *) &addr, sizeof(struct sockaddr_in));
+    if (conn < 0) return errSecIO;
+    int cntl = fcntl(sock, F_SETFL, O_NONBLOCK);
+    if (cntl < 0) return errSecIO;
+    int set = 1;
+    setsockopt(sock, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int));
+    *connection = (SSLConnectionRef)(long)sock;
+    return errSecSuccess;
+}
+
+OSStatus NWSSLRead(SSLConnectionRef connection, void *data, size_t *length) {
+    size_t leng = *length;
+    *length = 0;
+    size_t read = 0;
+    ssize_t rcvd = 0;
+    for(; read < leng; read += rcvd) {
+        rcvd = recv((int)connection, (char *)data + read, leng - read, 0);
+        if (rcvd <= 0) break;
+    }
+    *length = read;
+    if (rcvd > 0) return errSecSuccess;
+    if (!rcvd) return errSSLClosedGraceful;
+    switch (errno) {
+        case EAGAIN: return errSSLWouldBlock;
+        case ECONNRESET: return errSSLClosedAbort;
+    }
+    return errSecIO;
+}
+
+OSStatus NWSSLWrite(SSLConnectionRef connection, const void *data, size_t *length) {
+    size_t leng = *length;
+    *length = 0;
+    size_t sent = 0;
+    ssize_t wrtn = 0;
+    for (; sent < leng; sent += wrtn) {
+        wrtn = write((int)connection, (char *)data + sent, leng - sent);
+        if (wrtn <= 0) break;
+    }
+    *length = sent;
+    if (wrtn > 0) return errSecSuccess;
+    switch (errno) {
+        case EAGAIN: return errSSLWouldBlock;
+        case EPIPE: return errSSLClosedAbort;
+    }
+    return errSecIO;
+}
+
+OSStatus NWSSLClose(SSLConnectionRef connection) {
+    ssize_t clsd = close((int)connection);
+    if (clsd < 0) return errSecIO;
+    return errSecSuccess;
+}

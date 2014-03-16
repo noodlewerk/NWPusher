@@ -145,7 +145,6 @@ Alternatively you can include just the files you need from the `Classes` folder:
  - NWNotification.h/m
  - NWSSLConnection.h/m
  - NWSecTools.h/m
- - ioSock.h/c
 
 Make sure you link with `Foundation.framework` and `Security.framework`.
 

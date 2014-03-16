@@ -34,8 +34,6 @@
 		B3C6BDD315FD27E900F1F3F1 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3C6BDD215FD27E900F1F3F1 /* Security.framework */; };
 		B3C6BE0115FD30E900F1F3F1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B3C6BE0015FD30E900F1F3F1 /* README.md */; };
 		B3F23256189657DA0043DA98 /* pusher.p12 in Resources */ = {isa = PBXBuildFile; fileRef = B3F23255189657DA0043DA98 /* pusher.p12 */; };
-		B3F232AC189682D30043DA98 /* ioSock.c in Sources */ = {isa = PBXBuildFile; fileRef = B3F2329E189682D30043DA98 /* ioSock.c */; };
-		B3F232AD189682D30043DA98 /* ioSock.c in Sources */ = {isa = PBXBuildFile; fileRef = B3F2329E189682D30043DA98 /* ioSock.c */; };
 		B3F232AE189682D30043DA98 /* NWHub.m in Sources */ = {isa = PBXBuildFile; fileRef = B3F232A1189682D30043DA98 /* NWHub.m */; };
 		B3F232AF189682D30043DA98 /* NWHub.m in Sources */ = {isa = PBXBuildFile; fileRef = B3F232A1189682D30043DA98 /* NWHub.m */; };
 		B3F232B0189682D30043DA98 /* NWNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = B3F232A3189682D30043DA98 /* NWNotification.m */; };
@@ -87,8 +85,6 @@
 		B3C6BE0015FD30E900F1F3F1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		B3F23255189657DA0043DA98 /* pusher.p12 */ = {isa = PBXFileReference; lastKnownFileType = file; path = pusher.p12; sourceTree = SOURCE_ROOT; };
 		B3F232991896766B0043DA98 /* NWPusher.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = NWPusher.podspec; sourceTree = "<group>"; };
-		B3F2329E189682D30043DA98 /* ioSock.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioSock.c; sourceTree = "<group>"; };
-		B3F2329F189682D30043DA98 /* ioSock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioSock.h; sourceTree = "<group>"; };
 		B3F232A0189682D30043DA98 /* NWHub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWHub.h; sourceTree = "<group>"; };
 		B3F232A1189682D30043DA98 /* NWHub.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWHub.m; sourceTree = "<group>"; };
 		B3F232A2189682D30043DA98 /* NWNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWNotification.h; sourceTree = "<group>"; };
@@ -221,8 +217,6 @@
 		B3F2329D189682D30043DA98 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				B3F2329E189682D30043DA98 /* ioSock.c */,
-				B3F2329F189682D30043DA98 /* ioSock.h */,
 				B3F232A0189682D30043DA98 /* NWHub.h */,
 				B3F232A1189682D30043DA98 /* NWHub.m */,
 				B3F232A2189682D30043DA98 /* NWNotification.h */,
@@ -350,7 +344,6 @@
 				B3F232B9189682D30043DA98 /* NWSSLConnection.m in Sources */,
 				B3F232B1189682D30043DA98 /* NWNotification.m in Sources */,
 				B3376A64172BB71200242EBB /* NWLCore.c in Sources */,
-				B3F232AD189682D30043DA98 /* ioSock.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -367,7 +360,6 @@
 				B33FB1C9172B185C006529CE /* main.m in Sources */,
 				B33FB1CB172B185C006529CE /* NWAppDelegate.m in Sources */,
 				B3376A63172BB71200242EBB /* NWLCore.c in Sources */,
-				B3F232AC189682D30043DA98 /* ioSock.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
