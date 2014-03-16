@@ -1,50 +1,29 @@
 /*
-	File:		ioSock.h
-        
-        Contains:	SecureTransport sample I/O module, X sockets version
-        
-	Copyright: 	© Copyright 2002 Apple Computer, Inc. All rights reserved.
-	
-	Disclaimer:	IMPORTANT:  This Apple software is supplied to you by Apple Computer, Inc.
-                        ("Apple") in consideration of your agreement to the following terms, and your
-                        use, installation, modification or redistribution of this Apple software
-                        constitutes acceptance of these terms.  If you do not agree with these terms,
-                        please do not use, install, modify or redistribute this Apple software.
+ * Copyright (c) 2006-2008,2010-2012 Apple Inc. All Rights Reserved.
+ *
+ * @APPLE_LICENSE_HEADER_START@
+ *
+ * This file contains Original Code and/or Modifications of Original Code
+ * as defined in and that are subject to the Apple Public Source License
+ * Version 2.0 (the 'License'). You may not use this file except in
+ * compliance with the License. Please obtain a copy of the License at
+ * http://www.opensource.apple.com/apsl/ and read it before using this
+ * file.
+ *
+ * The Original Code and all software distributed under the License are
+ * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
+ * Please see the License for the specific language governing rights and
+ * limitations under the License.
+ *
+ * @APPLE_LICENSE_HEADER_END@
+ */
 
-                        In consideration of your agreement to abide by the following terms, and subject
-                        to these terms, Apple grants you a personal, non-exclusive license, under Apple’s
-                        copyrights in this original Apple software (the "Apple Software"), to use,
-                        reproduce, modify and redistribute the Apple Software, with or without
-                        modifications, in source and/or binary forms; provided that if you redistribute
-                        the Apple Software in its entirety and without modifications, you must retain
-                        this notice and the following text and disclaimers in all such redistributions of
-                        the Apple Software.  Neither the name, trademarks, service marks or logos of
-                        Apple Computer, Inc. may be used to endorse or promote products derived from the
-                        Apple Software without specific prior written permission from Apple.  Except as
-                        expressly stated in this notice, no other rights or licenses, express or implied,
-                        are granted by Apple herein, including but not limited to any patent rights that
-                        may be infringed by your derivative works or by other works in which the Apple
-                        Software may be incorporated.
-
-                        The Apple Software is provided by Apple on an "AS IS" basis.  APPLE MAKES NO
-                        WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED
-                        WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-                        PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND OPERATION ALONE OR IN
-                        COMBINATION WITH YOUR PRODUCTS.
-
-                        IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL OR
-                        CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
-                        GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-                        ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION, MODIFICATION AND/OR DISTRIBUTION
-                        OF THE APPLE SOFTWARE, HOWEVER CAUSED AND WHETHER UNDER THEORY OF CONTRACT, TORT
-                        (INCLUDING NEGLIGENCE), STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN
-                        ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-				
-	Change History (most recent first):
-                11/4/02		1.0d1
-
-*/
-
+/*
+ * ioSock.c - socket-based I/O routines for use with Secure Transport
+ */
 
 #include "ioSock.h"
 #include <errno.h>
@@ -58,6 +37,7 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 
+#include <Security/SecBase.h>
 #include <time.h>
 #include <strings.h>
 
@@ -83,6 +63,9 @@
 #define SSL_OT_IO_DUMP		0
 #define SSL_OT_IO_DUMP_SIZE	256
 
+/* indicate errSSLWouldBlock with a '.' */
+#define SSL_DISPL_WOULD_BLOCK	0
+
 /* general, not-too-verbose debugging */
 #if		SSL_OT_DEBUG
 #define dprintf(s)	printf s
@@ -97,9 +80,6 @@
 #define eprintf(s)
 #endif
 
-/* enable nonblocking I/O - maybe should be an arg to MakeServerConnection() */
-#define NON_BLOCKING	1
-
 /* trace completion of every r/w */
 #if		SSL_OT_IO_TRACE
 static void tprintf(
@@ -113,10 +93,10 @@ static void tprintf(
 		return;
 	}
 	#endif
-	printf("%s(%d): moved (%d) bytes\n", str, req, act);
+	printf("%s(%u): moved (%u) bytes\n", str, (unsigned)req, (unsigned)act);
 	#if	SSL_OT_IO_DUMP
 	{
-		int i;
+		unsigned i;
 		
 		for(i=0; i<act; i++) {
 			printf("%02X ", buf[i]);
@@ -168,7 +148,7 @@ static void outputDot()
 /*
  * One-time only init.
  */
-void initSslOt()
+void initSslOt(void)
 {
 
 }
@@ -176,9 +156,12 @@ void initSslOt()
 /*
  * Connect to server. 
  */
+#define GETHOST_RETRIES		3
+
 OSStatus MakeServerConnection(
 	const char *hostName, 
 	int port, 
+	int nonBlocking,		// 0 or 1
 	otSocket *socketNo, 	// RETURNED
 	PeerSpec *peer)			// RETURNED
 {
@@ -187,16 +170,26 @@ OSStatus MakeServerConnection(
     struct in_addr      host;
 	int					sock = 0;
 	
-	*socketNo = NULL;
+	*socketNo = 0;
     if (hostName[0] >= '0' && hostName[0] <= '9')
     {
         host.s_addr = inet_addr(hostName);
     }
-    else
-    {   ent = gethostbyname(hostName);
-        if (!ent)
-        {   printf("gethostbyname failed\n");
-            return ioErr;
+    else {
+		unsigned dex;
+		/* seeing a lot of soft failures here that I really don't want to track down */
+		for(dex=0; dex<GETHOST_RETRIES; dex++) {
+			if(dex != 0) {
+				printf("\n...retrying gethostbyname(%s)", hostName);
+			}
+			ent = gethostbyname(hostName);
+			if(ent != NULL) {
+				break;
+			}
+		}
+        if(ent == NULL) {
+			printf("\n***gethostbyname(%s) returned: %s\n", hostName, hstrerror(h_errno));
+            return errSecIO;
         }
         memcpy(&host, ent->h_addr, sizeof(struct in_addr));
     }
@@ -207,24 +200,22 @@ OSStatus MakeServerConnection(
     addr.sin_family = AF_INET;
     if (connect(sock, (struct sockaddr *) &addr, sizeof(struct sockaddr_in)) != 0)
     {   printf("connect returned error\n");
-        return ioErr;
+        return errSecIO;
     }
 
-	#if		NON_BLOCKING
-	/* OK to do this after connect? */
-	{
+	if(nonBlocking) {
+		/* OK to do this after connect? */
 		int rtn = fcntl(sock, F_SETFL, O_NONBLOCK);
 		if(rtn == -1) {
 			perror("fctnl(O_NONBLOCK)");
-			return ioErr;
+			return errSecIO;
 		}
 	}
-	#endif	/* NON_BLOCKING*/
 	
     peer->ipAddr = addr.sin_addr.s_addr;
     peer->port = htons((u_short)port);
-	*socketNo = (otSocket)(intptr_t)sock;
-    return noErr;
+	*socketNo = (otSocket)sock;
+    return errSecSuccess;
 }
 
 /*
@@ -233,6 +224,7 @@ OSStatus MakeServerConnection(
  */
 OSStatus ListenForClients(
 	int port, 
+	int nonBlocking,		// 0 or 1
 	otSocket *socketNo) 	// RETURNED
 {  
 	struct sockaddr_in  addr;
@@ -243,13 +235,20 @@ OSStatus ListenForClients(
     sock = socket(AF_INET, SOCK_STREAM, 0);
 	if(sock < 1) {
 		perror("socket");
-		return ioErr;
+		return errSecIO;
 	}
+    
+    int reuse = 1;
+    int err = setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
+    if (err != 0) {
+        perror("setsockopt");
+        return err;
+    }
 	
     ent = gethostbyname("localhost");
     if (!ent) {
 		perror("gethostbyname");
-		return ioErr;
+		return errSecIO;
     }
     memcpy(&addr.sin_addr, ent->h_addr, sizeof(struct in_addr));
 	
@@ -259,14 +258,34 @@ OSStatus ListenForClients(
     len = sizeof(struct sockaddr_in);
     if (bind(sock, (struct sockaddr *) &addr, len)) {
 		perror("bind");
-		return ioErr;
+        return errSecIO;
     }
-    if (listen(sock, 1)) {
-		perror("listen");
-		return ioErr;
+	if(nonBlocking) {
+		int rtn = fcntl(sock, F_SETFL, O_NONBLOCK);
+		if(rtn == -1) {
+			perror("fctnl(O_NONBLOCK)");
+			return errSecIO;
+		}
+	}
+
+	for(;;) {
+		int rtn = listen(sock, 1);
+		switch(rtn) {
+			case 0:
+				*socketNo = (otSocket)sock;
+				rtn = errSecSuccess;
+				break;
+			case EWOULDBLOCK:
+				continue;
+			default:
+				perror("listen");
+				rtn = errSecIO;
+				break;
+		}
+		return rtn;
     }
-	*socketNo = (otSocket)(intptr_t)sock;
-    return noErr;
+	/* NOT REACHED */
+	return 0;
 }
 
 /*
@@ -287,31 +306,42 @@ OSStatus AcceptClientConnection(
 {  
 	struct sockaddr_in  addr;
 	int					sock;
-    socklen_t            len;
+    socklen_t           len;
 	
     len = sizeof(struct sockaddr_in);
-    sock = accept((int)listenSock, (struct sockaddr *) &addr, &len);
-    if (sock < 0) {
-		perror("accept");
-		return ioErr;
-    }
-	*acceptSock = (otSocket)(intptr_t)sock;
+	do {
+		sock = accept((int)listenSock, (struct sockaddr *) &addr, &len);
+		if (sock < 0) {
+			if(errno == EAGAIN) {
+				/* nonblocking, no connection yet */
+				continue;
+			}
+			else {
+				perror("accept");
+				return errSecIO;
+			}
+		}
+		else {
+			break;
+		}
+    } while(1);
+	*acceptSock = (otSocket)sock;
     peer->ipAddr = addr.sin_addr.s_addr;
 	#if	FORCE_ACCEPT_PEER_PORT_ZERO
 	peer->port = 0;
 	#else
     peer->port = ntohs(addr.sin_port);
 	#endif
-    return noErr;
+    return errSecSuccess;
 }
 
 /*
  * Shut down a connection.
  */
 void endpointShutdown(
-	otSocket socket)
+	otSocket sock)
 {
-	close((int)socket);
+	close((int)sock);
 }
 	
 /*
@@ -327,53 +357,57 @@ OSStatus SocketRead(
 	UInt32			bytesToGo = (UInt32)*dataLength;
 	UInt32 			initLen = bytesToGo;
 	UInt8			*currData = (UInt8 *)data;
-	int				sock = (int)connection;
-	OSStatus		rtn = noErr;
+	int				sock = (int)((long)connection);
+	OSStatus		rtn = errSecSuccess;
 	UInt32			bytesRead;
-	int				rrtn;
+	ssize_t			rrtn;
 	
 	*dataLength = 0;
 
 	for(;;) {
-		rrtn = (int)read(sock, currData, bytesToGo);
+		bytesRead = 0;
+		/* paranoid check, ensure errno is getting written */
+		errno = -555;
+		rrtn = recv(sock, currData, bytesToGo, 0);
 		if (rrtn <= 0) {
-			/* this is guesswork... */
-			int theErr = errno;
-//			dprintf(("SocketRead: read(%d) error %d\n", (int)bytesToGo, theErr));
-			#if !NON_BLOCKING
-			if((rrtn == 0) && (theErr == 0)) {
-				/* try fix for iSync */ 
+			if(rrtn == 0) {
+				/* closed, EOF */
 				rtn = errSSLClosedGraceful;
-				//rtn = errSSLClosedAbort;
+				break;
 			}
-			else /* do the switch */
-			#endif
+			int theErr = errno;
 			switch(theErr) {
 				case ENOENT:
-					/* connection closed */
-					rtn = errSSLClosedGraceful; 
+					/* 
+					 * Undocumented but I definitely see this.
+					 * Non-blocking sockets only. Definitely retriable
+					 * just like an EAGAIN.
+					 */
+					dprintf(("SocketRead RETRYING on ENOENT, rrtn %d\n",
+						(int)rrtn));
+					/* normal... */
+					//rtn = errSSLWouldBlock;
+					/* ...for temp testing.... */
+					rtn = errSecIO; 
 					break;
 				case ECONNRESET:
+					/* explicit peer abort */
 					rtn = errSSLClosedAbort;
 					break;
-				#if	NON_BLOCKING
 				case EAGAIN:
-				#else
-				case 0:		/* ??? */
-				#endif
+					/* nonblocking, no data */
 					rtn = errSSLWouldBlock;
 					break;
 				default:
-					dprintf(("SocketRead: read(%d) error %d\n", 
-						(int)bytesToGo, theErr));
-					rtn = ioErr;
+					dprintf(("SocketRead: read(%u) error %d, rrtn %d\n", 
+						(unsigned)bytesToGo, theErr, (int)rrtn));
+					rtn = errSecIO;
 					break;
 			}
+			/* in any case, we're done with this call if rrtn <= 0 */
 			break;
 		}
-		else {
-			bytesRead = rrtn;
-		}
+		bytesRead = (UInt32)rrtn;
 		bytesToGo -= bytesRead;
 		currData  += bytesRead;
 		
@@ -391,6 +425,11 @@ OSStatus SocketRead(
 		outputDot();
 	}
 	#endif
+	#if SSL_DISPL_WOULD_BLOCK
+	if(rtn == errSSLWouldBlock) {
+		printf("."); fflush(stdout);
+	}
+	#endif
 	return rtn;
 }
 
@@ -401,29 +440,29 @@ OSStatus SocketWrite(
 	const void	 		*data, 
 	size_t 				*dataLength)	/* IN/OUT */ 
 {
-	UInt32		bytesSent = 0;
-	int			sock = (int)connection;
+	size_t		bytesSent = 0;
+	int			sock = (int)((long)connection);
 	int 		length;
-	UInt32		dataLen = (UInt32)*dataLength;
+	size_t		dataLen = *dataLength;
 	const UInt8 *dataPtr = (UInt8 *)data;
 	OSStatus	ortn;
 	
 	if(oneAtATime && (*dataLength > 1)) {
-		UInt32 i;
-		UInt32 outLen;
-		UInt32 thisMove;
+		size_t i;
+		size_t outLen;
+		size_t thisMove;
 		
 		outLen = 0;
 		for(i=0; i<dataLen; i++) {
 			thisMove = 1;
-			ortn = SocketWrite(connection, dataPtr, (size_t *)&thisMove);
+			ortn = SocketWrite(connection, dataPtr, &thisMove);
 			outLen += thisMove;
 			dataPtr++;  
 			if(ortn) {
 				return ortn;
 			}
 		}
-		return noErr;
+		return errSecSuccess;
 	}
 	*dataLength = 0;
 
@@ -435,15 +474,21 @@ OSStatus SocketWrite(
 			 ( (bytesSent += length) < dataLen) );
 	
 	if(length <= 0) {
-		if(errno == EAGAIN) {
-			ortn = errSSLWouldBlock;
-		}
-		else {
-			ortn = ioErr;
+		int theErr = errno;
+		switch(theErr) {
+			case EAGAIN:
+				ortn = errSSLWouldBlock; break;
+			case EPIPE:
+				ortn = errSSLClosedAbort; break;
+			default:
+				dprintf(("SocketWrite: write(%u) error %d\n", 
+					  (unsigned)(dataLen - bytesSent), theErr));
+				ortn = errSecIO;
+				break;
 		}
 	}
 	else {
-		ortn = noErr;
+		ortn = errSecSuccess;
 	}
 	tprintf("SocketWrite", dataLen, bytesSent, dataPtr);
 	*dataLength = bytesSent;

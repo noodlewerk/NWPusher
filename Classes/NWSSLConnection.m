@@ -36,8 +36,8 @@
 - (NWPusherResult)connect
 {
     PeerSpec spec;
-    OSStatus status = MakeServerConnection(_host.UTF8String, (int)_port, &_connection, &spec);
-    if (status != noErr) {
+    OSStatus status = MakeServerConnection(_host.UTF8String, (int)_port, true, &_connection, &spec);
+    if (status != errSecSuccess) {
         [self disconnect];
         return kNWPusherResultIOConnectFailed;
     }
@@ -49,19 +49,19 @@
     }
     
     status = SSLSetIOFuncs(_context, SocketRead, SocketWrite);
-    if (status != noErr) {
+    if (status != errSecSuccess) {
         [self disconnect];
         return kNWPusherResultIOConnectSocketCallbacks;
     }
     
-    status = SSLSetConnection(_context, _connection);
-    if (status != noErr) {
+    status = SSLSetConnection(_context, (SSLConnectionRef)(NSInteger)_connection);
+    if (status != errSecSuccess) {
         [self disconnect];
         return kNWPusherResultIOConnectSSL;
     }
     
     status = SSLSetPeerDomainName(_context, _host.UTF8String, strlen(_host.UTF8String));
-    if (status != noErr) {
+    if (status != errSecSuccess) {
         [self disconnect];
         return kNWPusherResultIOConnectPeerDomain;
     }
@@ -69,7 +69,7 @@
     CFArrayRef certificates = CFArrayCreate(NULL, (const void **)&_identity, 1, NULL);
     status = SSLSetCertificate(_context, certificates);
     CFRelease(certificates);
-    if (status != noErr) {
+    if (status != errSecSuccess) {
         [self disconnect];
         return kNWPusherResultIOConnectAssignCertificate;
     }
@@ -78,10 +78,10 @@
     for (NSUInteger i = 0; i < 1 << 26 && status == errSSLWouldBlock; i++) {
         status = SSLHandshake(_context);
     }
-    if (status != noErr) {
+    if (status != errSecSuccess) {
         [self disconnect];
         switch (status) {
-            case ioErr: return kNWPusherResultIOConnectSSLHandshakeConnection;
+            case errSecIO: return kNWPusherResultIOConnectSSLHandshakeConnection;
             case errSecAuthFailed: return kNWPusherResultIOConnectSSLHandshakeAuthentication;
             case errSSLWouldBlock: return kNWPusherResultIOConnectTimeout;
         }
@@ -89,7 +89,7 @@
     }
     
     int set = 1;
-    setsockopt((int)_connection, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int));
+    setsockopt(_connection, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int));
     
     return kNWPusherResultSuccess;
 }
@@ -102,9 +102,9 @@
     for (NSUInteger i = 0; i < 4 && status == errSSLWouldBlock; i++) {
         status = SSLRead(_context, bytes, data.length, &processed);
     }
-    if (status != noErr && status != errSSLWouldBlock) {
+    if (status != errSecSuccess && status != errSSLWouldBlock) {
         switch (status) {
-            case ioErr: return kNWPusherResultIOReadDroppedByServer;
+            case errSecIO: return kNWPusherResultIOReadDroppedByServer;
             case errSSLClosedAbort: return kNWPusherResultIOReadConnectionError;
             case errSSLClosedGraceful: return kNWPusherResultIOReadConnectionClosed;
         }
@@ -123,9 +123,9 @@
     for (NSUInteger i = 0; i < 4 && status == errSSLWouldBlock; i++) {
         status = SSLWrite(_context, bytes, data.length, &processed);
     }
-    if (status != noErr && status != errSSLWouldBlock) {
+    if (status != errSecSuccess && status != errSSLWouldBlock) {
         switch (status) {
-            case ioErr: return kNWPusherResultIOWriteDroppedByServer;
+            case errSecIO: return kNWPusherResultIOWriteDroppedByServer;
             case errSSLClosedAbort: return kNWPusherResultIOWriteConnectionError;
             case errSSLClosedGraceful: return kNWPusherResultIOWriteConnectionClosed;
         }
@@ -145,7 +145,7 @@
 - (void)disconnect
 {
     if (_context) SSLClose(_context);
-    if (_connection) close((int)_connection); _connection = NULL;
+    if (_connection) close(_connection); _connection = 0;
     if (_context) CFRelease(_context); _context = NULL;
 }
 
@@ -153,7 +153,7 @@
 {
     SecCertificateRef result = NULL;
     OSStatus status = SecIdentityCopyCertificate(_identity, &result);
-    if (status != noErr) return nil;
+    if (status != errSecSuccess) return nil;
     return result;
 }
 

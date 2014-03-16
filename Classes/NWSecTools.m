@@ -36,7 +36,7 @@ typedef enum {
 + (NWPusherResult)identityWithCertificateRef:(SecCertificateRef)certificate identity:(SecIdentityRef *)identity
 {
     OSStatus status = SecIdentityCreateWithCertificate(NULL, certificate, identity);
-    if (status != noErr) {
+    if (status != errSecSuccess) {
         switch (status) {
             case errSecItemNotFound: return kNWPusherResultCertificatePrivateKeyMissing;
         }
@@ -59,7 +59,7 @@ typedef enum {
     CFArrayRef items = CFArrayCreate(NULL, 0, 0, NULL);
     OSStatus status = SecPKCS12Import((__bridge CFDataRef)pkcs12, options, &items);
     CFRelease(options);
-    if (status != noErr) {
+    if (status != errSecSuccess) {
         CFRelease(items);
         return kNWPusherResultPKCS12InvalidData;
     }
@@ -97,7 +97,7 @@ typedef enum {
     
     OSStatus status = SecItemCopyMatching(options, (CFTypeRef *)&results);
     CFRelease(options);
-    if (status != noErr) {
+    if (status != errSecSuccess) {
         return nil;
     }
     
@@ -149,7 +149,7 @@ typedef enum {
 {
     SecCertificateRef result = NULL;
     OSStatus status = SecIdentityCopyCertificate(identity, &result);
-    if (status != noErr) return nil;
+    if (status != errSecSuccess) return nil;
     return result;
 }
 
