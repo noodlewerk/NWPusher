@@ -82,53 +82,48 @@ OSStatus NWSSLClose(SSLConnectionRef connection);
     for (NSUInteger i = 0; i < 1 << 26 && status == errSSLWouldBlock; i++) {
         status = SSLHandshake(_context);
     }
-    if (status != errSecSuccess) {
-        [self disconnect];
-        switch (status) {
-            case errSecIO: return kNWPusherResultIOConnectSSLHandshakeConnection;
-            case errSecAuthFailed: return kNWPusherResultIOConnectSSLHandshakeAuthentication;
-            case errSSLWouldBlock: return kNWPusherResultIOConnectTimeout;
-        }
-        return kNWPusherResultIOConnectSSLHandshakeError;
+    if (status == errSecSuccess) {
+        return kNWPusherResultSuccess;
     }
-    
-    return kNWPusherResultSuccess;
+    [self disconnect];
+    switch (status) {
+        case errSecIO: return kNWPusherResultIOConnectSSLHandshakeConnection;
+        case errSecAuthFailed: return kNWPusherResultIOConnectSSLHandshakeAuthentication;
+        case errSSLWouldBlock: return kNWPusherResultIOConnectTimeout;
+    }
+    return kNWPusherResultIOConnectSSLHandshakeError;
 }
 
 - (NWPusherResult)read:(NSMutableData *)data length:(NSUInteger *)length
 {
     size_t processed = 0;
-    void *bytes = data.mutableBytes;
-    OSStatus status = SSLRead(_context, bytes, data.length, &processed);
-    if (status != errSecSuccess && status != errSSLWouldBlock) {
-        switch (status) {
-            case errSecIO: return kNWPusherResultIOReadDroppedByServer;
-            case errSSLClosedAbort: return kNWPusherResultIOReadConnectionError;
-            case errSSLClosedGraceful: return kNWPusherResultIOReadConnectionClosed;
-        }
-        return kNWPusherResultIOReadError;
-    }
-    
+    OSStatus status = SSLRead(_context, data.mutableBytes, data.length, &processed);
     if (length) *length = processed;
-    return kNWPusherResultSuccess;
+    if (status == errSecSuccess || status == errSSLWouldBlock) {
+        return kNWPusherResultSuccess;
+    }
+    switch (status) {
+        case errSecIO: return kNWPusherResultIOReadDroppedByServer;
+        case errSSLClosedAbort: return kNWPusherResultIOReadConnectionError;
+        case errSSLClosedGraceful: return kNWPusherResultIOReadConnectionClosed;
+    }
+    return kNWPusherResultIOReadError;
 }
 
 - (NWPusherResult)write:(NSData *)data length:(NSUInteger *)length
 {
     size_t processed = 0;
-    const void *bytes = data.bytes;
-    OSStatus status = SSLWrite(_context, bytes, data.length, &processed);
-    if (status != errSecSuccess && status != errSSLWouldBlock) {
-        switch (status) {
-            case errSecIO: return kNWPusherResultIOWriteDroppedByServer;
-            case errSSLClosedAbort: return kNWPusherResultIOWriteConnectionError;
-            case errSSLClosedGraceful: return kNWPusherResultIOWriteConnectionClosed;
-        }
-        return kNWPusherResultIOWriteError;
-    }
-    
+    OSStatus status = SSLWrite(_context, data.bytes, data.length, &processed);
     if (length) *length = processed;
-    return kNWPusherResultSuccess;
+    if (status == errSecSuccess || status == errSSLWouldBlock) {
+        return kNWPusherResultSuccess;
+    }
+    switch (status) {
+        case errSecIO: return kNWPusherResultIOWriteDroppedByServer;
+        case errSSLClosedAbort: return kNWPusherResultIOWriteConnectionError;
+        case errSSLClosedGraceful: return kNWPusherResultIOWriteConnectionClosed;
+    }
+    return kNWPusherResultIOWriteError;
 }
 
 - (NWPusherResult)reconnect

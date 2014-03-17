@@ -99,9 +99,10 @@ static NSUInteger const NWPushPort = 2195;
     NSMutableData *data = [NSMutableData dataWithLength:sizeof(uint8_t) * 2 + sizeof(uint32_t)];
     NSUInteger length = 0;
     NWPusherResult read = [_connection read:data length:&length];
-    if (read != kNWPusherResultSuccess) return kNWPusherResultUnableToReadResponse;
-    if (!length) return kNWPusherResultSuccess;
-    return [NWNotification parseResponse:data identifier:identifier];
+    if (length && read == kNWPusherResultSuccess) {
+        read = [NWNotification parseResponse:data identifier:identifier];
+    }
+    return read;
 }
 
 
@@ -127,7 +128,6 @@ static NSUInteger const NWPushPort = 2195;
         case kNWPusherResultEmptyToken: return @"Device token is emtpy";
         case kNWPusherResultInvalidToken: return @"Device token should be 64 hex characters)";
         case kNWPusherResultPayloadTooLong: return @"Payload cannot be more than 256 bytes (UTF8)";
-        case kNWPusherResultUnableToReadResponse: return @"Unable to read response";
         case kNWPusherResultUnexpectedResponseCommand: return @"Unexpected response command";
         case kNWPusherResultUnexpectedResponseLength: return @"Unexpected response length";
         case kNWPusherResultUnexpectedTokenLength: return @"Unexpected token length";

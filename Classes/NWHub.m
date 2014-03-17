@@ -127,11 +127,15 @@
 - (BOOL)fetchFailed
 {
     NSUInteger identifier = 0;
-    NWPusherResult failed = [_pusher fetchFailedIdentifier:&identifier];
-    if (!identifier) return NO;
-    NWNotification *notification = _notificationForIdentifier[@(identifier)][0];
-    [_delegate notification:notification didFailWithResult:failed];
-    return YES;
+    NWPusherResult fetch = [_pusher fetchFailedIdentifier:&identifier];
+    if (identifier) {
+        NWNotification *notification = _notificationForIdentifier[@(identifier)][0];
+        [_delegate notification:notification didFailWithResult:fetch];
+        return YES;
+    } else if (fetch != kNWPusherResultSuccess) {
+        [_delegate notification:nil didFailWithResult:fetch];
+    }
+    return NO;
 }
 
 - (NSUInteger)collectGarbage
