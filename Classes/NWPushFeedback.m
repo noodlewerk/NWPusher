@@ -45,7 +45,9 @@ static NSUInteger const NWTokenMaxSize = 32;
 - (NWPusherResult)connectWithIdentityRef:(SecIdentityRef)identity
 {
     SecCertificateRef certificate = [NWSecTools certificateForIdentity:identity];
+    if (!certificate) return kNWPusherResultCertificateNotFound;
     BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
+    CFRelease(certificate);
     NSString *host = sandbox ? NWSandboxPushHost : NWPushHost;
     
     if (_connection) [_connection disconnect]; _connection = nil;
