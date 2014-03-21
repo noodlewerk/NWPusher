@@ -56,7 +56,7 @@ typedef enum {
     const void *keys[] = {kSecImportExportPassphrase};
     const void *values[] = {(__bridge const void *)password};
     CFDictionaryRef options = CFDictionaryCreate(NULL, keys, values, 1, NULL, NULL);
-    CFArrayRef items = CFArrayCreate(NULL, 0, 0, NULL);
+    CFArrayRef items = NULL;
     OSStatus status = SecPKCS12Import((__bridge CFDataRef)pkcs12, options, &items);
     CFRelease(options);
     if (status != errSecSuccess) {
