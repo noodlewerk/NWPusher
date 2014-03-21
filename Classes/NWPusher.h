@@ -60,6 +60,7 @@ typedef enum {
     kNWPusherResultPKCS12EmptyData                    = 305,
     kNWPusherResultPKCS12InvalidData                  = 306,
     kNWPusherResultPKCS12NoItems                      = 307,
+    kNWPusherResultPKCS12MutlipleItems                = 309,
     kNWPusherResultPKCS12NoIdentity                   = 308,
 } NWPusherResult;
 

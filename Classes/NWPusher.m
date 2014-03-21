@@ -160,6 +160,7 @@ static NSUInteger const NWPushPort = 2195;
         case kNWPusherResultPKCS12EmptyData: return @"PKCS12 data is empty";
         case kNWPusherResultPKCS12InvalidData: return @"Unable to import PKCS12 data";
         case kNWPusherResultPKCS12NoItems: return @"No items in PKCS12 data";
+        case kNWPusherResultPKCS12MutlipleItems: return @"Multiple certificates in PKCS12 data";
         case kNWPusherResultPKCS12NoIdentity: return @"No identity in PKCS12 data";
     }
     return @"Unkown";

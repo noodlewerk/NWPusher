@@ -69,6 +69,11 @@ typedef enum {
         CFRelease(items);
         return kNWPusherResultPKCS12NoItems;
     }
+
+    if (count > 1) {
+        CFRelease(items);
+        return kNWPusherResultPKCS12MutlipleItems;
+    }
     
     CFDictionaryRef dict = CFArrayGetValueAtIndex(items, 0);
     SecIdentityRef ident = (SecIdentityRef)CFDictionaryGetValue(dict, kSecImportItemIdentity);
