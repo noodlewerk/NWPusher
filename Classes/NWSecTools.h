@@ -21,6 +21,7 @@
 + (BOOL)isSandboxCertificate:(SecCertificateRef)certificate;
 + (NSString *)identifierForCertificate:(SecCertificateRef)certificate;
 + (SecCertificateRef)certificateForIdentity:(SecIdentityRef)identity;
++ (NSDictionary *)inspectIdentity:(SecIdentityRef)identity;
 
 // deprecated
 + (BOOL)isDevelopmentCertificate:(SecCertificateRef)certificate __attribute__((deprecated));

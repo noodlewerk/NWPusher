@@ -153,6 +153,28 @@ typedef enum {
     return result;
 }
 
++ (NSDictionary *)inspectIdentity:(SecIdentityRef)identity
+{
+    NSMutableDictionary *result = @{}.mutableCopy;
+    SecCertificateRef certificate = NULL;
+    OSStatus certstat = SecIdentityCopyCertificate(identity, &certificate);
+    result[@"has_certificate"] = @(!!certificate);
+    if (certstat) result[@"certificate_error"] = @(certstat);
+    if (certificate) {
+        result[@"cert_subject_summary"] = CFBridgingRelease(SecCertificateCopySubjectSummary(certificate));
+        result[@"cert_data"] = CFBridgingRelease(SecCertificateCopyData(certificate));
+        CFRelease(certificate);
+    }
+    SecKeyRef key = NULL;
+    OSStatus keystat = SecIdentityCopyPrivateKey(identity, &key);
+    result[@"has_key"] = @(!!key);
+    if (keystat) result[@"key_error"] = @(keystat);
+    if (key) {
+        result[@"key_block_size"] = @(SecKeyGetBlockSize(key));
+        CFRelease(key);
+    }
+    return result;
+}
 
 #pragma mark - Deprecated
 
