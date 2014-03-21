@@ -50,6 +50,20 @@ typedef enum {
 
 + (NWPusherResult)identityWithPKCS12Data:(NSData *)pkcs12 password:(NSString *)password identity:(SecIdentityRef *)identity
 {
+    if (identity) *identity = nil;
+    NSArray *identities = nil;
+    NWPusherResult result = [self identitiesWithPKCS12Data:pkcs12 password:password identities:&identities];
+    if (result != kNWPusherResultSuccess) return result;
+    if (identities.count == 0) return kNWPusherResultPKCS12NoItems;
+    if (identities.count > 1) return kNWPusherResultPKCS12MutlipleItems;
+    if (identity) *identity = (SecIdentityRef)CFBridgingRetain(identities.lastObject);
+    return kNWPusherResultSuccess;
+}
+
++ (NWPusherResult)identitiesWithPKCS12Data:(NSData *)pkcs12 password:(NSString *)password identities:(NSArray **)identities
+{
+    if (identities) *identities = nil;
+    
     if (!pkcs12.length) {
         return kNWPusherResultPKCS12EmptyData;
     }
@@ -64,30 +78,14 @@ typedef enum {
         return kNWPusherResultPKCS12InvalidData;
     }
     
-    CFIndex count = CFArrayGetCount(items);
-    if (!count) {
-        CFRelease(items);
-        return kNWPusherResultPKCS12NoItems;
-    }
-
-    if (count > 1) {
-        CFRelease(items);
-        return kNWPusherResultPKCS12MutlipleItems;
-    }
-    
-    CFDictionaryRef dict = CFArrayGetValueAtIndex(items, 0);
-    SecIdentityRef ident = (SecIdentityRef)CFDictionaryGetValue(dict, kSecImportItemIdentity);
-    if (!ident) {
-        CFRelease(items);
-        return kNWPusherResultPKCS12NoIdentity;
-    }
-    
-    if (identity) {
-        CFRetain(ident);
-        *identity = ident;
+    NSMutableArray *ids = @[].mutableCopy;
+    for (NSUInteger i = 0; i < CFArrayGetCount(items); i++) {
+        CFDictionaryRef dict = CFArrayGetValueAtIndex(items, 0);
+        SecIdentityRef ident = (SecIdentityRef)CFDictionaryGetValue(dict, kSecImportItemIdentity);
+        if (ident) [ids addObject:(__bridge id)(ident)];
     }
     CFRelease(items);
-    
+    if (identities) *identities = ids;
     return kNWPusherResultSuccess;
 }
 
