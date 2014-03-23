@@ -7,27 +7,31 @@
 
 #import "NWSSLConnection.h"
 #include <netdb.h>
+#import "NWSecTools.h"
 
 
-OSStatus NWSSLConnect(const char *host, int port, SSLConnectionRef *connection);
 OSStatus NWSSLRead(SSLConnectionRef connection, void *data, size_t *length);
 OSStatus NWSSLWrite(SSLConnectionRef connection, const void *data, size_t *length);
-OSStatus NWSSLClose(SSLConnectionRef connection);
 
 
 @implementation NWSSLConnection {
-    SSLConnectionRef _connection;
+    int _socket;
     SSLContextRef _context;
 }
 
-- (id)initWithHost:(NSString *)host port:(NSUInteger)port identity:(SecIdentityRef)identity
+- (instancetype)init
+{
+    return [self initWithHost:nil port:0 identity:nil];
+}
+
+- (instancetype)initWithHost:(NSString *)host port:(NSUInteger)port identity:(NWIdentityRef)identity
 {
     self = [super init];
     if (self) {
         _host = host;
         _port = port;
         _identity = identity;
-        CFRetain(identity);
+        _socket = -1;
     }
     return self;
 }
@@ -35,148 +39,157 @@ OSStatus NWSSLClose(SSLConnectionRef connection);
 - (void)dealloc
 {
     [self disconnect];
-    if (_identity) CFRelease(_identity); _identity = NULL;
 }
 
-- (NWPusherResult)connect
+- (NWError)connect
 {
-    OSStatus status = NWSSLConnect(_host.UTF8String, (int)_port, &_connection);
-    if (status != errSecSuccess) {
+    [self disconnect];
+    NWError socket = [self connectSocket];
+    if (socket != kNWSuccess) {
         [self disconnect];
-        return kNWPusherResultIOConnectFailed;
+        return socket;
     }
-    
-    _context = SSLCreateContext(NULL, kSSLClientSide, kSSLStreamType);
-    if (!_context) {
+    NWError ssl = [self connectSSL];
+    if (ssl != kNWSuccess) {
         [self disconnect];
-        return kNWPusherResultIOConnectSSLContext;
+        return ssl;
     }
-    
-    status = SSLSetIOFuncs(_context, NWSSLRead, NWSSLWrite);
-    if (status != errSecSuccess) {
+    NWError handshake = [self handshakeSSL];
+    if (handshake != kNWSuccess) {
         [self disconnect];
-        return kNWPusherResultIOConnectSocketCallbacks;
+        return handshake;
     }
-    
-    status = SSLSetConnection(_context, (SSLConnectionRef)(NSInteger)_connection);
-    if (status != errSecSuccess) {
-        [self disconnect];
-        return kNWPusherResultIOConnectSSL;
+    return kNWSuccess;
+}
+
+- (NWError)connectSocket
+{
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock < 0) {
+        return kNWErrorSocketCreate;
     }
-    
-    status = SSLSetPeerDomainName(_context, _host.UTF8String, strlen(_host.UTF8String));
-    if (status != errSecSuccess) {
-        [self disconnect];
-        return kNWPusherResultIOConnectPeerDomain;
+    struct sockaddr_in addr;
+    memset(&addr, 0, sizeof(struct sockaddr_in));
+    struct hostent *entr = gethostbyname(_host.UTF8String);
+    if (!entr) {
+        return kNWErrorSocketResolveHostName;
     }
-    
-    CFArrayRef certificates = CFArrayCreate(NULL, (const void **)&_identity, 1, NULL);
-    status = SSLSetCertificate(_context, certificates);
-    CFRelease(certificates);
-    if (status != errSecSuccess) {
-        [self disconnect];
-        return kNWPusherResultIOConnectAssignCertificate;
+    struct in_addr host;
+    memcpy(&host, entr->h_addr, sizeof(struct in_addr));
+    addr.sin_addr = host;
+    addr.sin_port = htons((u_short)_port);
+    addr.sin_family = AF_INET;
+    int conn = connect(sock, (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
+    if (conn < 0) {
+        return kNWErrorSocketConnect;
     }
-    
-    status = errSSLWouldBlock;
+    int cntl = fcntl(sock, F_SETFL, O_NONBLOCK);
+    if (cntl < 0) {
+        return kNWErrorSocketFileControl;
+    }
+    int set = 1, sopt = setsockopt(sock, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int));
+    if (sopt < 0) {
+        return kNWErrorSocketOptions;
+    }
+    _socket = sock;
+    return kNWSuccess;
+}
+
+- (NWError)connectSSL
+{
+    SSLContextRef context = SSLCreateContext(NULL, kSSLClientSide, kSSLStreamType);
+    if (!context) {
+        return kNWErrorSSLContext;
+    }
+    OSStatus setio = SSLSetIOFuncs(context, NWSSLRead, NWSSLWrite);
+    if (setio != errSecSuccess) {
+        return kNWErrorSSLIOFuncs;
+    }
+    OSStatus setconn = SSLSetConnection(context, (SSLConnectionRef)(NSInteger)_socket);
+    if (setconn != errSecSuccess) {
+        return kNWErrorSSLConnection;
+    }
+    OSStatus setpeer = SSLSetPeerDomainName(context, _host.UTF8String, strlen(_host.UTF8String));
+    if (setpeer != errSecSuccess) {
+        return kNWErrorSSLPeerDomainName;
+    }
+    OSStatus setcert = SSLSetCertificate(context, (__bridge CFArrayRef)@[_identity]);
+    if (setcert != errSecSuccess) {
+        return kNWErrorSSLCertificate;
+    }
+    _context = context;
+    return kNWSuccess;
+}
+
+- (NWError)handshakeSSL
+{
+    OSStatus status = errSSLWouldBlock;
     for (NSUInteger i = 0; i < 1 << 26 && status == errSSLWouldBlock; i++) {
         status = SSLHandshake(_context);
     }
-    if (status == errSecSuccess) {
-        return kNWPusherResultSuccess;
-    }
-    [self disconnect];
     switch (status) {
-        case errSecIO: return kNWPusherResultIOConnectSSLHandshakeConnection;
-        case errSecAuthFailed: return kNWPusherResultIOConnectSSLHandshakeAuthentication;
-        case errSSLWouldBlock: return kNWPusherResultIOConnectTimeout;
+        case errSecSuccess: return kNWSuccess;
+        case errSSLWouldBlock: return kNWErrorSSLHandshakeTimeout;
+        case errSecIO: return kNWErrorSSLDroppedByServer;
+        case errSecAuthFailed: return kNWErrorSSLAuthFailed;
     }
-    return kNWPusherResultIOConnectSSLHandshakeError;
+    return kNWErrorSSLHandshakeFail;
 }
 
-- (NWPusherResult)read:(NSMutableData *)data length:(NSUInteger *)length
+- (NWError)read:(NSMutableData *)data length:(NSUInteger *)length
 {
+    *length = 0;
     size_t processed = 0;
     OSStatus status = SSLRead(_context, data.mutableBytes, data.length, &processed);
-    if (length) *length = processed;
-    if (status == errSecSuccess || status == errSSLWouldBlock) {
-        return kNWPusherResultSuccess;
-    }
+    *length = processed;
     switch (status) {
-        case errSecIO: return kNWPusherResultIOReadDroppedByServer;
-        case errSSLClosedAbort: return kNWPusherResultIOReadConnectionError;
-        case errSSLClosedGraceful: return kNWPusherResultIOReadConnectionClosed;
+        case errSecSuccess: return kNWSuccess;
+        case errSSLWouldBlock: return kNWSuccess;
+        case errSecIO: return kNWErrorReadDroppedByServer;
+        case errSSLClosedAbort: return kNWErrorReadClosedAbort;
+        case errSSLClosedGraceful: return kNWErrorReadClosedGraceful;
     }
-    return kNWPusherResultIOReadError;
+    return kNWErrorReadFail;
 }
 
-- (NWPusherResult)write:(NSData *)data length:(NSUInteger *)length
+- (NWError)write:(NSData *)data length:(NSUInteger *)length
 {
+    *length = 0;
     size_t processed = 0;
     OSStatus status = SSLWrite(_context, data.bytes, data.length, &processed);
-    if (length) *length = processed;
-    if (status == errSecSuccess || status == errSSLWouldBlock) {
-        return kNWPusherResultSuccess;
-    }
+    *length = processed;
     switch (status) {
-        case errSecIO: return kNWPusherResultIOWriteDroppedByServer;
-        case errSSLClosedAbort: return kNWPusherResultIOWriteConnectionError;
-        case errSSLClosedGraceful: return kNWPusherResultIOWriteConnectionClosed;
+        case errSecSuccess: return kNWSuccess;
+        case errSSLWouldBlock: return kNWSuccess;
+        case errSecIO: return kNWErrorWriteDroppedByServer;
+        case errSSLClosedAbort: return kNWErrorWriteClosedAbort;
+        case errSSLClosedGraceful: return kNWErrorWriteClosedGraceful;
     }
-    return kNWPusherResultIOWriteError;
-}
-
-- (NWPusherResult)reconnect
-{
-    [self disconnect];
-    return [self connect];
+    return kNWErrorWriteFail;
 }
 
 - (void)disconnect
 {
     if (_context) SSLClose(_context);
-    if (_connection) NWSSLClose(_connection); _connection = NULL;
+    if (_socket >= 0) close(_socket); _socket = -1;
     if (_context) CFRelease(_context); _context = NULL;
 }
 
+#pragma mark - Deprecated
+
 - (SecCertificateRef)certificate
 {
-    SecCertificateRef result = NULL;
-    OSStatus status = SecIdentityCopyCertificate(_identity, &result);
-    if (status != errSecSuccess) return nil;
-    return result;
+    NWCertificateRef result = nil;
+    [NWSecTools certificateWithIdentity:_identity certificate:&result];
+    return (SecCertificateRef)CFBridgingRetain(result);
+}
+
+- (NWError)reconnect
+{
+    return [self connect];
 }
 
 @end
-
-
-int NWSSLResolve(const char *hostName, int port, struct sockaddr_in *addr) {
-    memset(addr, 0, sizeof(struct sockaddr_in));
-    struct hostent *entr = gethostbyname(hostName);
-    if (!entr) return errSecIO;
-    struct in_addr host;
-    memcpy(&host, entr->h_addr, sizeof(struct in_addr));
-    addr->sin_addr = host;
-    addr->sin_port = htons((u_short)port);
-    addr->sin_family = AF_INET;
-    return 0;
-}
-
-OSStatus NWSSLConnect(const char *hostName, int port, SSLConnectionRef *connection) {
-    *connection = 0;
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    struct sockaddr_in addr;
-    int rslv = NWSSLResolve(hostName, port, &addr);
-    if (rslv < 0) return errSecIO;
-    int conn = connect(sock, (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
-    if (conn < 0) return errSecIO;
-    int cntl = fcntl(sock, F_SETFL, O_NONBLOCK);
-    if (cntl < 0) return errSecIO;
-    int set = 1, sopt = setsockopt(sock, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int));
-    if (sopt < 0) return errSecIO;
-    *connection = (SSLConnectionRef)(long)sock;
-    return errSecSuccess;
-}
 
 OSStatus NWSSLRead(SSLConnectionRef connection, void *data, size_t *length) {
     size_t leng = *length;
@@ -188,8 +201,12 @@ OSStatus NWSSLRead(SSLConnectionRef connection, void *data, size_t *length) {
         if (rcvd <= 0) break;
     }
     *length = read;
-    if (rcvd > 0 || !leng) return errSecSuccess;
-    if (!rcvd) return errSSLClosedGraceful;
+    if (rcvd > 0 || !leng) {
+        return errSecSuccess;
+    }
+    if (!rcvd) {
+        return errSSLClosedGraceful;
+    }
     switch (errno) {
         case EAGAIN: return errSSLWouldBlock;
         case ECONNRESET: return errSSLClosedAbort;
@@ -207,16 +224,12 @@ OSStatus NWSSLWrite(SSLConnectionRef connection, const void *data, size_t *lengt
         if (wrtn <= 0) break;
     }
     *length = sent;
-    if (wrtn > 0 || !leng) return errSecSuccess;
+    if (wrtn > 0 || !leng) {
+        return errSecSuccess;
+    }
     switch (errno) {
         case EAGAIN: return errSSLWouldBlock;
         case EPIPE: return errSSLClosedAbort;
     }
     return errSecIO;
-}
-
-OSStatus NWSSLClose(SSLConnectionRef connection) {
-    ssize_t clsd = close((int)connection);
-    if (clsd < 0) return errSecIO;
-    return errSecSuccess;
 }

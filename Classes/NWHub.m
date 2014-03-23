@@ -8,23 +8,25 @@
 #import "NWHub.h"
 #import "NWPusher.h"
 #import "NWNotification.h"
+#import "NWSecTools.h"
+
 
 @implementation NWHub {
     NSUInteger _index;
     NSMutableDictionary *_notificationForIdentifier;
 }
     
-- (id)init
+- (instancetype)init
 {
     return [self initWithPusher:[[NWPusher alloc] init] delegate:nil];
 }
 
-- (id)initWithDelegate:(id<NWHubDelegate>)delegate
+- (instancetype)initWithDelegate:(id<NWHubDelegate>)delegate
 {
     return [self initWithPusher:[[NWPusher alloc] init] delegate:delegate];
 }
     
-- (id)initWithPusher:(NWPusher *)pusher delegate:(id<NWHubDelegate>)delegate
+- (instancetype)initWithPusher:(NWPusher *)pusher delegate:(id<NWHubDelegate>)delegate
 {
     self = [super init];
     if (self) {
@@ -41,24 +43,17 @@
     
 #pragma mark - Connecting
 
-#if !TARGET_OS_IPHONE
-- (NWPusherResult)connectWithCertificateRef:(SecCertificateRef)certificate
+- (NWError)connectWithIdentity:(NWIdentityRef)identity
 {
-    return [_pusher connectWithCertificateRef:certificate];
-}
-#endif
-    
-- (NWPusherResult)connectWithIdentityRef:(SecIdentityRef)identity
-{
-    return [_pusher connectWithIdentityRef:identity];
+    return [_pusher connectWithIdentity:identity];
 }
 
-- (NWPusherResult)connectWithPKCS12Data:(NSData *)data password:(NSString *)password
+- (NWError)connectWithPKCS12Data:(NSData *)data password:(NSString *)password
 {
     return [_pusher connectWithPKCS12Data:data password:password];
 }
 
-- (NWPusherResult)reconnect
+- (NWError)reconnect
 {
     return [_pusher reconnect];
 }
@@ -113,26 +108,26 @@
 
 - (BOOL)pushNotification:(NWNotification *)notification autoReconnect:(BOOL)reconnect
 {
-    NWPusherResult pushed = [_pusher pushNotification:notification type:_type];
-    if (pushed != kNWPusherResultSuccess) {
+    NWError pushed = [_pusher pushNotification:notification type:_type];
+    if (pushed != kNWSuccess) {
         [_delegate notification:notification didFailWithResult:pushed];
     }
-    if (reconnect && pushed == kNWPusherResultIOWriteConnectionClosed) {
+    if (reconnect && pushed == kNWErrorWriteClosedGraceful) {
         [self reconnect];
     }
     _notificationForIdentifier[@(notification.identifier)] = @[notification, NSDate.date];
-    return pushed != kNWPusherResultSuccess;
+    return pushed != kNWSuccess;
 }
 
 - (BOOL)fetchFailed
 {
     NSUInteger identifier = 0;
-    NWPusherResult fetch = [_pusher fetchFailedIdentifier:&identifier];
+    NWError fetch = [_pusher fetchFailedIdentifier:&identifier];
     if (identifier) {
         NWNotification *notification = _notificationForIdentifier[@(identifier)][0];
         [_delegate notification:notification didFailWithResult:fetch];
         return YES;
-    } else if (fetch != kNWPusherResultSuccess) {
+    } else if (fetch != kNWSuccess) {
         [_delegate notification:nil didFailWithResult:fetch];
     }
     return NO;
@@ -156,6 +151,25 @@
     }
     [self collectGarbage];
     return count - 1;
+}
+
+#pragma mark - Deprecated
+
+#if !TARGET_OS_IPHONE
+- (NWError)connectWithCertificateRef:(SecCertificateRef)certificate
+{
+    NWIdentityRef identity = nil;
+    NWError error = [NWSecTools keychainIdentityWithCertificate:(__bridge NWCertificateRef)certificate identity:&identity];
+    if (error != kNWSuccess) {
+        return error;
+    }
+    return [self connectWithIdentity:identity];
+}
+#endif
+
+- (NWError)connectWithIdentityRef:(SecIdentityRef)identity
+{
+    return [self connectWithIdentity:(__bridge NWIdentityRef)identity];
 }
 
 @end

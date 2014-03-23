@@ -16,7 +16,7 @@ static NSUInteger const NWPayloadMaxSize = 256;
 
 #pragma mark - Init
 
-- (id)initWithPayload:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier expiration:(NSDate *)date priority:(NSUInteger)priority
+- (instancetype)initWithPayload:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier expiration:(NSDate *)date priority:(NSUInteger)priority
 {
     self = [super init];
     if (self) {
@@ -29,7 +29,7 @@ static NSUInteger const NWPayloadMaxSize = 256;
     return self;
 }
 
-- (id)initWithPayloadData:(NSData *)payload tokenData:(NSData *)token identifier:(NSUInteger)identifier expirationStamp:(NSUInteger)expirationStamp addExpiration:(BOOL)addExpiration priority:(NSUInteger)priority
+- (instancetype)initWithPayloadData:(NSData *)payload tokenData:(NSData *)token identifier:(NSUInteger)identifier expirationStamp:(NSUInteger)expirationStamp addExpiration:(BOOL)addExpiration priority:(NSUInteger)priority
 {
     self = [super init];
     if (self) {
@@ -198,15 +198,12 @@ static NSUInteger const NWPayloadMaxSize = 256;
     
     if (_tokenData) [self.class appendTo:result identifier:1 bytes:_tokenData.bytes length:_tokenData.length];
     if (_payloadData) [self.class appendTo:result identifier:2 bytes:_payloadData.bytes length:_payloadData.length];
-    
     uint32_t identifier = htonl(_identifier);
     uint32_t expires = htonl(_expirationStamp);
     uint8_t priority = _priority;
-    
     if (identifier) [self.class appendTo:result identifier:3 bytes:&identifier length:4];
     if (_addExpiration) [self.class appendTo:result identifier:4 bytes:&expires length:4];
     if (priority) [self.class appendTo:result identifier:5 bytes:&priority length:1];
-
     uint8_t command = 2;
     [result replaceBytesInRange:NSMakeRange(0, 1) withBytes:&command];
     uint32_t length = htonl(result.length - 5);
@@ -222,33 +219,6 @@ static NSUInteger const NWPayloadMaxSize = 256;
     [buffer appendBytes:&i length:1];
     [buffer appendBytes:&l length:2];
     [buffer appendBytes:bytes length:length];
-}
-
-+ (NWPusherResult)parseResponse:(NSData *)data identifier:(NSUInteger *)identifier
-{
-    uint8_t command = 0;
-    [data getBytes:&command range:NSMakeRange(0, 1)];
-    if (command != 8) {
-        return kNWPusherResultUnexpectedResponseCommand;
-    }
-    uint8_t status = 0;
-    [data getBytes:&status range:NSMakeRange(1, 1)];
-    uint32_t ID = 0;
-    [data getBytes:&ID range:NSMakeRange(2, 4)];
-    if (identifier) *identifier = htonl(ID);
-    switch (status) {
-        case 0: return kNWPusherResultAPNNoErrorsEncountered;
-        case 1: return kNWPusherResultAPNProcessingError;
-        case 2: return kNWPusherResultAPNMissingDeviceToken;
-        case 3: return kNWPusherResultAPNMissingTopic;
-        case 4: return kNWPusherResultAPNMissingPayload;
-        case 5: return kNWPusherResultAPNInvalidTokenSize;
-        case 6: return kNWPusherResultAPNInvalidTopicSize;
-        case 7: return kNWPusherResultAPNInvalidPayloadSize;
-        case 8: return kNWPusherResultAPNInvalidToken;
-        case 10: return kNWPusherResultAPNShutdown;
-    }
-    return kNWPusherResultAPNUnknownReason;
 }
 
 @end

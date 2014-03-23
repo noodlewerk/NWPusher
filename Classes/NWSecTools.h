@@ -5,26 +5,38 @@
 //  Copyright (c) 2012 noodlewerk. All rights reserved.
 //
 
-#import "NWPusher.h"
+#import "NWType.h"
 #import <Foundation/Foundation.h>
 
 
 @interface NWSecTools : NSObject
 
-#if !TARGET_OS_IPHONE
-+ (NWPusherResult)identityWithCertificateRef:(SecCertificateRef)certificate identity:(SecIdentityRef *)identity;
-+ (NWPusherResult)identityWithCertificateData:(NSData *)certificate identity:(SecIdentityRef *)identity;
-#endif
-+ (NWPusherResult)identityWithPKCS12Data:(NSData *)pkcs12 password:(NSString *)password identity:(SecIdentityRef *)identity;
++ (NWError)identityWithPKCS12Data:(NSData *)pkcs12 password:(NSString *)password identity:(NWIdentityRef *)identity;
++ (NWError)identitiesWithPKCS12Data:(NSData *)pkcs12 password:(NSString *)password identities:(NSArray **)identities;
++ (NWError)keychainCertificates:(NSArray **)certificates;
++ (NWError)certificateWithIdentity:(NWIdentityRef)identity certificate:(NWCertificateRef *)certificate;
++ (NWError)keyWithIdentity:(NWIdentityRef)identity key:(NWKeyRef *)key;
 
-+ (NSArray *)keychainCertificates;
-+ (BOOL)isSandboxCertificateRef:(SecCertificateRef)certificate;
-+ (NSString *)identifierForCertificate:(SecCertificateRef)certificate;
-+ (SecCertificateRef)certificateForIdentity:(SecIdentityRef)identity;
-+ (NSDictionary *)inspectIdentity:(SecIdentityRef)identity;
++ (NWCertificateRef)certificateWithData:(NSData *)data;
++ (NSString *)summaryWithCertificate:(NWCertificateRef)certificate;
++ (BOOL)isSandboxIdentity:(NWIdentityRef)identity;
++ (BOOL)isSandboxCertificate:(NWCertificateRef)certificate;
++ (BOOL)isPushCertificate:(NWCertificateRef)certificate;
+
++ (NSDictionary *)inspectIdentity:(NWIdentityRef)identity;
+
+#if !TARGET_OS_IPHONE
++ (NWError)keychainIdentityWithCertificate:(NWCertificateRef)certificate identity:(NWIdentityRef *)identity;
+#endif
 
 // deprecated
-+ (BOOL)isDevelopmentCertificate:(SecCertificateRef)certificate __attribute__((deprecated));
-+ (BOOL)isSandboxCertificate:(SecCertificateRef)certificate __attribute__((deprecated));
+#if !TARGET_OS_IPHONE
++ (NWError)identityWithCertificateRef:(SecCertificateRef)certificate identity:(SecIdentityRef *)identity __attribute__((deprecated));
++ (NWError)identityWithCertificateData:(NSData *)certificate identity:(SecIdentityRef *)identity __attribute__((deprecated));
+#endif
++ (NSArray *)keychainCertificates __attribute__((deprecated));
++ (NSString *)identifierForCertificate:(SecCertificateRef)certificate __attribute__((deprecated));
++ (SecCertificateRef)certificateForIdentity:(SecIdentityRef)identity __attribute__((deprecated));
++ (BOOL)isSandboxCertificateRef:(SecCertificateRef)certificate __attribute__((deprecated));
 
 @end

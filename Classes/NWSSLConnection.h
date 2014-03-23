@@ -5,7 +5,7 @@
 //  Copyright (c) 2012 noodlewerk. All rights reserved.
 //
 
-#import "NWPusher.h"
+#import "NWType.h"
 #import <Foundation/Foundation.h>
 
 
@@ -13,14 +13,18 @@
 
 @property (nonatomic, strong) NSString *host;
 @property (nonatomic, assign) NSUInteger port;
-@property (nonatomic, assign) SecIdentityRef identity;
-@property (nonatomic, readonly) SecCertificateRef certificate;
+@property (nonatomic, strong) NWIdentityRef identity;
 
-- (id)initWithHost:(NSString *)host port:(NSUInteger)port identity:(SecIdentityRef)identity;
-- (NWPusherResult)connect;
-- (NWPusherResult)read:(NSMutableData *)data length:(NSUInteger *)length;
-- (NWPusherResult)write:(NSData *)data length:(NSUInteger *)length;
-- (NWPusherResult)reconnect;
+- (instancetype)initWithHost:(NSString *)host port:(NSUInteger)port identity:(NWIdentityRef)identity;
+
+- (NWError)connect;
 - (void)disconnect;
+
+- (NWError)read:(NSMutableData *)data length:(NSUInteger *)length;
+- (NWError)write:(NSData *)data length:(NSUInteger *)length;
+
+// deprecated
+- (SecCertificateRef)certificate __attribute__((deprecated));
+- (NWError)reconnect __attribute__((deprecated));
 
 @end

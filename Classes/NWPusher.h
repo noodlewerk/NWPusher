@@ -5,101 +5,93 @@
 //  Copyright (c) 2012 noodlewerk. All rights reserved.
 //
 
+#import "NWType.h"
 #import <Foundation/Foundation.h>
 
-
-typedef enum {
-    kNWPusherResultSuccess                            = -1,
-    // APN error codes
-    kNWPusherResultAPNNoErrorsEncountered             = 0,
-    kNWPusherResultAPNProcessingError                 = 1,
-    kNWPusherResultAPNMissingDeviceToken              = 2,
-    kNWPusherResultAPNMissingTopic                    = 3,
-    kNWPusherResultAPNMissingPayload                  = 4,
-    kNWPusherResultAPNInvalidTokenSize                = 5,
-    kNWPusherResultAPNInvalidTopicSize                = 6,
-    kNWPusherResultAPNInvalidPayloadSize              = 7,
-    kNWPusherResultAPNInvalidToken                    = 8,
-    kNWPusherResultAPNUnknownReason                   = 9,
-    kNWPusherResultAPNShutdown                        = 10,
-    // Pusher error codes
-    kNWPusherResultEmptyPayload                       = 101,
-    kNWPusherResultInvalidPayload                     = 102,
-    kNWPusherResultEmptyToken                         = 103,
-    kNWPusherResultInvalidToken                       = 104,
-    kNWPusherResultPayloadTooLong                     = 105,
-    kNWPusherResultUnexpectedResponseCommand          = 107,
-    kNWPusherResultUnexpectedResponseLength           = 108,
-    kNWPusherResultUnexpectedTokenLength              = 109,
-    kNWPusherResultIDOutOfSync                        = 110,
-    kNWPusherResultNotConnected                       = 111,
-    // Socket error codes
-    kNWPusherResultIOConnectFailed                    = 201,
-    kNWPusherResultIOConnectSSLContext                = 202,
-    kNWPusherResultIOConnectSocketCallbacks           = 203,
-    kNWPusherResultIOConnectSSL                       = 204,
-    kNWPusherResultIOConnectPeerDomain                = 205,
-    kNWPusherResultIOConnectAssignCertificate         = 206,
-    kNWPusherResultIOConnectSSLHandshakeConnection    = 207,
-    kNWPusherResultIOConnectSSLHandshakeAuthentication = 208,
-    kNWPusherResultIOConnectSSLHandshakeError         = 209,
-    kNWPusherResultIOConnectTimeout                   = 218,
-    kNWPusherResultIOReadDroppedByServer              = 210,
-    kNWPusherResultIOReadConnectionError              = 211,
-    kNWPusherResultIOReadConnectionClosed             = 212,
-    kNWPusherResultIOReadError                        = 213,
-    kNWPusherResultIOWriteDroppedByServer             = 214,
-    kNWPusherResultIOWriteConnectionError             = 215,
-    kNWPusherResultIOWriteConnectionClosed            = 216,
-    kNWPusherResultIOWriteError                       = 217,
-    // Tools error codes
-    kNWPusherResultCertificateInvalid                 = 301,
-    kNWPusherResultCertificatePrivateKeyMissing       = 302,
-    kNWPusherResultCertificateCreateIdentity          = 303,
-    kNWPusherResultCertificateNotFound                = 304,
-    kNWPusherResultPKCS12EmptyData                    = 305,
-    kNWPusherResultPKCS12InvalidData                  = 306,
-    kNWPusherResultPKCS12NoItems                      = 307,
-    kNWPusherResultPKCS12MutlipleItems                = 309,
-    kNWPusherResultPKCS12NoIdentity                   = 308,
-} NWPusherResult;
-
-typedef enum {
-    kNWNotificationType0 = 0,
-    kNWNotificationType1 = 1,
-    kNWNotificationType2 = 2,
-} NWNotificationType;
-
 @class NWNotification, NWSSLConnection;
+
+typedef NWError NWPusherResult; // deprecated
 
 
 @interface NWPusher : NSObject
 
 @property (nonatomic, readonly) NWSSLConnection *connection;
 
-#if !TARGET_OS_IPHONE
-- (NWPusherResult)connectWithCertificateRef:(SecCertificateRef)certificate;
-#endif
-- (NWPusherResult)connectWithIdentityRef:(SecIdentityRef)identity;
-- (NWPusherResult)connectWithPKCS12Data:(NSData *)data password:(NSString *)password;
-- (NWPusherResult)pushPayload:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier;
-- (NWPusherResult)pushNotification:(NWNotification *)notification type:(NWNotificationType)type;
-- (NWPusherResult)fetchFailedIdentifier:(NSUInteger *)identifier;
-- (NWPusherResult)reconnect;
+- (NWError)connectWithIdentity:(NWIdentityRef)identity;
+- (NWError)connectWithPKCS12Data:(NSData *)data password:(NSString *)password;
+- (NWError)reconnect;
 - (void)disconnect;
-+ (NSString *)stringFromResult:(NWPusherResult)result;
+
+- (NWError)pushPayload:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier;
+- (NWError)pushNotification:(NWNotification *)notification type:(NWNotificationType)type;
+- (NWError)fetchFailedIdentifier:(NSUInteger *)identifier;
 
 // deprecated
 #if !TARGET_OS_IPHONE
-- (NWPusherResult)connectWithCertificateRef:(SecCertificateRef)certificate sandbox:(BOOL)sandbox __attribute__((deprecated));
+- (NWError)connectWithCertificateRef:(SecCertificateRef)certificate __attribute__((deprecated));
 #endif
-- (NWPusherResult)connectWithIdentityRef:(SecIdentityRef)identity sandbox:(BOOL)sandbox __attribute__((deprecated));
-- (NWPusherResult)connectWithPKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox __attribute__((deprecated));
-- (NWPusherResult)pushPayloadString:(NSString *)payload token:(NSString *)token __attribute__((deprecated));
-- (NWPusherResult)pushPayloadString:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier expires:(NSDate *)expires __attribute__((deprecated));
-- (NWPusherResult)pushPayloadData:(NSData *)payload tokenData:(NSData *)token __attribute__((deprecated));
-- (NWPusherResult)pushPayloadData:(NSData *)payload tokenData:(NSData *)token identifier:(NSUInteger)identifier expires:(NSDate *)expires __attribute__((deprecated));
-- (void)connectWithPKCS12Data:(NSData *)data password:(NSString *)password sandbox:(BOOL)sandbox block:(void(^)(NWPusherResult response))block __attribute__((deprecated));
-- (NSUInteger)pushPayloadString:(NSString *)payload tokenString:(NSString *)token block:(void(^)(NWPusherResult response))block __attribute__((deprecated));
+- (NWError)connectWithIdentityRef:(SecIdentityRef)identity __attribute__((deprecated));
++ (NSString *)stringFromResult:(NWError)result __attribute__((deprecated));
 
 @end
+
+// deprecated
+enum {
+    kNWPusherResultSuccess                             = kNWSuccess,
+    
+    kNWPusherResultAPNProcessingError                  = kNWErrorAPNProcessing,
+    kNWPusherResultAPNMissingDeviceToken               = kNWErrorAPNMissingDeviceToken,
+    kNWPusherResultAPNMissingTopic                     = kNWErrorAPNMissingTopic,
+    kNWPusherResultAPNMissingPayload                   = kNWErrorAPNMissingPayload,
+    kNWPusherResultAPNInvalidTokenSize                 = kNWErrorAPNInvalidTokenSize,
+    kNWPusherResultAPNInvalidTopicSize                 = kNWErrorAPNInvalidTopicSize,
+    kNWPusherResultAPNInvalidPayloadSize               = kNWErrorAPNInvalidPayloadSize,
+    kNWPusherResultAPNInvalidToken                     = kNWErrorAPNInvalidTokenContent,
+    kNWPusherResultAPNUnknownReason                    = kNWErrorAPNUnknownReason,
+    kNWPusherResultAPNShutdown                         = kNWErrorAPNShutdown,
+    
+    kNWPusherResultEmptyPayload,
+    kNWPusherResultInvalidPayload,
+    kNWPusherResultEmptyToken,
+    kNWPusherResultInvalidToken,
+    kNWPusherResultPayloadTooLong,
+    kNWPusherResultUnexpectedResponseCommand           = kNWErrorPushResponseCommand,
+    kNWPusherResultUnexpectedResponseLength            = kNWErrorFeedbackLength,
+    kNWPusherResultUnexpectedTokenLength               = kNWErrorFeedbackTokenLength,
+    kNWPusherResultIDOutOfSync,
+    kNWPusherResultNotConnected                        = kNWErrorPushNotConnected,
+    
+    kNWPusherResultIOConnectFailed                     = kNWErrorSocketConnect,
+    kNWPusherResultIOConnectSocketCallbacks            = kNWErrorSSLIOFuncs,
+    
+    kNWPusherResultIOConnectSSL                        = kNWErrorSSLConnection,
+    kNWPusherResultIOConnectSSLContext                 = kNWErrorSSLContext,
+    kNWPusherResultIOConnectPeerDomain                 = kNWErrorSSLPeerDomainName,
+    kNWPusherResultIOConnectAssignCertificate          = kNWErrorSSLCertificate,
+    kNWPusherResultIOConnectSSLHandshakeConnection     = kNWErrorSSLDroppedByServer,
+    kNWPusherResultIOConnectSSLHandshakeAuthentication = kNWErrorSSLAuthFailed,
+    kNWPusherResultIOConnectSSLHandshakeError          = kNWErrorSSLHandshakeFail,
+    kNWPusherResultIOConnectTimeout                    = kNWErrorSSLHandshakeTimeout,
+    
+    kNWPusherResultIOReadDroppedByServer               = kNWErrorReadDroppedByServer,
+    kNWPusherResultIOReadConnectionError               = kNWErrorReadClosedAbort,
+    kNWPusherResultIOReadConnectionClosed              = kNWErrorReadClosedGraceful,
+    kNWPusherResultIOReadError                         = kNWErrorReadFail,
+    kNWPusherResultIOWriteDroppedByServer              = kNWErrorWriteDroppedByServer,
+    kNWPusherResultIOWriteConnectionError              = kNWErrorWriteClosedAbort,
+    kNWPusherResultIOWriteConnectionClosed             = kNWErrorWriteClosedGraceful,
+    kNWPusherResultIOWriteError                        = kNWErrorWriteFail,
+    
+    kNWPusherResultCertificateInvalid,
+    kNWPusherResultCertificatePrivateKeyMissing        = kNWErrorKeychainItemNotFound,
+    kNWPusherResultCertificateCreateIdentity           = kNWErrorKeychainCreateIdentity,
+    kNWPusherResultCertificateNotFound                 = kNWErrorIdentityCopyCertificate,
+    
+    kNWPusherResultPKCS12EmptyData                     = kNWErrorPKCS12EmptyData,
+    kNWPusherResultPKCS12InvalidData                   = kNWErrorPKCS12Import,
+    kNWPusherResultPKCS12NoItems                       = kNWErrorPKCS12NoItems,
+    kNWPusherResultPKCS12MutlipleItems                 = kNWErrorPKCS12MutlipleItems,
+    kNWPusherResultPKCS12NoIdentity,
+    
+    kNWPusherResultKeychainFail                        = kNWErrorKeychainCopyMatching,
+};

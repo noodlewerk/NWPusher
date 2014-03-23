@@ -5,7 +5,7 @@
 //  Copyright (c) 2014 noodlewerk. All rights reserved.
 //
 
-#import "NWPusher.h"
+#import "NWType.h"
 #import <Foundation/Foundation.h>
 
 
@@ -21,11 +21,10 @@
 @property (nonatomic, assign) NSUInteger priority;
 @property (nonatomic, assign) BOOL addExpiration;
 
-- (id)initWithPayload:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier expiration:(NSDate *)date priority:(NSUInteger)priority;
-- (id)initWithPayloadData:(NSData *)payload tokenData:(NSData *)token identifier:(NSUInteger)identifier expirationStamp:(NSUInteger)expirationStamp addExpiration:(BOOL)addExpiration priority:(NSUInteger)priority;
+- (instancetype)initWithPayload:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier expiration:(NSDate *)date priority:(NSUInteger)priority;
+- (instancetype)initWithPayloadData:(NSData *)payload tokenData:(NSData *)token identifier:(NSUInteger)identifier expirationStamp:(NSUInteger)expirationStamp addExpiration:(BOOL)addExpiration priority:(NSUInteger)priority;
 
 - (NSData *)dataWithType:(NWNotificationType)type;
-+ (NWPusherResult)parseResponse:(NSData *)data identifier:(NSUInteger *)identifier;
 
 + (NSData *)dataFromHex:(NSString *)hex;
 + (NSString *)hexFromData:(NSData *)data;
