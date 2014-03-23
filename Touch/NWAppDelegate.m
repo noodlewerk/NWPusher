@@ -7,6 +7,7 @@
 
 #import "NWAppDelegate.h"
 #import "NWHub.h"
+#import "NWPusher.h"
 #import "NWNotification.h"
 #import "NWLCore.h"
 #import "NWSSLConnection.h"
@@ -75,18 +76,19 @@ static NWPusherViewController *controller = nil;
             NSURL *url = [NSBundle.mainBundle URLForResource:pkcs12FileName withExtension:nil];
             NSData *pkcs12 = [NSData dataWithContentsOfURL:url];
             NWHub *hub = [[NWHub alloc] initWithDelegate:self];
-            NWPusherResult connected = [hub connectWithPKCS12Data:pkcs12 password:pkcs12Password];
+            NWError connected = [hub connectWithPKCS12Data:pkcs12 password:pkcs12Password];
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (connected == kNWPusherResultSuccess) {
-                    SecCertificateRef certificate = hub.pusher.connection.certificate;
-                    BOOL sandbox = [NWSecTools isSandboxCertificateRef:certificate];
-                    NSString *identifier = [NWSecTools identifierForCertificate:certificate];
-                    NWLogInfo(@"Connected to APN: %@%@", identifier, sandbox ? @" (sandbox)" : @"");
+                if (connected == kNWSuccess) {
+                    NWCertificateRef certificate = nil;
+                    [NWSecTools certificateWithIdentity:hub.pusher.connection.identity certificate:&certificate];
+                    BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
+                    NSString *summary = [NWSecTools summaryWithCertificate:certificate];
+                    NWLogInfo(@"Connected to APN: %@%@", summary, sandbox ? @" (sandbox)" : @"");
                     _hub = hub;
                     _pushButton.enabled = YES;
                     [_connectButton setTitle:@"Disconnect" forState:UIControlStateNormal];
                 } else {
-                    NWLogWarn(@"Unable to connect: %@", [NWPusher stringFromResult:connected]);
+                    NWLogWarn(@"Unable to connect: %@", [NWErrorUtil stringWithError:connected]);
                 }
                 _connectButton.enabled = YES;
             });
@@ -114,11 +116,11 @@ static NWPusherViewController *controller = nil;
     });
 }
 
-- (void)notification:(NWNotification *)notification didFailWithResult:(NWPusherResult)result
+- (void)notification:(NWNotification *)notification didFailWithResult:(NWError)result
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         //NSLog(@"failed notification: %@ %@ %lu %lu %lu", notification.payload, notification.token, notification.identifier, notification.expires, notification.priority);
-        NWLogWarn(@"Notification could not be pushed: %@", [NWPusher stringFromResult:result]);
+        NWLogWarn(@"Notification error: %@", [NWErrorUtil stringWithError:result]);
     });
 }
 
@@ -135,7 +137,7 @@ static NWPusherViewController *controller = nil;
 
 static void NWPusherPrinter(NWLContext context, CFStringRef message, void *info) {
     BOOL warning = strncmp(context.tag, "warn", 5) == 0;
-    [controller log:(__bridge NSString *)(message) warning:warning];
+    [controller log:(__bridge NSString *)message warning:warning];
 }
 
 @end

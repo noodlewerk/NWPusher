@@ -72,7 +72,7 @@
 - (IBAction)certificateSelected:(NSPopUpButton *)sender
 {
     if (_certificatePopup.indexOfSelectedItem) {
-        id certificate = [_certificates objectAtIndex:_certificatePopup.indexOfSelectedItem - 1];
+        NWCertificateRef certificate = [_certificates objectAtIndex:_certificatePopup.indexOfSelectedItem - 1];
         [self selectCertificate:certificate];
     } else {
         [self selectCertificate:nil];
@@ -128,11 +128,11 @@
     }
 }
 
-- (void)notification:(NWNotification *)notification didFailWithResult:(NWPusherResult)result
+- (void)notification:(NWNotification *)notification didFailWithResult:(NWError)result
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         //NSLog(@"failed notification: %@ %@ %lu %lu %lu", notification.payload, notification.token, notification.identifier, notification.expires, notification.priority);
-        NWLogWarn(@"Notification could not be pushed: %@", [NWPusher stringFromResult:result]);
+        NWLogWarn(@"Notification error: %@", [NWErrorUtil stringWithError:result]);
     });
 }
 
@@ -180,41 +180,45 @@
 
 - (void)loadCertificatesFromKeychain
 {
-    NSArray *certs = [NWSecTools keychainCertificates];
+    NSArray *certs = nil;
+    NWError keychain = [NWSecTools keychainCertificates:&certs];
+    if (keychain != kNWSuccess) {
+        NWLogWarn(@"Unable to access keychain: %@", [NWErrorUtil stringWithError:keychain]);
+    }
     if (!certs.count) {
         NWLogWarn(@"No push certificates in keychain.");
     }
-    certs = [certs sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
-        BOOL adev = [NWSecTools isSandboxCertificateRef:(__bridge SecCertificateRef)(a)];
-        BOOL bdev = [NWSecTools isSandboxCertificateRef:(__bridge SecCertificateRef)(b)];
+    certs = [certs sortedArrayUsingComparator:^NSComparisonResult(NWCertificateRef a, NWCertificateRef b) {
+        BOOL adev = [NWSecTools isSandboxCertificate:a];
+        BOOL bdev = [NWSecTools isSandboxCertificate:b];
         if (adev != bdev) {
             return adev ? NSOrderedAscending : NSOrderedDescending;
         }
-        NSString *aname = [NWSecTools identifierForCertificate:(__bridge SecCertificateRef)(a)];
-        NSString *bname = [NWSecTools identifierForCertificate:(__bridge SecCertificateRef)(b)];
+        NSString *aname = [NWSecTools summaryWithCertificate:a];
+        NSString *bname = [NWSecTools summaryWithCertificate:b];
         return [aname compare:bname];
     }];
     _certificates = certs;
     
     [_certificatePopup removeAllItems];
     [_certificatePopup addItemWithTitle:@"Select Push Certificate"];
-    for (id c in _certificates) {
-        BOOL sandbox = [NWSecTools isSandboxCertificateRef:(__bridge SecCertificateRef)(c)];
-        NSString *name = [NWSecTools identifierForCertificate:(__bridge SecCertificateRef)(c)];
-        [_certificatePopup addItemWithTitle:[NSString stringWithFormat:@"%@%@", name, sandbox ? @" (sandbox)" : @""]];
+    for (NWCertificateRef c in _certificates) {
+        BOOL sandbox = [NWSecTools isSandboxCertificate:c];
+        NSString *summary = [NWSecTools summaryWithCertificate:c];
+        [_certificatePopup addItemWithTitle:[NSString stringWithFormat:@"%@%@", summary, sandbox ? @" (sandbox)" : @""]];
     }
 }
 
 - (NSArray *)tokensForCertificate:(id)certificate
 {
     NSMutableArray *result = [[NSMutableArray alloc] init];
-    BOOL sandbox = [NWSecTools isSandboxCertificateRef:(__bridge SecCertificateRef)certificate];
-    NSString *identifier = [NWSecTools identifierForCertificate:(__bridge SecCertificateRef)certificate];
+    BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
+    NSString *summary = [NWSecTools summaryWithCertificate:certificate];
     for (NSDictionary *dict in [_configuration valueForKey:@"tokens"]) {
         NSArray *identifiers = [dict valueForKey:@"identifiers"];
         BOOL match = !identifiers;
         for (NSString *i in identifiers) {
-            if ([i isEqualToString:identifier]) {
+            if ([i isEqualToString:summary]) {
                 match = YES;
                 break;
             }
@@ -246,17 +250,21 @@
     if (certificate) {
         dispatch_async(_serial, ^{
             NWHub *hub = [[NWHub alloc] initWithDelegate:self];
-            NWPusherResult connected = [hub connectWithCertificateRef:(__bridge SecCertificateRef)certificate];
+            NWIdentityRef identity = nil;
+            NWError connected = [NWSecTools keychainIdentityWithCertificate:certificate identity:&identity];
+            if (connected == kNWSuccess) {
+                connected = [hub connectWithIdentity:identity];
+            }
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (connected == kNWPusherResultSuccess) {
-                    BOOL sandbox = [NWSecTools isSandboxCertificateRef:(__bridge SecCertificateRef)certificate];
-                    NSString *identifier = [NWSecTools identifierForCertificate:(__bridge SecCertificateRef)certificate];
-                    NWLogInfo(@"Connected to APN: %@%@", identifier, sandbox ? @" (sandbox)" : @"");
+                if (connected == kNWSuccess) {
+                    BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
+                    NSString *summary = [NWSecTools summaryWithCertificate:certificate];
+                    NWLogInfo(@"Connected to APN: %@%@", summary, sandbox ? @" (sandbox)" : @"");
                     _hub = hub;
                     _pushButton.enabled = YES;
                     _reconnectButton.enabled = YES;
                 } else {
-                    NWLogWarn(@"Unable to connect: %@", [NWPusher stringFromResult:connected]);
+                    NWLogWarn(@"Unable to connect: %@", [NWErrorUtil stringWithError:connected]);
                     [hub disconnect];
                     [_certificatePopup selectItemAtIndex:0];
                 }
@@ -292,13 +300,13 @@
     _pushButton.enabled = NO;
     _reconnectButton.enabled = NO;
     dispatch_async(_serial, ^{
-        NWPusherResult connected = [_hub reconnect];
+        NWError connected = [_hub reconnect];
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (connected == kNWPusherResultSuccess) {
+            if (connected == kNWSuccess) {
                 NWLogInfo(@"Reconnected");
                 _pushButton.enabled = YES;
             } else {
-                NWLogWarn(@"Unable to reconnect: %@", [NWPusher stringFromResult:connected]);
+                NWLogWarn(@"Unable to reconnect: %@", [NWErrorUtil stringWithError:connected]);
             }
             _reconnectButton.enabled = YES;
         });
@@ -319,7 +327,7 @@
 static void NWPusherPrinter(NWLContext context, CFStringRef message, void *info) {
     BOOL warning = strncmp(context.tag, "warn", 5) == 0;
     id delegate = NSApplication.sharedApplication.delegate;
-    [delegate log:(__bridge NSString *)(message) warning:warning];
+    [delegate log:(__bridge NSString *)message warning:warning];
 }
 
 @end
