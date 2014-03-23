@@ -185,8 +185,8 @@
         NWLogWarn(@"No push certificates in keychain.");
     }
     certs = [certs sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
-        BOOL adev = [NWSecTools isSandboxCertificate:(__bridge SecCertificateRef)(a)];
-        BOOL bdev = [NWSecTools isSandboxCertificate:(__bridge SecCertificateRef)(b)];
+        BOOL adev = [NWSecTools isSandboxCertificateRef:(__bridge SecCertificateRef)(a)];
+        BOOL bdev = [NWSecTools isSandboxCertificateRef:(__bridge SecCertificateRef)(b)];
         if (adev != bdev) {
             return adev ? NSOrderedAscending : NSOrderedDescending;
         }
@@ -199,7 +199,7 @@
     [_certificatePopup removeAllItems];
     [_certificatePopup addItemWithTitle:@"Select Push Certificate"];
     for (id c in _certificates) {
-        BOOL sandbox = [NWSecTools isSandboxCertificate:(__bridge SecCertificateRef)(c)];
+        BOOL sandbox = [NWSecTools isSandboxCertificateRef:(__bridge SecCertificateRef)(c)];
         NSString *name = [NWSecTools identifierForCertificate:(__bridge SecCertificateRef)(c)];
         [_certificatePopup addItemWithTitle:[NSString stringWithFormat:@"%@%@", name, sandbox ? @" (sandbox)" : @""]];
     }
@@ -208,7 +208,7 @@
 - (NSArray *)tokensForCertificate:(id)certificate
 {
     NSMutableArray *result = [[NSMutableArray alloc] init];
-    BOOL sandbox = [NWSecTools isSandboxCertificate:(__bridge SecCertificateRef)certificate];
+    BOOL sandbox = [NWSecTools isSandboxCertificateRef:(__bridge SecCertificateRef)certificate];
     NSString *identifier = [NWSecTools identifierForCertificate:(__bridge SecCertificateRef)certificate];
     for (NSDictionary *dict in [_configuration valueForKey:@"tokens"]) {
         NSArray *identifiers = [dict valueForKey:@"identifiers"];
@@ -249,7 +249,7 @@
             NWPusherResult connected = [hub connectWithCertificateRef:(__bridge SecCertificateRef)certificate];
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (connected == kNWPusherResultSuccess) {
-                    BOOL sandbox = [NWSecTools isSandboxCertificate:(__bridge SecCertificateRef)certificate];
+                    BOOL sandbox = [NWSecTools isSandboxCertificateRef:(__bridge SecCertificateRef)certificate];
                     NSString *identifier = [NWSecTools identifierForCertificate:(__bridge SecCertificateRef)certificate];
                     NWLogInfo(@"Connected to APN: %@%@", identifier, sandbox ? @" (sandbox)" : @"");
                     _hub = hub;

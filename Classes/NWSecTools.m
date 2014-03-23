@@ -117,7 +117,7 @@ typedef enum {
     return result;
 }
 
-+ (BOOL)isSandboxCertificate:(SecCertificateRef)certificate
++ (BOOL)isSandboxCertificateRef:(SecCertificateRef)certificate
 {
     BOOL result = [self typeForCertificate:certificate identifier:nil] == kNWCertificateTypeDevelopment;
     return result;
@@ -184,7 +184,12 @@ typedef enum {
 
 + (BOOL)isDevelopmentCertificate:(SecCertificateRef)certificate
 {
-    return [self isSandboxCertificate:certificate];
+    return [self isSandboxCertificateRef:certificate];
+}
+
++ (BOOL)isSandboxCertificate:(SecCertificateRef)certificate
+{
+    return [self isSandboxCertificateRef:certificate];
 }
 
 @end

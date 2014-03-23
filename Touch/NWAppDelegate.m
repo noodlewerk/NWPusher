@@ -79,7 +79,7 @@ static NWPusherViewController *controller = nil;
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (connected == kNWPusherResultSuccess) {
                     SecCertificateRef certificate = hub.pusher.connection.certificate;
-                    BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
+                    BOOL sandbox = [NWSecTools isSandboxCertificateRef:certificate];
                     NSString *identifier = [NWSecTools identifierForCertificate:certificate];
                     NWLogInfo(@"Connected to APN: %@%@", identifier, sandbox ? @" (sandbox)" : @"");
                     _hub = hub;

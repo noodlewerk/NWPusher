@@ -18,12 +18,13 @@
 + (NWPusherResult)identityWithPKCS12Data:(NSData *)pkcs12 password:(NSString *)password identity:(SecIdentityRef *)identity;
 
 + (NSArray *)keychainCertificates;
-+ (BOOL)isSandboxCertificate:(SecCertificateRef)certificate;
++ (BOOL)isSandboxCertificateRef:(SecCertificateRef)certificate;
 + (NSString *)identifierForCertificate:(SecCertificateRef)certificate;
 + (SecCertificateRef)certificateForIdentity:(SecIdentityRef)identity;
 + (NSDictionary *)inspectIdentity:(SecIdentityRef)identity;
 
 // deprecated
 + (BOOL)isDevelopmentCertificate:(SecCertificateRef)certificate __attribute__((deprecated));
++ (BOOL)isSandboxCertificate:(SecCertificateRef)certificate __attribute__((deprecated));
 
 @end
