@@ -172,9 +172,12 @@ After a second or so, we can take a look to see if the notification was accepted
 
 ```objective-c
     NSUInteger identifier = 0;
-    NWError fetch = [pusher fetchFailedIdentifier:&identifier];
+    NWError apnError = kNWSuccess;
+    NWError fetch = [pusher fetchFailedIdentifier:&identifier apnError:apnError];
     if (fetch != kNWSuccess) {
-        NSLog(@"Notification with identifier %i rejected: %@", (int)identifier, [NWErrorUtil stringWithError:fetch]);
+        NSLog(@"Unable to read response: %@", [NWErrorUtil stringWithError:push]);
+    } else if (apnError != kNWSuccess) {
+        NSLog(@"Notification with identifier %i rejected: %@", (int)identifier, [NWErrorUtil stringWithError:apnError]);
     }
 ```
 

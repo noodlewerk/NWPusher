@@ -79,8 +79,9 @@ static NSUInteger const NWPushPort = 2195;
     return kNWSuccess;
 }
 
-- (NWError)fetchFailedIdentifier:(NSUInteger *)identifier
+- (NWError)fetchFailedIdentifier:(NSUInteger *)identifier apnError:(NWError *)apnError
 {
+    *apnError = kNWSuccess;
     *identifier = 0;
     NSMutableData *data = [NSMutableData dataWithLength:sizeof(uint8_t) * 2 + sizeof(uint32_t)];
     NSUInteger length = 0;
@@ -99,24 +100,23 @@ static NSUInteger const NWPushPort = 2195;
     [data getBytes:&ID range:NSMakeRange(2, 4)];
     *identifier = htonl(ID);
     switch (status) {
-        case 0: return kNWSuccess;
-        case 1: return kNWErrorAPNProcessing;
-        case 2: return kNWErrorAPNMissingDeviceToken;
-        case 3: return kNWErrorAPNMissingTopic;
-        case 4: return kNWErrorAPNMissingPayload;
-        case 5: return kNWErrorAPNInvalidTokenSize;
-        case 6: return kNWErrorAPNInvalidTopicSize;
-        case 7: return kNWErrorAPNInvalidPayloadSize;
-        case 8: return kNWErrorAPNInvalidTokenContent;
-        case 10: return kNWErrorAPNShutdown;
+        case 1: *apnError = kNWErrorAPNProcessing; break;
+        case 2: *apnError = kNWErrorAPNMissingDeviceToken; break;
+        case 3: *apnError = kNWErrorAPNMissingTopic; break;
+        case 4: *apnError = kNWErrorAPNMissingPayload; break;
+        case 5: *apnError = kNWErrorAPNInvalidTokenSize; break;
+        case 6: *apnError = kNWErrorAPNInvalidTopicSize; break;
+        case 7: *apnError = kNWErrorAPNInvalidPayloadSize; break;
+        case 8: *apnError = kNWErrorAPNInvalidTokenContent; break;
+        case 10: *apnError = kNWErrorAPNShutdown; break;
     }
-    return kNWErrorAPNUnknownReason;
+    return kNWSuccess;
 }
 
 #pragma mark - Deprecated
 
 #if !TARGET_OS_IPHONE
-- (NWError)connectWithCertificateRef:(SecCertificateRef)certificate __attribute__((deprecated))
+- (NWError)connectWithCertificateRef:(SecCertificateRef)certificate
 {
     NWIdentityRef identity = nil;
     NWError error = [NWSecTools keychainIdentityWithCertificate:(__bridge NWCertificateRef)certificate identity:&identity];
@@ -127,14 +127,24 @@ static NSUInteger const NWPushPort = 2195;
 }
 #endif
 
-- (NWError)connectWithIdentityRef:(SecIdentityRef)identity __attribute__((deprecated))
+- (NWError)connectWithIdentityRef:(SecIdentityRef)identity
 {
     return [self connectWithIdentity:(__bridge NWIdentityRef)identity];
 }
 
-+ (NSString *)stringFromResult:(NWError)result __attribute__((deprecated))
++ (NSString *)stringFromResult:(NWError)result
 {
     return [NWErrorUtil stringWithError:result];
+}
+
+- (NWError)fetchFailedIdentifier:(NSUInteger *)identifier
+{
+    NWError apnError = kNWSuccess;
+    NWError result = [self fetchFailedIdentifier:identifier apnError:&apnError];
+    if (result != kNWSuccess) {
+        return result;
+    }
+    return apnError;
 }
 
 @end

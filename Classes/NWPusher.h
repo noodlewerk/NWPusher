@@ -24,7 +24,7 @@ typedef NWError NWPusherResult; // deprecated
 
 - (NWError)pushPayload:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier;
 - (NWError)pushNotification:(NWNotification *)notification type:(NWNotificationType)type;
-- (NWError)fetchFailedIdentifier:(NSUInteger *)identifier;
+- (NWError)fetchFailedIdentifier:(NSUInteger *)identifier apnError:(NWError *)apnError;
 
 // deprecated
 #if !TARGET_OS_IPHONE
@@ -32,6 +32,7 @@ typedef NWError NWPusherResult; // deprecated
 #endif
 - (NWError)connectWithIdentityRef:(SecIdentityRef)identity __attribute__((deprecated));
 + (NSString *)stringFromResult:(NWError)result __attribute__((deprecated));
+- (NWError)fetchFailedIdentifier:(NSUInteger *)identifier __attribute__((deprecated));
 
 @end
 

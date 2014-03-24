@@ -210,7 +210,7 @@
         BOOL hasIdentity = (pair[1] != NSNull.null);
         BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
         NSString *summary = [NWSecTools summaryWithCertificate:certificate];
-        [_certificatePopup addItemWithTitle:[NSString stringWithFormat:@"%@: %@%@", hasIdentity ? @"imported" : @"keychain", summary, sandbox ? @" (sandbox)" : @""]];
+        [_certificatePopup addItemWithTitle:[NSString stringWithFormat:@"%@%@%@", hasIdentity ? @"imported: " : @"", summary, sandbox ? @" (sandbox)" : @""]];
     }
     [_certificatePopup addItemWithTitle:@"Import PKCS #12 file (.p12)..."];
 }

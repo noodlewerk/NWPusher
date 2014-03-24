@@ -122,10 +122,14 @@
 - (BOOL)fetchFailed
 {
     NSUInteger identifier = 0;
-    NWError fetch = [_pusher fetchFailedIdentifier:&identifier];
-    if (identifier) {
+    NWError apnError = kNWSuccess;
+    NWError fetch = [_pusher fetchFailedIdentifier:&identifier apnError:&apnError];
+    if (fetch != kNWSuccess) {
+        return NO;
+    }
+    if (identifier || apnError != kNWSuccess) {
         NWNotification *notification = _notificationForIdentifier[@(identifier)][0];
-        [_delegate notification:notification didFailWithResult:fetch];
+        [_delegate notification:notification didFailWithResult:apnError];
         return YES;
     }
     return NO;

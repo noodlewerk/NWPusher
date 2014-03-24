@@ -21,7 +21,7 @@
         case kNWErrorAPNInvalidTokenSize               : return @"APN invalid token size";
         case kNWErrorAPNInvalidTopicSize               : return @"APN invalid topic size";
         case kNWErrorAPNInvalidPayloadSize             : return @"APN invalid payload size";
-        case kNWErrorAPNInvalidTokenContent            : return @"APN invalid token (you need to reconnect)";
+        case kNWErrorAPNInvalidTokenContent            : return @"APN invalid token";
         case kNWErrorAPNUnknownReason                  : return @"APN unkown reason";
         case kNWErrorAPNShutdown                       : return @"APN shutdown";
             
@@ -64,9 +64,9 @@
         case kNWErrorPKCS12Import                      : return @"PKCS12 data cannot be imported";
         case kNWErrorPKCS12EmptyData                   : return @"PKCS12 data is empty";
         case kNWErrorPKCS12Decode                      : return @"PKCS12 data cannot be read or is malformed";
-        case kNWErrorPKCS12AuthFailed                  : return @"PKCS12 data data damaged";
+        case kNWErrorPKCS12AuthFailed                  : return @"PKCS12 data password incorrect";
+        case kNWErrorPKCS12Password                    : return @"PKCS12 data wrong password";
         case kNWErrorPKCS12NoItems                     : return @"PKCS12 data contains no identities";
-        case kNWErrorPKCS12Password                    : return @"PKCS12 data password incorrect";
         case kNWErrorPKCS12MutlipleItems               : return @"PKCS12 data contains multiple identities";
             
         case kNWErrorKeychainCopyMatching              : return @"Keychain cannot be searched";
