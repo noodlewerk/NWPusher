@@ -127,8 +127,6 @@
         NWNotification *notification = _notificationForIdentifier[@(identifier)][0];
         [_delegate notification:notification didFailWithResult:fetch];
         return YES;
-    } else if (fetch != kNWSuccess) {
-        [_delegate notification:nil didFailWithResult:fetch];
     }
     return NO;
 }
