@@ -215,6 +215,7 @@ typedef enum {
         switch (status) {
             case errSecDecode: return kNWErrorPKCS12Decode;
             case errSecAuthFailed: return kNWErrorPKCS12AuthFailed;
+            case errSecPkcs12VerifyFailure: return kNWErrorPKCS12Password;
         }
         return kNWErrorPKCS12Import;
     }

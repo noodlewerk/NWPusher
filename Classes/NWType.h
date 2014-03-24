@@ -71,6 +71,7 @@ typedef enum { // NWError
     kNWErrorPKCS12EmptyData                    = -305,
     kNWErrorPKCS12Decode                       = -311,
     kNWErrorPKCS12AuthFailed                   = -312,
+    kNWErrorPKCS12Password                     = -313,
     kNWErrorPKCS12NoItems                      = -307,
     kNWErrorPKCS12MutlipleItems                = -309,
     

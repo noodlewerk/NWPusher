@@ -64,8 +64,9 @@
         case kNWErrorPKCS12Import                      : return @"PKCS12 data cannot be imported";
         case kNWErrorPKCS12EmptyData                   : return @"PKCS12 data is empty";
         case kNWErrorPKCS12Decode                      : return @"PKCS12 data cannot be read or is malformed";
-        case kNWErrorPKCS12AuthFailed                  : return @"PKCS12 data password incorrect or data damaged";
+        case kNWErrorPKCS12AuthFailed                  : return @"PKCS12 data data damaged";
         case kNWErrorPKCS12NoItems                     : return @"PKCS12 data contains no identities";
+        case kNWErrorPKCS12Password                    : return @"PKCS12 data password incorrect";
         case kNWErrorPKCS12MutlipleItems               : return @"PKCS12 data contains multiple identities";
             
         case kNWErrorKeychainCopyMatching              : return @"Keychain cannot be searched";
