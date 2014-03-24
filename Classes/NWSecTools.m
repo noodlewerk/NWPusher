@@ -186,10 +186,10 @@ typedef enum {
     *certificate = nil;
     SecCertificateRef cert = NULL;
     OSStatus status = SecIdentityCopyCertificate((__bridge SecIdentityRef)identity, &cert);
+    *certificate = CFBridgingRelease(cert);
     if (status != errSecSuccess || !cert) {
         return kNWErrorIdentityCopyCertificate;
     }
-    *certificate = CFBridgingRelease(cert);
     return kNWSuccess;
 }
 
@@ -198,10 +198,10 @@ typedef enum {
     *key = nil;
     SecKeyRef k = NULL;
     OSStatus status = SecIdentityCopyPrivateKey((__bridge SecIdentityRef)identity, &k);
+    *key = CFBridgingRelease(k);
     if (status != errSecSuccess || !k) {
         return kNWErrorIdentityCopyPrivateKey;
     }
-    *key = CFBridgingRelease(k);
     return kNWSuccess;
 }
 
@@ -211,6 +211,7 @@ typedef enum {
     NSDictionary *options = @{(__bridge id)kSecImportExportPassphrase: password};
     CFArrayRef items = NULL;
     OSStatus status = SecPKCS12Import((__bridge CFDataRef)data, (__bridge CFDictionaryRef)options, &items);
+    *dicts = CFBridgingRelease(items);
     if (status != errSecSuccess || !items) {
         switch (status) {
             case errSecDecode: return kNWErrorPKCS12Decode;
@@ -221,7 +222,6 @@ typedef enum {
         }
         return kNWErrorPKCS12Import;
     }
-    *dicts = CFBridgingRelease(items);
     return kNWSuccess;
 }
 
@@ -232,10 +232,10 @@ typedef enum {
                               (__bridge id)kSecMatchLimit: (__bridge id)kSecMatchLimitAll};
     CFArrayRef certs = NULL;
     OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)options, (CFTypeRef *)&certs);
+    *certificates = CFBridgingRelease(certs);
     if (status != errSecSuccess || !certs) {
         return kNWErrorKeychainCopyMatching;
     }
-    *certificates = CFBridgingRelease(certs);
     return kNWSuccess;
 }
 
@@ -245,13 +245,13 @@ typedef enum {
     *identity = nil;
     SecIdentityRef ident = NULL;
     OSStatus status = SecIdentityCreateWithCertificate(NULL, (__bridge SecCertificateRef)certificate, &ident);
+    *identity = CFBridgingRelease(ident);
     if (status != errSecSuccess || !ident) {
         switch (status) {
             case errSecItemNotFound: return kNWErrorKeychainItemNotFound;
         }
         return kNWErrorKeychainCreateIdentity;
     }
-    *identity = CFBridgingRelease(ident);
     return kNWSuccess;
 }
 #endif
