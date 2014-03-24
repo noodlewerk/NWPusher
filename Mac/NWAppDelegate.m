@@ -203,6 +203,7 @@
 
 - (void)updateCertificatePopup
 {
+    NSMutableString *suffix = @" ".mutableCopy;
     [_certificatePopup removeAllItems];
     [_certificatePopup addItemWithTitle:@"Select Push Certificate"];
     for (NSArray *pair in _certificateIdentityPairs) {
@@ -210,7 +211,8 @@
         BOOL hasIdentity = (pair[1] != NSNull.null);
         BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
         NSString *summary = [NWSecTools summaryWithCertificate:certificate];
-        [_certificatePopup addItemWithTitle:[NSString stringWithFormat:@"%@%@%@", hasIdentity ? @"imported: " : @"", summary, sandbox ? @" (sandbox)" : @""]];
+        [_certificatePopup addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@", hasIdentity ? @"imported: " : @"", summary, sandbox ? @" (sandbox)" : @"", suffix]];
+        [suffix appendString:@" "];
     }
     [_certificatePopup addItemWithTitle:@"Import PKCS #12 file (.p12)..."];
 }
