@@ -6,8 +6,8 @@
 //
 
 #import "NWSSLConnection.h"
-#include <netdb.h>
 #import "NWSecTools.h"
+#include <netdb.h>
 
 
 OSStatus NWSSLRead(SSLConnectionRef connection, void *data, size_t *length);
