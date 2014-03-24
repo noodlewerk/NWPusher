@@ -49,6 +49,7 @@ Mac OS X application for sending push notifications through the APN service:
 
 OS X/iOS library for sending pushes from your own application:
 - iOS compatible, so you can also push directly from your iPhone :o
+- Detailed error handling
 - Modular, no dependencies, use what you like
 - Demo applications for both platforms
 
@@ -138,15 +139,7 @@ Pusher can also be used as a library to send notifications programmatically. The
 pod 'NWPusher', '~> 0.3.0'
 ```
 
-Alternatively you can include just the files you need from the `Classes` folder:
-
- - NWHub.h/m
- - NWPusher.h/m
- - NWNotification.h/m
- - NWSSLConnection.h/m
- - NWSecTools.h/m
-
-Make sure you link with `Foundation.framework` and `Security.framework`.
+Alternatively you can include just the files you need from the `Classes` folder. Make sure you link with `Foundation.framework` and `Security.framework`.
 
 Before any notification can be sent, you first need to create a connection. When this connection is established, any number of payload can be sent.
 
@@ -158,11 +151,9 @@ To create a connection directly from a PKCS12 (.p12) file:
     NSURL *url = [NSBundle.mainBundle URLForResource:@"pusher.p12" withExtension:nil];
     NSData *pkcs12 = [NSData dataWithContentsOfURL:url];
     NWPusher *pusher = [[NWPusher alloc] init];
-    NWPusherResult connected = [pusher connectWithPKCS12Data:pkcs12 password:@"pa$$word"];
-    if (connected == kNWPusherResultSuccess) {
-        NSLog(@"Connected to APN");
-    } else {
-        NSLog(@"Unable to connect: %@", [NWPusher stringFromResult:connected]);
+    NWError connect = [pusher connectWithPKCS12Data:pkcs12 password:@"pa$$word"];
+    if (connect != kNWSuccess) {
+        NSLog(@"Unable to connect: %@", [NWErrorUtil stringWithError:connect]);
     }
 ```
 
@@ -171,11 +162,9 @@ When pusher is successfully connected, send a payload to your device:
 ```objective-c
     NSString *payload = @"{\"aps\":{\"alert\":\"Testing..\"}}";
     NSString *token = @"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
-    NWPusherResult pushed = [pusher pushPayload:payload token:token identifier:rand()];
-    if (pushed == kNWPusherResultSuccess) {
-        NSLog(@"Notification sending");
-    } else {
-        NSLog(@"Unable to sent: %@", [NWPusher stringFromResult:pushed]);
+    NWError push = [pusher pushPayload:payload token:token identifier:rand()];
+    if (push != kNWSuccess) {
+        NSLog(@"Unable to sent: %@", [NWErrorUtil stringWithError:push]);
     }
 ```
 
@@ -183,24 +172,30 @@ After a second or so, we can take a look to see if the notification was accepted
 
 ```objective-c
     NSUInteger identifier = 0;
-    NWPusherResult accepted = [pusher fetchFailedIdentifier:&identifier];
-    if (accepted == kNWPusherResultSuccess) {
-        NSLog(@"Notification sent successfully");
-    } else {
-        NSLog(@"Notification with identifier %i rejected: %@", (int)identifier, [NWPusher stringFromResult:accepted]);
+    NWError fetch = [pusher fetchFailedIdentifier:&identifier];
+    if (fetch != kNWSuccess) {
+        NSLog(@"Notification with identifier %i rejected: %@", (int)identifier, [NWErrorUtil stringWithError:fetch]);
     }
 ```
 
 Alternatively on OS X you can also use the keychain to obtain the SSL certificate. In that case first collect all certificates:
 
 ```objective-c
-    NSArray *certificates = [NWSecTools keychainCertificates];
+    NSArray *certificates = nil;
+    NWError keychain = [NWSecTools keychainCertificates:&certificates];
+    if (keychain != kNWSuccess) {
+        NSLog(@"Unable to access keychain: %@", [NWErrorUtil stringWithError:keychain]);
+    }
 ```
 
-After selecting the right certificate, connect using:
+After selecting the right certificate, obtain the identity from the keychain:
 
 ```objective-c
-    NWPusherResult connected = [pusher connectWithCertificateRef:certificate];
+    NWIdentityRef identity = nil;
+    NWError ident = [NWSecTools keychainIdentityWithCertificate:certificate identity:&identity];
+    if (ident != kNWSuccess) {
+        NSLog(@"Unable to create identity: %@", [NWErrorUtil stringWithError:ident]);
+    }
 ```
 
 Take a look at the example project for variations on this approach.
@@ -215,11 +210,9 @@ The feedback service is part of the Apple Push Notification Service. The feedbac
     NSURL *url = [NSBundle.mainBundle URLForResource:@"pusher.p12" withExtension:nil];
     NSData *pkcs12 = [NSData dataWithContentsOfURL:url];
     NWPushFeedback *feedback = [[NWPushFeedback alloc] init];
-    NWPusherResult connected = [feedback connectWithPKCS12Data:pkcs12 password:@"pa$$word"];
-    if (connected == kNWPusherResultSuccess) {
-        NSLog(@"Connected to feedback service");
-    } else {
-        NSLog(@"Unable to connect to feedback service: %@", [NWPusher stringFromResult:connected]);
+    NWError connect = [feedback connectWithPKCS12Data:pkcs12 password:@"pa$$word"];
+    if (connect != kNWSuccess) {
+        NSLog(@"Unable to connect to feedback service: %@", [NWErrorUtil stringWithError:connect]);
     }
 ```
 
@@ -228,13 +221,13 @@ When connected read the device token and date of invalidation:
 ```objective-c
     NSString *token = nil;
     NSDate *date = nil;
-    NWPusherResult read = [feedback readToken:&token date:&date];
-    if (read == kNWPusherResultIOReadConnectionClosed) {
+    NWError read = [feedback readToken:&token date:&date];
+    if (read == kNWErrorReadClosedGraceful) {
         NSLog(@"All tokens have been read, connection closed");
-    } else if (read == kNWPusherResultSuccess) {
-        NSLog(@"Feedback service invalidated token: %@ on date: %@", token, date);
+    } else if (read != kNWSuccess) {
+        NSLog(@"Unable to read feedback: %@", [NWErrorUtil stringWithError:read]);
     } else {
-        NSLog(@"Unable to read feedback: %@", [NWPusher stringFromResult:read]);
+        NSLog(@"Feedback service invalidated token: %@ on date: %@", token, date);
     }
 ```
 
@@ -247,8 +240,6 @@ Apple's Push Notification Service is not very forgiving in nature. If things are
 Some tips on what to look out for:
 
 - A device token is unique to both the device, the developer's certificate, and to whether the app was built with a production or development (sandbox) certificate. Therefore make sure that the push certificate matches the app's provisioning profile exactly. This doesn't mean the tokens are always different; device tokens can be the same for different bundle identifiers.
-
-- When an incorrect device token is used, Apple will close the connection without notifying the client. Unfortunately the client will be unaware of this until the next notification is sent. This can lead to confusing behavior where you might put the blame on the wrong device token. It's therefore important to only use device tokens that are guaranteed to come from within the app, using `application:didRegisterForRemoteNotificationsWithDeviceToken:`. Pusher does *not* automatically reconnect in such cases.
 
 - There are two channels through which Apple responds to sent notifications: the notification connection and the feedback connection. Both operate asynchronously, so for example after the second push has been sent, we might get a response to the first push, saying it has an invalid payload. Use a new identifier for every notification so these responses can be linked to the right notification.
 
