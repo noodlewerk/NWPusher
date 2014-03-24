@@ -27,8 +27,8 @@
 
     NWHub *_hub;
     NSDictionary *_configuration;
-    NSArray *_certificates;
-    NSUInteger _index;
+    NSArray *_certificateIdentityPairs;
+    NSUInteger _lastSelectedIndex;
     
     dispatch_queue_t _serial;
 }
@@ -43,15 +43,16 @@
     NWLPrintInfo();
     _serial = dispatch_queue_create("NWAppDelegate", DISPATCH_QUEUE_SERIAL);
     
+    _certificateIdentityPairs = @[];
     [self loadCertificatesFromKeychain];
     [self loadConfiguration];
+    [self updateCertificatePopup];
     
     NSString *payload = [_configuration valueForKey:@"payload"];
     _payloadField.string = payload.length ? payload : @"";
     _payloadField.font = [NSFont fontWithName:@"Courier" size:10];
     _payloadField.enabledTextCheckingTypes = 0;
     [self textDidChange:nil];
-    _index = 1;
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification
@@ -71,12 +72,7 @@
 
 - (IBAction)certificateSelected:(NSPopUpButton *)sender
 {
-    if (_certificatePopup.indexOfSelectedItem) {
-        NWCertificateRef certificate = [_certificates objectAtIndex:_certificatePopup.indexOfSelectedItem - 1];
-        [self selectCertificate:certificate];
-    } else {
-        [self selectCertificate:nil];
-    }
+    [self connectWithCertificateAtIndex:_certificatePopup.indexOfSelectedItem];
 }
 
 - (NSDate *)expirySelected
@@ -198,14 +194,40 @@
         NSString *bname = [NWSecTools summaryWithCertificate:b];
         return [aname compare:bname];
     }];
-    _certificates = certs;
-    
+    NSMutableArray *pairs = @[].mutableCopy;
+    for (NWCertificateRef c in certs) {
+        [pairs addObject:@[c, NSNull.null]];
+    }
+    _certificateIdentityPairs = [_certificateIdentityPairs arrayByAddingObjectsFromArray:pairs];
+}
+
+- (void)updateCertificatePopup
+{
     [_certificatePopup removeAllItems];
     [_certificatePopup addItemWithTitle:@"Select Push Certificate"];
-    for (NWCertificateRef c in _certificates) {
-        BOOL sandbox = [NWSecTools isSandboxCertificate:c];
-        NSString *summary = [NWSecTools summaryWithCertificate:c];
-        [_certificatePopup addItemWithTitle:[NSString stringWithFormat:@"%@%@", summary, sandbox ? @" (sandbox)" : @""]];
+    for (NSArray *pair in _certificateIdentityPairs) {
+        NWCertificateRef certificate = pair[0];
+        BOOL hasIdentity = (pair[1] != NSNull.null);
+        BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
+        NSString *summary = [NWSecTools summaryWithCertificate:certificate];
+        [_certificatePopup addItemWithTitle:[NSString stringWithFormat:@"%@: %@%@", hasIdentity ? @"imported" : @"keychain", summary, sandbox ? @" (sandbox)" : @""]];
+    }
+    [_certificatePopup addItemWithTitle:@"Import PKCS #12 file (.p12)..."];
+}
+
+- (void)connectWithCertificateAtIndex:(NSUInteger)index
+{
+    if (index == 0) {
+        [_certificatePopup selectItemAtIndex:0];
+        [self selectCertificate:nil identity:nil];
+    } else if (index <= _certificateIdentityPairs.count) {
+        [_certificatePopup selectItemAtIndex:index];
+        _lastSelectedIndex = index;
+        NSArray *pair = [_certificateIdentityPairs objectAtIndex:index - 1];
+        [self selectCertificate:pair[0] identity:pair[1] == NSNull.null ? nil : pair[1]];
+    } else {
+        [_certificatePopup selectItemAtIndex:_lastSelectedIndex];
+        [self importIdentity];
     }
 }
 
@@ -233,7 +255,7 @@
     return result;
 }
 
-- (void)selectCertificate:(id)certificate
+- (void)selectCertificate:(NWCertificateRef)certificate identity:(NWIdentityRef)identity
 {
     if (_hub) {
         [_hub disconnect]; _hub = nil;
@@ -248,12 +270,17 @@
     [_tokenCombo addItemsWithObjectValues:tokens];
     
     if (certificate) {
+        NWLogInfo(@"Connecting...");
+        
         dispatch_async(_serial, ^{
             NWHub *hub = [[NWHub alloc] initWithDelegate:self];
-            NWIdentityRef identity = nil;
-            NWError connected = [NWSecTools keychainIdentityWithCertificate:certificate identity:&identity];
+            NWError connected = kNWSuccess;
+            NWIdentityRef ident = identity;
+            if (!ident) {
+                connected = [NWSecTools keychainIdentityWithCertificate:certificate identity:&ident];
+            }
             if (connected == kNWSuccess) {
-                connected = [hub connectWithIdentity:identity];
+                connected = [hub connectWithIdentity:ident];
             }
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (connected == kNWSuccess) {
@@ -271,6 +298,58 @@
             });
         });
     }
+}
+
+- (void)importIdentity
+{
+    NWLogInfo(@"");
+    NSOpenPanel *panel = [NSOpenPanel openPanel];
+    panel.canChooseFiles = YES;
+    panel.canChooseDirectories = NO;
+    panel.allowsMultipleSelection = YES;
+    panel.allowedFileTypes = @[@"p12"];
+    [panel beginWithCompletionHandler:^(NSInteger result){
+        if (result != NSFileHandlingPanelOKButton) {
+            return;
+        }
+        NSMutableArray *pairs = @[].mutableCopy;
+        for (NSURL *url in panel.URLs) {
+            NSString *text = [NSString stringWithFormat:@"Enter password for %@", url.lastPathComponent];
+            NSAlert *alert = [NSAlert alertWithMessageText:text defaultButton:@"OK" alternateButton:@"Cancel" otherButton:nil informativeTextWithFormat:@""];
+            NSSecureTextField *input = [[NSSecureTextField alloc] initWithFrame:NSMakeRect(0, 0, 200, 24)];
+            alert.accessoryView = input;
+            NSInteger button = [alert runModal];
+            if (button != NSAlertDefaultReturn) {
+                return;
+            }
+            NSString *password = input.stringValue;
+            NSData *data = [NSData dataWithContentsOfURL:url];
+            NSArray *ids = nil;
+            NWError identdata = [NWSecTools identitiesWithPKCS12Data:data password:password identities:&ids];
+            if (identdata != kNWSuccess) {
+                NWLogWarn(@"Unable to read p12 file: %@", [NWErrorUtil stringWithError:identdata]);
+                return;
+            }
+            for (NWIdentityRef identity in ids) {
+                NWCertificateRef certificate = nil;
+                NWError certident = [NWSecTools certificateWithIdentity:identity certificate:&certificate];
+                if (certident != kNWSuccess) {
+                    NWLogWarn(@"Unable to import p12 file: %@", [NWErrorUtil stringWithError:certident]);
+                    return;
+                }
+                [pairs addObject:@[certificate, identity]];
+            }
+        }
+        if (!pairs.count) {
+            NWLogWarn(@"Unable to import p12 file: no push certificates found");
+            return;
+        }
+        NWLogInfo(@"Imported %i certificate%@", (int)pairs.count, pairs.count == 1 ? @"" : @"s");
+        NSUInteger index = _certificateIdentityPairs.count;
+        _certificateIdentityPairs = [_certificateIdentityPairs arrayByAddingObjectsFromArray:pairs];
+        [self updateCertificatePopup];
+        [self connectWithCertificateAtIndex:index + 1];
+    }];
 }
 
 - (void)push
