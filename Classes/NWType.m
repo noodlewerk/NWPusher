@@ -12,7 +12,7 @@
 + (NSString *)stringWithError:(NWError)error
 {
     switch (error) {
-        case kNWSuccess                                : return @"Success";
+        case kNWSuccess                                : return @"Success (no error)";
             
         case kNWErrorAPNProcessing                     : return @"APN processing error";
         case kNWErrorAPNMissingDeviceToken             : return @"APN missing device token";
@@ -21,7 +21,7 @@
         case kNWErrorAPNInvalidTokenSize               : return @"APN invalid token size";
         case kNWErrorAPNInvalidTopicSize               : return @"APN invalid topic size";
         case kNWErrorAPNInvalidPayloadSize             : return @"APN invalid payload size";
-        case kNWErrorAPNInvalidTokenContent            : return @"APN invalid token (you might need to reconnect now)";
+        case kNWErrorAPNInvalidTokenContent            : return @"APN invalid token (you need to reconnect)";
         case kNWErrorAPNUnknownReason                  : return @"APN unkown reason";
         case kNWErrorAPNShutdown                       : return @"APN shutdown";
             
