@@ -26,7 +26,7 @@
     IBOutlet NSPopUpButton *_priorityPopup;
 
     NWHub *_hub;
-    NSDictionary *_configuration;
+    NSDictionary *_config;
     NSArray *_certificateIdentityPairs;
     NSUInteger _lastSelectedIndex;
     
@@ -45,10 +45,10 @@
     
     _certificateIdentityPairs = @[];
     [self loadCertificatesFromKeychain];
-    [self loadConfiguration];
+    [self loadConfig];
     [self updateCertificatePopup];
     
-    NSString *payload = [_configuration valueForKey:@"payload"];
+    NSString *payload = [_config valueForKey:@"payload"];
     _payloadField.string = payload.length ? payload : @"";
     _payloadField.font = [NSFont fontWithName:@"Courier" size:10];
     _payloadField.enabledTextCheckingTypes = 0;
@@ -148,10 +148,10 @@
 
 #pragma mark - Actions
 
-- (void)loadConfiguration
+- (void)loadConfig
 {
     NSURL *defaultURL = [NSBundle.mainBundle URLForResource:@"configuration" withExtension:@"plist"];
-    _configuration = [NSDictionary dictionaryWithContentsOfURL:defaultURL];
+    _config = [NSDictionary dictionaryWithContentsOfURL:defaultURL];
     NSURL *libraryURL = [[NSFileManager.defaultManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
     NSURL *configURL = [libraryURL URLByAppendingPathComponent:@"Pusher" isDirectory:YES];
     if (configURL) {
@@ -163,9 +163,9 @@
             NSDictionary *config = [NSDictionary dictionaryWithContentsOfURL:plistURL];
             if ([config isKindOfClass:NSDictionary.class]) {
                 NWLogInfo(@"Read configuration from ~/Library/Pusher/configuration.plist");
-                _configuration = config;
+                _config = config;
             } else if (![NSFileManager.defaultManager fileExistsAtPath:plistURL.path]){
-                [_configuration writeToURL:plistURL atomically:NO];
+                [_config writeToURL:plistURL atomically:NO];
                 NWLogInfo(@"Created default configuration in ~/Library/Pusher/configuration.plist");
             } else {
                 NWLogInfo(@"Unable to read configuration from ~/Library/Pusher/configuration.plist");
@@ -238,7 +238,7 @@
     NSMutableArray *result = [[NSMutableArray alloc] init];
     BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
     NSString *summary = [NWSecTools summaryWithCertificate:certificate];
-    for (NSDictionary *dict in [_configuration valueForKey:@"tokens"]) {
+    for (NSDictionary *dict in [_config valueForKey:@"tokens"]) {
         NSArray *identifiers = [dict valueForKey:@"identifiers"];
         BOOL match = !identifiers;
         for (NSString *i in identifiers) {
