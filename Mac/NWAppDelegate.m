@@ -67,35 +67,11 @@
     return YES;
 }
 
-
 #pragma mark - Events
 
 - (IBAction)certificateSelected:(NSPopUpButton *)sender
 {
     [self connectWithCertificateAtIndex:_certificatePopup.indexOfSelectedItem];
-}
-
-- (NSDate *)expirySelected
-{
-    switch(_expiryPopup.indexOfSelectedItem) {
-        case 1: return [NSDate dateWithTimeIntervalSince1970:0];
-        case 2: return [NSDate dateWithTimeIntervalSinceNow:60];
-        case 3: return [NSDate dateWithTimeIntervalSince1970:300];
-        case 4: return [NSDate dateWithTimeIntervalSinceNow:3600];
-        case 5: return [NSDate dateWithTimeIntervalSinceNow:86400];
-        case 6: return [NSDate dateWithTimeIntervalSince1970:1];
-        case 7: return [NSDate dateWithTimeIntervalSince1970:UINT32_MAX];
-    }
-    return nil;
-}
-
-- (NSUInteger)prioritySelected
-{
-    switch(_priorityPopup.indexOfSelectedItem) {
-        case 1: return 5;
-        case 2: return 10;
-    }
-    return 0;
 }
 
 - (void)textDidChange:(NSNotification *)notification
@@ -132,47 +108,7 @@
     });
 }
 
-- (void)upPayloadTextIndex
-{
-    NSString *payload = _payloadField.string;
-    NSRange range = [payload rangeOfString:@"Testing.. \\([0-9]+\\)" options:NSRegularExpressionSearch];
-    if (range.location != NSNotFound) {
-        range.location += 11;
-        range.length -= 12;
-        NSString *before = [payload substringToIndex:range.location];
-        NSUInteger value = [payload substringWithRange:range].integerValue + 1;
-        NSString *after = [payload substringFromIndex:range.location + range.length];
-        _payloadField.string = [NSString stringWithFormat:@"%@%lu%@", before, value, after];
-    }
-}
-
-#pragma mark - Actions
-
-- (void)loadConfig
-{
-    NSURL *defaultURL = [NSBundle.mainBundle URLForResource:@"configuration" withExtension:@"plist"];
-    _config = [NSDictionary dictionaryWithContentsOfURL:defaultURL];
-    NSURL *libraryURL = [[NSFileManager.defaultManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
-    NSURL *configURL = [libraryURL URLByAppendingPathComponent:@"Pusher" isDirectory:YES];
-    if (configURL) {
-        NSError *error = nil;
-        BOOL exists = [NSFileManager.defaultManager createDirectoryAtURL:configURL withIntermediateDirectories:YES attributes:nil error:&error];
-        NWLogWarnIfError(error);
-        if (exists) {
-            NSURL *plistURL = [configURL URLByAppendingPathComponent:@"configuration.plist"];
-            NSDictionary *config = [NSDictionary dictionaryWithContentsOfURL:plistURL];
-            if ([config isKindOfClass:NSDictionary.class]) {
-                NWLogInfo(@"Read configuration from ~/Library/Pusher/configuration.plist");
-                _config = config;
-            } else if (![NSFileManager.defaultManager fileExistsAtPath:plistURL.path]){
-                [_config writeToURL:plistURL atomically:NO];
-                NWLogInfo(@"Created default configuration in ~/Library/Pusher/configuration.plist");
-            } else {
-                NWLogInfo(@"Unable to read configuration from ~/Library/Pusher/configuration.plist");
-            }
-        }
-    }
-}
+#pragma mark - Certificate and Identity
 
 - (void)loadCertificatesFromKeychain
 {
@@ -215,91 +151,6 @@
         [suffix appendString:@" "];
     }
     [_certificatePopup addItemWithTitle:@"Import PKCS #12 file (.p12)..."];
-}
-
-- (void)connectWithCertificateAtIndex:(NSUInteger)index
-{
-    if (index == 0) {
-        [_certificatePopup selectItemAtIndex:0];
-        [self selectCertificate:nil identity:nil];
-    } else if (index <= _certificateIdentityPairs.count) {
-        [_certificatePopup selectItemAtIndex:index];
-        _lastSelectedIndex = index;
-        NSArray *pair = [_certificateIdentityPairs objectAtIndex:index - 1];
-        [self selectCertificate:pair[0] identity:pair[1] == NSNull.null ? nil : pair[1]];
-    } else {
-        [_certificatePopup selectItemAtIndex:_lastSelectedIndex];
-        [self importIdentity];
-    }
-}
-
-- (NSArray *)tokensForCertificate:(id)certificate
-{
-    NSMutableArray *result = [[NSMutableArray alloc] init];
-    BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
-    NSString *summary = [NWSecTools summaryWithCertificate:certificate];
-    for (NSDictionary *dict in [_config valueForKey:@"tokens"]) {
-        NSArray *identifiers = [dict valueForKey:@"identifiers"];
-        BOOL match = !identifiers;
-        for (NSString *i in identifiers) {
-            if ([i isEqualToString:summary]) {
-                match = YES;
-                break;
-            }
-        }
-        if (match) {
-            NSArray *tokens = sandbox ? [dict valueForKey:@"development"] : [dict valueForKey:@"production"];
-            if (tokens.count) {
-                [result addObjectsFromArray:tokens];
-            }
-        }
-    }
-    return result;
-}
-
-- (void)selectCertificate:(NWCertificateRef)certificate identity:(NWIdentityRef)identity
-{
-    if (_hub) {
-        [_hub disconnect]; _hub = nil;
-        _pushButton.enabled = NO;
-        _reconnectButton.enabled = NO;
-        NWLogInfo(@"Disconnected from APN");
-    }
-    
-    NSArray *tokens = [self tokensForCertificate:certificate];
-    [_tokenCombo removeAllItems];
-    //_tokenCombo.stringValue = @"";
-    [_tokenCombo addItemsWithObjectValues:tokens];
-    
-    if (certificate) {
-        NWLogInfo(@"Connecting...");
-        
-        dispatch_async(_serial, ^{
-            NWHub *hub = [[NWHub alloc] initWithDelegate:self];
-            NWError connected = kNWSuccess;
-            NWIdentityRef ident = identity;
-            if (!ident) {
-                connected = [NWSecTools keychainIdentityWithCertificate:certificate identity:&ident];
-            }
-            if (connected == kNWSuccess) {
-                connected = [hub connectWithIdentity:ident];
-            }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (connected == kNWSuccess) {
-                    BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
-                    NSString *summary = [NWSecTools summaryWithCertificate:certificate];
-                    NWLogInfo(@"Connected to APN: %@%@", summary, sandbox ? @" (sandbox)" : @"");
-                    _hub = hub;
-                    _pushButton.enabled = YES;
-                    _reconnectButton.enabled = YES;
-                } else {
-                    NWLogWarn(@"Unable to connect: %@", [NWErrorUtil stringWithError:connected]);
-                    [hub disconnect];
-                    [_certificatePopup selectItemAtIndex:0];
-                }
-            });
-        });
-    }
 }
 
 - (void)importIdentity
@@ -354,25 +205,108 @@
     }];
 }
 
-- (void)push
+#pragma mark - Expiry and Priority
+
+- (NSDate *)expirySelected
+{
+    switch(_expiryPopup.indexOfSelectedItem) {
+        case 1: return [NSDate dateWithTimeIntervalSince1970:0];
+        case 2: return [NSDate dateWithTimeIntervalSinceNow:60];
+        case 3: return [NSDate dateWithTimeIntervalSince1970:300];
+        case 4: return [NSDate dateWithTimeIntervalSinceNow:3600];
+        case 5: return [NSDate dateWithTimeIntervalSinceNow:86400];
+        case 6: return [NSDate dateWithTimeIntervalSince1970:1];
+        case 7: return [NSDate dateWithTimeIntervalSince1970:UINT32_MAX];
+    }
+    return nil;
+}
+
+- (NSUInteger)prioritySelected
+{
+    switch(_priorityPopup.indexOfSelectedItem) {
+        case 1: return 5;
+        case 2: return 10;
+    }
+    return 0;
+}
+
+#pragma mark - Payload
+
+- (void)upPayloadTextIndex
 {
     NSString *payload = _payloadField.string;
-    NSString *token = _tokenCombo.stringValue;
-    NSDate *expiry = self.expirySelected;
-    NSUInteger priority = self.prioritySelected;
-    NWLogInfo(@"Pushing..");
-    dispatch_async(_serial, ^{
-        NWNotification *notification = [[NWNotification alloc] initWithPayload:payload token:token identifier:0 expiration:expiry priority:priority];
-        NSUInteger failed = [_hub pushNotifications:@[notification] autoReconnect:NO];
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC));
-        dispatch_after(popTime, _serial, ^(void){
-            NSUInteger failed2 = failed + [_hub flushFailed];
-            if (!failed2) NWLogInfo(@"Payload has been pushed");
+    NSRange range = [payload rangeOfString:@"Testing.. \\([0-9]+\\)" options:NSRegularExpressionSearch];
+    if (range.location != NSNotFound) {
+        range.location += 11;
+        range.length -= 12;
+        NSString *before = [payload substringToIndex:range.location];
+        NSUInteger value = [payload substringWithRange:range].integerValue + 1;
+        NSString *after = [payload substringFromIndex:range.location + range.length];
+        _payloadField.string = [NSString stringWithFormat:@"%@%lu%@", before, value, after];
+    }
+}
+
+#pragma mark - Connection
+
+- (void)connectWithCertificateAtIndex:(NSUInteger)index
+{
+    if (index == 0) {
+        [_certificatePopup selectItemAtIndex:0];
+        [self selectCertificate:nil identity:nil];
+    } else if (index <= _certificateIdentityPairs.count) {
+        [_certificatePopup selectItemAtIndex:index];
+        _lastSelectedIndex = index;
+        NSArray *pair = [_certificateIdentityPairs objectAtIndex:index - 1];
+        [self selectCertificate:pair[0] identity:pair[1] == NSNull.null ? nil : pair[1]];
+    } else {
+        [_certificatePopup selectItemAtIndex:_lastSelectedIndex];
+        [self importIdentity];
+    }
+}
+
+- (void)selectCertificate:(NWCertificateRef)certificate identity:(NWIdentityRef)identity
+{
+    if (_hub) {
+        [_hub disconnect]; _hub = nil;
+        _pushButton.enabled = NO;
+        _reconnectButton.enabled = NO;
+        NWLogInfo(@"Disconnected from APN");
+    }
+    
+    NSArray *tokens = [self tokensForCertificate:certificate];
+    [_tokenCombo removeAllItems];
+    //_tokenCombo.stringValue = @"";
+    [_tokenCombo addItemsWithObjectValues:tokens];
+    
+    if (certificate) {
+        NWLogInfo(@"Connecting...");
+        
+        dispatch_async(_serial, ^{
+            NWHub *hub = [[NWHub alloc] initWithDelegate:self];
+            NWError connected = kNWSuccess;
+            NWIdentityRef ident = identity;
+            if (!ident) {
+                connected = [NWSecTools keychainIdentityWithCertificate:certificate identity:&ident];
+            }
+            if (connected == kNWSuccess) {
+                connected = [hub connectWithIdentity:ident];
+            }
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self upPayloadTextIndex];
+                if (connected == kNWSuccess) {
+                    BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
+                    NSString *summary = [NWSecTools summaryWithCertificate:certificate];
+                    NWLogInfo(@"Connected to APN: %@%@", summary, sandbox ? @" (sandbox)" : @"");
+                    _hub = hub;
+                    _pushButton.enabled = YES;
+                    _reconnectButton.enabled = YES;
+                } else {
+                    NWLogWarn(@"Unable to connect: %@", [NWErrorUtil stringWithError:connected]);
+                    [hub disconnect];
+                    [_certificatePopup selectItemAtIndex:0];
+                }
             });
         });
-    });
+    }
 }
 
 - (void)reconnect
@@ -394,8 +328,80 @@
     });
 }
 
+- (void)push
+{
+    NSString *payload = _payloadField.string;
+    NSString *token = _tokenCombo.stringValue;
+    NSDate *expiry = self.expirySelected;
+    NSUInteger priority = self.prioritySelected;
+    NWLogInfo(@"Pushing..");
+    dispatch_async(_serial, ^{
+        NWNotification *notification = [[NWNotification alloc] initWithPayload:payload token:token identifier:0 expiration:expiry priority:priority];
+        NSUInteger failed = [_hub pushNotifications:@[notification] autoReconnect:NO];
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC));
+        dispatch_after(popTime, _serial, ^(void){
+            NSUInteger failed2 = failed + [_hub flushFailed];
+            if (!failed2) NWLogInfo(@"Payload has been pushed");
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self upPayloadTextIndex];
+            });
+        });
+    });
+}
 
-#pragma mark - NWLogging
+#pragma mark - Config
+
+- (void)loadConfig
+{
+    NSURL *defaultURL = [NSBundle.mainBundle URLForResource:@"configuration" withExtension:@"plist"];
+    _config = [NSDictionary dictionaryWithContentsOfURL:defaultURL];
+    NSURL *libraryURL = [[NSFileManager.defaultManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL *configURL = [libraryURL URLByAppendingPathComponent:@"Pusher" isDirectory:YES];
+    if (configURL) {
+        NSError *error = nil;
+        BOOL exists = [NSFileManager.defaultManager createDirectoryAtURL:configURL withIntermediateDirectories:YES attributes:nil error:&error];
+        NWLogWarnIfError(error);
+        if (exists) {
+            NSURL *plistURL = [configURL URLByAppendingPathComponent:@"configuration.plist"];
+            NSDictionary *config = [NSDictionary dictionaryWithContentsOfURL:plistURL];
+            if ([config isKindOfClass:NSDictionary.class]) {
+                NWLogInfo(@"Read configuration from ~/Library/Pusher/configuration.plist");
+                _config = config;
+            } else if (![NSFileManager.defaultManager fileExistsAtPath:plistURL.path]){
+                [_config writeToURL:plistURL atomically:NO];
+                NWLogInfo(@"Created default configuration in ~/Library/Pusher/configuration.plist");
+            } else {
+                NWLogInfo(@"Unable to read configuration from ~/Library/Pusher/configuration.plist");
+            }
+        }
+    }
+}
+
+- (NSArray *)tokensForCertificate:(id)certificate
+{
+    NSMutableArray *result = [[NSMutableArray alloc] init];
+    BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
+    NSString *summary = [NWSecTools summaryWithCertificate:certificate];
+    for (NSDictionary *dict in [_config valueForKey:@"tokens"]) {
+        NSArray *identifiers = [dict valueForKey:@"identifiers"];
+        BOOL match = !identifiers;
+        for (NSString *i in identifiers) {
+            if ([i isEqualToString:summary]) {
+                match = YES;
+                break;
+            }
+        }
+        if (match) {
+            NSArray *tokens = sandbox ? [dict valueForKey:@"development"] : [dict valueForKey:@"production"];
+            if (tokens.count) {
+                [result addObjectsFromArray:tokens];
+            }
+        }
+    }
+    return result;
+}
+
+#pragma mark - Logging
 
 - (void)log:(NSString *)message warning:(BOOL)warning
 {
