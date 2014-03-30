@@ -168,24 +168,24 @@ typedef enum {
 
 + (NWCertificateRef)certificateWithData:(NSData *)data
 {
-    return CFBridgingRelease(SecCertificateCreateWithData(kCFAllocatorDefault, (__bridge CFDataRef)data));
+    return data ? CFBridgingRelease(SecCertificateCreateWithData(kCFAllocatorDefault, (__bridge CFDataRef)data)) : nil;
 }
 
 + (NSString *)plainSummaryWithCertificate:(NWCertificateRef)certificate
 {
-    return CFBridgingRelease(SecCertificateCopySubjectSummary((__bridge SecCertificateRef)certificate));
+    return certificate ? CFBridgingRelease(SecCertificateCopySubjectSummary((__bridge SecCertificateRef)certificate)) : nil;
 }
 
 + (NSData *)derDataWithCertificate:(NWCertificateRef)certificate
 {
-    return CFBridgingRelease(SecCertificateCopyData((__bridge SecCertificateRef)certificate));
+    return certificate ? CFBridgingRelease(SecCertificateCopyData((__bridge SecCertificateRef)certificate)) : nil;
 }
 
 + (NWError)certificateWithIdentity:(NWIdentityRef)identity certificate:(NWCertificateRef *)certificate
 {
     *certificate = nil;
     SecCertificateRef cert = NULL;
-    OSStatus status = SecIdentityCopyCertificate((__bridge SecIdentityRef)identity, &cert);
+    OSStatus status = identity ? SecIdentityCopyCertificate((__bridge SecIdentityRef)identity, &cert) : errSecParam;
     *certificate = CFBridgingRelease(cert);
     if (status != errSecSuccess || !cert) {
         return kNWErrorIdentityCopyCertificate;
@@ -197,7 +197,7 @@ typedef enum {
 {
     *key = nil;
     SecKeyRef k = NULL;
-    OSStatus status = SecIdentityCopyPrivateKey((__bridge SecIdentityRef)identity, &k);
+    OSStatus status = identity ? SecIdentityCopyPrivateKey((__bridge SecIdentityRef)identity, &k) : errSecParam;
     *key = CFBridgingRelease(k);
     if (status != errSecSuccess || !k) {
         return kNWErrorIdentityCopyPrivateKey;
@@ -210,7 +210,7 @@ typedef enum {
     *dicts = nil;
     NSDictionary *options = @{(__bridge id)kSecImportExportPassphrase: password};
     CFArrayRef items = NULL;
-    OSStatus status = SecPKCS12Import((__bridge CFDataRef)data, (__bridge CFDictionaryRef)options, &items);
+    OSStatus status = data ? SecPKCS12Import((__bridge CFDataRef)data, (__bridge CFDictionaryRef)options, &items) : errSecParam;
     *dicts = CFBridgingRelease(items);
     if (status != errSecSuccess || !items) {
         switch (status) {
@@ -244,7 +244,7 @@ typedef enum {
 {
     *identity = nil;
     SecIdentityRef ident = NULL;
-    OSStatus status = SecIdentityCreateWithCertificate(NULL, (__bridge SecCertificateRef)certificate, &ident);
+    OSStatus status = certificate ? SecIdentityCreateWithCertificate(NULL, (__bridge SecCertificateRef)certificate, &ident) : errSecParam;
     *identity = CFBridgingRelease(ident);
     if (status != errSecSuccess || !ident) {
         switch (status) {
@@ -260,6 +260,7 @@ typedef enum {
 
 + (NSDictionary *)inspectIdentity:(NWIdentityRef)identity
 {
+    if (!identity) return nil;
     NSMutableDictionary *result = @{}.mutableCopy;
     SecCertificateRef certificate = NULL;
     OSStatus certstat = SecIdentityCopyCertificate((__bridge SecIdentityRef)identity, &certificate);
