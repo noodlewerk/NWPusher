@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>payload</key>
+	<string>{&quot;aps&quot;:{&quot;alert&quot;:&quot;Testing.. (0)&quot;,&quot;badge&quot;:1,&quot;sound&quot;:&quot;default&quot;}}</string>
+	<key>identifiers</key>
+	<dict>
+		<key>com.example.app</key>
+		<array>
+			<string>0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF my-iphone</string>
+		</array>
+		<key>com.example.app-sandbox</key>
+		<array>
+			<string>ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789 my-iphone</string>
+		</array>
+	</dict>
+</dict>
+</plist>

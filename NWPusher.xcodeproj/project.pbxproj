@@ -29,7 +29,7 @@
 		B34BF1B418DDF401004BA9F7 /* NWType.m in Sources */ = {isa = PBXBuildFile; fileRef = B34BF1B318DDF401004BA9F7 /* NWType.m */; };
 		B34BF1B518DDF401004BA9F7 /* NWType.m in Sources */ = {isa = PBXBuildFile; fileRef = B34BF1B318DDF401004BA9F7 /* NWType.m */; };
 		B395BA12172BC17A00631932 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B3C6BE0015FD30E900F1F3F1 /* README.md */; };
-		B3AFABEF172C81910027346A /* configuration.plist in Resources */ = {isa = PBXBuildFile; fileRef = B3AFABEE172C81910027346A /* configuration.plist */; };
+		B3AFABEF172C81910027346A /* config.plist in Resources */ = {isa = PBXBuildFile; fileRef = B3AFABEE172C81910027346A /* config.plist */; };
 		B3B4DCD318A7998300F9F258 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = B3B4DCD218A7998300F9F258 /* LICENSE.txt */; };
 		B3B4DCD418A7998300F9F258 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = B3B4DCD218A7998300F9F258 /* LICENSE.txt */; };
 		B3C6BD8015FD24D200F1F3F1 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3C6BD7F15FD24D200F1F3F1 /* Cocoa.framework */; };
@@ -79,7 +79,7 @@
 		B33FB213172B303D006529CE /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
 		B34BF1B218DDF401004BA9F7 /* NWType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWType.h; sourceTree = "<group>"; };
 		B34BF1B318DDF401004BA9F7 /* NWType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWType.m; sourceTree = "<group>"; };
-		B3AFABEE172C81910027346A /* configuration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = configuration.plist; sourceTree = "<group>"; };
+		B3AFABEE172C81910027346A /* config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = config.plist; sourceTree = "<group>"; };
 		B3B4DCD218A7998300F9F258 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		B3C6BD7B15FD24D200F1F3F1 /* Pusher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pusher.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3C6BD7F15FD24D200F1F3F1 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -158,7 +158,7 @@
 		B33FB1BA172B185C006529CE /* Mac */ = {
 			isa = PBXGroup;
 			children = (
-				B3AFABEE172C81910027346A /* configuration.plist */,
+				B3AFABEE172C81910027346A /* config.plist */,
 				B33FB1BD172B185C006529CE /* MainMenu.xib */,
 				B33FB1BE172B185C006529CE /* NWAppDelegate.h */,
 				B33FB1BF172B185C006529CE /* NWAppDelegate.m */,
@@ -330,7 +330,7 @@
 				B33FB1C8172B185C006529CE /* icon.icns in Resources */,
 				B33FB1CA172B185C006529CE /* MainMenu.xib in Resources */,
 				B3B4DCD318A7998300F9F258 /* LICENSE.txt in Resources */,
-				B3AFABEF172C81910027346A /* configuration.plist in Resources */,
+				B3AFABEF172C81910027346A /* config.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

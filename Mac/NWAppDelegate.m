@@ -24,11 +24,12 @@
     IBOutlet NSButton *_reconnectButton;
     IBOutlet NSPopUpButton *_expiryPopup;
     IBOutlet NSPopUpButton *_priorityPopup;
-
+    
     NWHub *_hub;
     NSDictionary *_config;
     NSArray *_certificateIdentityPairs;
     NSUInteger _lastSelectedIndex;
+    NWCertificateRef _selectedCertificate;
     
     dispatch_queue_t _serial;
 }
@@ -45,6 +46,7 @@
     
     _certificateIdentityPairs = @[];
     [self loadCertificatesFromKeychain];
+    [self migrateOldConfigurationIfNeeded];
     [self loadConfig];
     [self updateCertificatePopup];
     
@@ -52,11 +54,12 @@
     _payloadField.string = payload.length ? payload : @"";
     _payloadField.font = [NSFont fontWithName:@"Courier" size:10];
     _payloadField.enabledTextCheckingTypes = 0;
-    [self textDidChange:nil];
+    [self updatePayloadCounter];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification
 {
+    [self saveConfig];
     NWLRemovePrinter("NWPusher");
     NWLog(@"Application will terminate");
     [_hub disconnect]; _hub.delegate = nil; _hub = nil;
@@ -74,30 +77,30 @@
     [self connectWithCertificateAtIndex:_certificatePopup.indexOfSelectedItem];
 }
 
+- (IBAction)tokenSelected:(NSComboBox *)sender
+{
+    [self selectTokenAndUpdateCombo];
+}
+
 - (void)textDidChange:(NSNotification *)notification
 {
-    NSString *payload = _payloadField.string;
-    BOOL isJSON = !![NSJSONSerialization JSONObjectWithData:[payload dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
-    _countField.stringValue = [NSString stringWithFormat:@"%@  %lu", isJSON ? @"" : @"malformed", payload.length];
-    _countField.textColor = payload.length > 256 || !isJSON ? NSColor.redColor : NSColor.darkGrayColor;
+    if (notification.object == _payloadField) [self updatePayloadCounter];
+}
+
+- (void)controlTextDidChange:(NSNotification *)notification
+{
+//    if (notification.object == _tokenCombo) [self something];
 }
 
 - (IBAction)push:(NSButton *)sender
 {
-    if (_hub) {
-        [self push];
-    } else {
-        NWLogWarn(@"No certificate selected");
-    }
+    [self addTokenAndUpdateCombo];
+    [self push];
 }
 
 - (IBAction)reconnect:(NSButton *)sender
 {
-    if (_hub) {
-        [self reconnect];
-    } else {
-        NWLogWarn(@"No certificate selected");
-    }
+    [self reconnect];
 }
 
 - (void)notification:(NWNotification *)notification didFailWithResult:(NWError)result
@@ -207,7 +210,7 @@
 
 #pragma mark - Expiry and Priority
 
-- (NSDate *)expirySelected
+- (NSDate *)selectedExpiry
 {
     switch(_expiryPopup.indexOfSelectedItem) {
         case 1: return [NSDate dateWithTimeIntervalSince1970:0];
@@ -221,7 +224,7 @@
     return nil;
 }
 
-- (NSUInteger)prioritySelected
+- (NSUInteger)selectedPriority
 {
     switch(_priorityPopup.indexOfSelectedItem) {
         case 1: return 5;
@@ -231,6 +234,14 @@
 }
 
 #pragma mark - Payload
+
+- (void)updatePayloadCounter
+{
+    NSString *payload = _payloadField.string;
+    BOOL isJSON = !![NSJSONSerialization JSONObjectWithData:[payload dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+    _countField.stringValue = [NSString stringWithFormat:@"%@  %lu", isJSON ? @"" : @"malformed", payload.length];
+    _countField.textColor = payload.length > 256 || !isJSON ? NSColor.redColor : NSColor.darkGrayColor;
+}
 
 - (void)upPayloadTextIndex
 {
@@ -252,12 +263,17 @@
 {
     if (index == 0) {
         [_certificatePopup selectItemAtIndex:0];
+        _lastSelectedIndex = 0;
         [self selectCertificate:nil identity:nil];
+        _tokenCombo.enabled = NO;
+        [self loadSelectedToken];
     } else if (index <= _certificateIdentityPairs.count) {
         [_certificatePopup selectItemAtIndex:index];
         _lastSelectedIndex = index;
         NSArray *pair = [_certificateIdentityPairs objectAtIndex:index - 1];
         [self selectCertificate:pair[0] identity:pair[1] == NSNull.null ? nil : pair[1]];
+        _tokenCombo.enabled = YES;
+        [self loadSelectedToken];
     } else {
         [_certificatePopup selectItemAtIndex:_lastSelectedIndex];
         [self importIdentity];
@@ -273,10 +289,8 @@
         NWLogInfo(@"Disconnected from APN");
     }
     
-    NSArray *tokens = [self tokensForCertificate:certificate];
-    [_tokenCombo removeAllItems];
-    //_tokenCombo.stringValue = @"";
-    [_tokenCombo addItemsWithObjectValues:tokens];
+    _selectedCertificate = certificate;
+    [self updateTokenCombo];
     
     if (certificate) {
         NWLogInfo(@"Connecting...");
@@ -332,8 +346,8 @@
 {
     NSString *payload = _payloadField.string;
     NSString *token = _tokenCombo.stringValue;
-    NSDate *expiry = self.expirySelected;
-    NSUInteger priority = self.prioritySelected;
+    NSDate *expiry = self.selectedExpiry;
+    NSUInteger priority = self.selectedPriority;
     NWLogInfo(@"Pushing..");
     dispatch_async(_serial, ^{
         NWNotification *notification = [[NWNotification alloc] initWithPayload:payload token:token identifier:0 expiration:expiry priority:priority];
@@ -351,54 +365,137 @@
 
 #pragma mark - Config
 
-- (void)loadConfig
+- (NSString *)identifierWithCertificate:(NWCertificateRef)certificate
 {
-    NSURL *defaultURL = [NSBundle.mainBundle URLForResource:@"configuration" withExtension:@"plist"];
-    _config = [NSDictionary dictionaryWithContentsOfURL:defaultURL];
-    NSURL *libraryURL = [[NSFileManager.defaultManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
-    NSURL *configURL = [libraryURL URLByAppendingPathComponent:@"Pusher" isDirectory:YES];
-    if (configURL) {
-        NSError *error = nil;
-        BOOL exists = [NSFileManager.defaultManager createDirectoryAtURL:configURL withIntermediateDirectories:YES attributes:nil error:&error];
-        NWLogWarnIfError(error);
-        if (exists) {
-            NSURL *plistURL = [configURL URLByAppendingPathComponent:@"configuration.plist"];
-            NSDictionary *config = [NSDictionary dictionaryWithContentsOfURL:plistURL];
-            if ([config isKindOfClass:NSDictionary.class]) {
-                NWLogInfo(@"Read configuration from ~/Library/Pusher/configuration.plist");
-                _config = config;
-            } else if (![NSFileManager.defaultManager fileExistsAtPath:plistURL.path]){
-                [_config writeToURL:plistURL atomically:NO];
-                NWLogInfo(@"Created default configuration in ~/Library/Pusher/configuration.plist");
-            } else {
-                NWLogInfo(@"Unable to read configuration from ~/Library/Pusher/configuration.plist");
-            }
-        }
-    }
-}
-
-- (NSArray *)tokensForCertificate:(id)certificate
-{
-    NSMutableArray *result = [[NSMutableArray alloc] init];
     BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
     NSString *summary = [NWSecTools summaryWithCertificate:certificate];
-    for (NSDictionary *dict in [_config valueForKey:@"tokens"]) {
-        NSArray *identifiers = [dict valueForKey:@"identifiers"];
-        BOOL match = !identifiers;
-        for (NSString *i in identifiers) {
-            if ([i isEqualToString:summary]) {
-                match = YES;
-                break;
+    return summary ? [NSString stringWithFormat:@"%@%@", summary, sandbox ? @"-sandbox" : @""] : nil;
+}
+
+- (NSMutableArray *)tokensWithCertificate:(NWCertificateRef)certificate create:(BOOL)create
+{
+    NSString *identifier = [self identifierWithCertificate:certificate];
+    if (!identifier) return nil;
+    NSArray *result = _config[@"identifiers"][identifier];
+    if (create && !result) result = (_config[@"identifiers"][identifier] = @[].mutableCopy);
+    if (result && ![result isKindOfClass:NSMutableArray.class]) result = (_config[@"identifiers"][identifier] = result.mutableCopy);
+    return (NSMutableArray *)result;
+}
+
+- (BOOL)addToken:(NSString *)token certificate:(NWCertificateRef)certificate
+{
+    NSMutableArray *tokens = [self tokensWithCertificate:certificate create:YES];
+    if (token.length && ![tokens containsObject:token]) {
+        [tokens addObject:token];
+        return YES;
+    }
+    return NO;
+}
+
+- (BOOL)removeToken:(NSString *)token certificate:(NWCertificateRef)certificate
+{
+    NSMutableArray *tokens = [self tokensWithCertificate:certificate create:NO];
+    if (token && [tokens containsObject:token]) {
+        [tokens removeObject:token];
+        return YES;
+    }
+    return NO;
+}
+
+- (BOOL)selectToken:(NSString *)token certificate:(NWCertificateRef)certificate
+{
+    NSMutableArray *tokens = [self tokensWithCertificate:certificate create:YES];
+    if (token && [tokens containsObject:token]) {
+        [tokens removeObject:token];
+        [tokens addObject:token];
+        return YES;
+    }
+    return NO;
+}
+
+- (void)updateTokenCombo
+{
+    [_tokenCombo removeAllItems];
+    NSArray *tokens = [self tokensWithCertificate:_selectedCertificate create:NO];
+    if (tokens.count) [_tokenCombo addItemsWithObjectValues:tokens.reverseObjectEnumerator.allObjects];
+}
+
+- (void)loadSelectedToken
+{
+    _tokenCombo.stringValue = [[self tokensWithCertificate:_selectedCertificate create:YES] lastObject] ?: @"";
+}
+
+- (void)addTokenAndUpdateCombo
+{
+    BOOL added = [self addToken:_tokenCombo.stringValue certificate:_selectedCertificate];
+    if (added) [self updateTokenCombo];
+}
+
+- (void)selectTokenAndUpdateCombo
+{
+    BOOL selected = [self selectToken:_tokenCombo.stringValue certificate:_selectedCertificate];
+    if (selected) [self updateTokenCombo];
+}
+
+- (NSURL *)configFileURL
+{
+    NSURL *libraryURL = [[NSFileManager.defaultManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL *configURL = [libraryURL URLByAppendingPathComponent:@"Pusher" isDirectory:YES];
+    if (!configURL) return nil;
+    NSError *error = nil;
+    BOOL exists = [NSFileManager.defaultManager createDirectoryAtURL:configURL withIntermediateDirectories:YES attributes:nil error:&error];
+    NWLogWarnIfError(error);
+    if (!exists) return nil;
+    NSURL *result = [configURL URLByAppendingPathComponent:@"config.plist"];
+    if (![NSFileManager.defaultManager fileExistsAtPath:result.path]){
+        NSURL *defaultURL = [NSBundle.mainBundle URLForResource:@"config" withExtension:@"plist"];
+        [NSFileManager.defaultManager copyItemAtURL:defaultURL toURL:result error:&error];
+        NWLogWarnIfError(error);
+    }
+    return result;
+}
+
+- (void)loadConfig
+{
+    _config = [NSDictionary dictionaryWithContentsOfURL:[self configFileURL]];
+}
+
+- (void)saveConfig
+{
+    if (_config.count) [_config writeToURL:[self configFileURL] atomically:NO];
+}
+
+- (void)migrateOldConfigurationIfNeeded
+{
+    NSURL *libraryURL = [[NSFileManager.defaultManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL *configURL = [libraryURL URLByAppendingPathComponent:@"Pusher" isDirectory:YES];
+    NSURL *newURL = [configURL URLByAppendingPathComponent:@"config.plist"];
+    NSURL *oldURL = [configURL URLByAppendingPathComponent:@"configuration.plist"];
+    if ([NSFileManager.defaultManager fileExistsAtPath:newURL.path]) return;
+    if (![NSFileManager.defaultManager fileExistsAtPath:oldURL.path]) return;
+    NSDictionary *old = [NSDictionary dictionaryWithContentsOfURL:oldURL];
+    NSMutableDictionary *identifiers = @{}.mutableCopy;
+    for (NSDictionary *d in old[@"tokens"]) {
+        for (NSString *identifier in d[@"identifiers"]) {
+            for (NSArray *token in d[@"development"]) {
+                NSString *key = [NSString stringWithFormat:@"%@-sandbox", identifier];
+                if (!identifiers[key]) identifiers[key] = @[].mutableCopy;
+                [identifiers[key] addObject:token];
             }
-        }
-        if (match) {
-            NSArray *tokens = sandbox ? [dict valueForKey:@"development"] : [dict valueForKey:@"production"];
-            if (tokens.count) {
-                [result addObjectsFromArray:tokens];
+            for (NSArray *token in d[@"production"]) {
+                NSString *key = identifier;
+                if (!identifiers[key]) identifiers[key] = @[].mutableCopy;
+                [identifiers[key] addObject:token];
             }
         }
     }
-    return result;
+    NSMutableDictionary *new = @{}.mutableCopy;
+    new[@"payload"] = old[@"payload"];
+    new[@"identifiers"] = identifiers;
+    [new writeToURL:newURL atomically:NO];
+    NSError *error = nil;
+    [NSFileManager.defaultManager removeItemAtURL:oldURL error:&error];
+    NWLogWarnIfError(error);
 }
 
 #pragma mark - Logging
