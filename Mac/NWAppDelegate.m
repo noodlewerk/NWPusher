@@ -246,10 +246,10 @@
 - (void)upPayloadTextIndex
 {
     NSString *payload = _payloadField.string;
-    NSRange range = [payload rangeOfString:@"Testing.. \\([0-9]+\\)" options:NSRegularExpressionSearch];
+    NSRange range = [payload rangeOfString:@"\\([0-9]+\\)" options:NSRegularExpressionSearch];
     if (range.location != NSNotFound) {
-        range.location += 11;
-        range.length -= 12;
+        range.location += 1;
+        range.length -= 2;
         NSString *before = [payload substringToIndex:range.location];
         NSUInteger value = [payload substringWithRange:range].integerValue + 1;
         NSString *after = [payload substringFromIndex:range.location + range.length];
