@@ -55,10 +55,12 @@ static NSUInteger const NWTokenMaxSize = 32;
 
 - (NWError)readTokenData:(NSData **)token date:(NSDate **)date
 {
+    *token = nil;
+    *date = nil;
     NSMutableData *data = [NSMutableData dataWithLength:sizeof(uint32_t) + sizeof(uint16_t) + NWTokenMaxSize];
     NSUInteger length = 0;
     NWError read = [_connection read:data length:&length];
-    if (read != kNWSuccess) {
+    if (read != kNWSuccess || length == 0) {
         return read;
     }
     if (length != data.length) {
@@ -66,25 +68,26 @@ static NSUInteger const NWTokenMaxSize = 32;
     }
     uint32_t time = 0;
     [data getBytes:&time range:NSMakeRange(0, 4)];
-    if (date) *date = [NSDate dateWithTimeIntervalSince1970:htonl(time)];
+    *date = [NSDate dateWithTimeIntervalSince1970:htonl(time)];
     uint16_t l = 0;
     [data getBytes:&l range:NSMakeRange(4, 2)];
     NSUInteger tokenLength = htons(l);
     if (tokenLength != NWTokenMaxSize) {
         return kNWErrorFeedbackTokenLength;
     }
-    if (token) *token = [data subdataWithRange:NSMakeRange(6, length - 6)];
+    *token = [data subdataWithRange:NSMakeRange(6, length - 6)];
     return kNWSuccess;
 }
 
 - (NWError)readToken:(NSString **)token date:(NSDate **)date;
 {
+    *token = nil;
     NSData *data = nil;
     NWError read = [self readTokenData:&data date:date];
     if (read != kNWSuccess) {
         return read;
     }
-    *token = [NWNotification hexFromData:data];
+    if (data) *token = [NWNotification hexFromData:data];
     return read;
 }
 

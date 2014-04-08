@@ -10,6 +10,7 @@
 #import "NWNotification.h"
 #import "NWSecTools.h"
 #import "NWLCore.h"
+#import "NWPushFeedback.h"
 
 
 @interface NWAppDelegate () <NWHubDelegate> @end
@@ -56,8 +57,8 @@
     _payloadField.string = payload.length ? payload : @"";
     _payloadField.font = [NSFont fontWithName:@"Courier" size:10];
     _payloadField.enabledTextCheckingTypes = 0;
+    _logField.enabledTextCheckingTypes = 0;
     [self updatePayloadCounter];
-    NWLog(@"");
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification
@@ -116,6 +117,10 @@
 
 - (IBAction)selectOutput:(NSSegmentedControl *)sender {
     _logScroll.hidden = sender.selectedSegment != 1;
+}
+
+- (IBAction)readFeedback:(id)sender {
+    [self feedback];
 }
 
 #pragma mark - Certificate and Identity
@@ -300,7 +305,9 @@
     [self updateTokenCombo];
     
     if (certificate) {
-        NWLogInfo(@"Connecting...");
+        BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
+        NSString *summary = [NWSecTools summaryWithCertificate:certificate];
+        NWLogInfo(@"Connecting to APN..  (%@%@)", summary, sandbox ? @" sandbox" : @"");
         
         dispatch_async(_serial, ^{
             NWHub *hub = [[NWHub alloc] initWithDelegate:self];
@@ -314,9 +321,7 @@
             }
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (connected == kNWSuccess) {
-                    BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
-                    NSString *summary = [NWSecTools summaryWithCertificate:certificate];
-                    NWLogInfo(@"Connected to APN: %@%@", summary, sandbox ? @" (sandbox)" : @"");
+                    NWLogInfo(@"Connected (%@%@)", summary, sandbox ? @" sandbox" : @"");
                     _hub = hub;
                     _pushButton.enabled = YES;
                     _reconnectButton.enabled = YES;
@@ -367,6 +372,45 @@
                 [self upPayloadTextIndex];
             });
         });
+    });
+}
+
+- (void)feedback
+{
+    dispatch_async(_serial, ^{
+        NWCertificateRef certificate = _selectedCertificate;
+        if (!certificate) {
+            NWLogWarn(@"Unable to connect to feedback service: no certificate selected");
+            return;
+        }
+        BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
+        NSString *summary = [NWSecTools summaryWithCertificate:certificate];
+        NWLogInfo(@"Connecting to feedback service..  (%@%@)", summary, sandbox ? @" sandbox" : @"");
+        NWIdentityRef identity = nil;
+        NWError connected = [NWSecTools keychainIdentityWithCertificate:_selectedCertificate identity:&identity];
+        NWPushFeedback *feedback = [[NWPushFeedback alloc] init];
+        if (connected == kNWSuccess) {
+            connected = [feedback connectWithIdentity:identity];
+        }
+        if (connected != kNWSuccess) {
+            NWLogWarn(@"Unable to connect to feedback service: %@", [NWErrorUtil stringWithError:connected]);
+            return;
+        }
+        NWLogInfo(@"Reading feedback service..  (%@%@)", summary, sandbox ? @" sandbox" : @"");
+        NSArray *pairs = nil;
+        NWError read = [feedback readTokenDatePairs:&pairs max:1000];
+        if (read != kNWSuccess) {
+            NWLogWarn(@"Unable to read feedback: %@", [NWErrorUtil stringWithError:read]);
+            return;
+        }
+        for (NSArray *pair in pairs) {
+            NWLogInfo(@"token: %@  date: %@", pair[0], pair[1]);
+        }
+        if (pairs.count) {
+            NWLogInfo(@"Feedback service returned %i device tokens, see logs for details", (int)pairs.count);
+        } else {
+            NWLogInfo(@"Feedback service returned zero device tokens");
+        }
     });
 }
 
@@ -510,9 +554,10 @@
 - (void)log:(NSString *)message warning:(BOOL)warning
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSDictionary *attributes = @{NSForegroundColorAttributeName: warning ? NSColor.redColor : NSColor.blackColor};
+        _infoField.textColor = warning ? NSColor.redColor : NSColor.blackColor;
+        _infoField.stringValue = message;
+        NSDictionary *attributes = @{NSForegroundColorAttributeName: _infoField.textColor, NSFontAttributeName: [NSFont fontWithName:@"Courier" size:10]};
         NSAttributedString *string = [[NSAttributedString alloc] initWithString:message attributes:attributes];
-        _infoField.attributedStringValue = string;
         [_logField.textStorage appendAttributedString:string];
         [_logField.textStorage.mutableString appendString:@"\n"];
         [_logField scrollRangeToVisible:NSMakeRange(_logField.textStorage.length - 1, 1)];
