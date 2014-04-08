@@ -42,7 +42,7 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
-    NWLog(@"Application did finish launching");
+    NWLogInfo(@"Application did finish launching");
     NWLAddPrinter("NWPusher", NWPusherPrinter, 0);
     NWLPrintInfo();
     _serial = dispatch_queue_create("NWAppDelegate", DISPATCH_QUEUE_SERIAL);
@@ -55,18 +55,19 @@
     
     NSString *payload = [_config valueForKey:@"payload"];
     _payloadField.string = payload.length ? payload : @"";
-    _payloadField.font = [NSFont fontWithName:@"Courier" size:10];
+    _payloadField.font = [NSFont fontWithName:@"Monaco" size:10];
     _payloadField.enabledTextCheckingTypes = 0;
     _logField.enabledTextCheckingTypes = 0;
     [self updatePayloadCounter];
+    NWLogInfo(@"");
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification
 {
     [self saveConfig];
     NWLRemovePrinter("NWPusher");
-    NWLog(@"Application will terminate");
     [_hub disconnect]; _hub.delegate = nil; _hub = nil;
+    NWLogInfo(@"Application will terminate");
 }
 
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)application
@@ -321,7 +322,7 @@
             }
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (connected == kNWSuccess) {
-                    NWLogInfo(@"Connected (%@%@)", summary, sandbox ? @" sandbox" : @"");
+                    NWLogInfo(@"Connected  (%@%@)", summary, sandbox ? @" sandbox" : @"");
                     _hub = hub;
                     _pushButton.enabled = YES;
                     _reconnectButton.enabled = YES;
@@ -508,7 +509,9 @@
 
 - (void)loadConfig
 {
-    _config = [NSDictionary dictionaryWithContentsOfURL:[self configFileURL]];
+    NSURL *url = [self configFileURL];
+    _config = [NSDictionary dictionaryWithContentsOfURL:url];
+    NWLogInfo(@"Loaded config from %@", url.path);
 }
 
 - (void)saveConfig
@@ -524,6 +527,7 @@
     NSURL *oldURL = [configURL URLByAppendingPathComponent:@"configuration.plist"];
     if ([NSFileManager.defaultManager fileExistsAtPath:newURL.path]) return;
     if (![NSFileManager.defaultManager fileExistsAtPath:oldURL.path]) return;
+    NWLogInfo(@"Migrating old configuration to new format");
     NSDictionary *old = [NSDictionary dictionaryWithContentsOfURL:oldURL];
     NSMutableDictionary *identifiers = @{}.mutableCopy;
     for (NSDictionary *d in old[@"tokens"]) {
@@ -556,11 +560,13 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         _infoField.textColor = warning ? NSColor.redColor : NSColor.blackColor;
         _infoField.stringValue = message;
-        NSDictionary *attributes = @{NSForegroundColorAttributeName: _infoField.textColor, NSFontAttributeName: [NSFont fontWithName:@"Courier" size:10]};
-        NSAttributedString *string = [[NSAttributedString alloc] initWithString:message attributes:attributes];
-        [_logField.textStorage appendAttributedString:string];
-        [_logField.textStorage.mutableString appendString:@"\n"];
-        [_logField scrollRangeToVisible:NSMakeRange(_logField.textStorage.length - 1, 1)];
+        if (message.length) {
+            NSDictionary *attributes = @{NSForegroundColorAttributeName: _infoField.textColor, NSFontAttributeName: [NSFont fontWithName:@"Monaco" size:10]};
+            NSAttributedString *string = [[NSAttributedString alloc] initWithString:message attributes:attributes];
+            [_logField.textStorage appendAttributedString:string];
+            [_logField.textStorage.mutableString appendString:@"\n"];
+            [_logField scrollRangeToVisible:NSMakeRange(_logField.textStorage.length - 1, 1)];
+        }
     });
 }
 

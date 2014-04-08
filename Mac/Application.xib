@@ -198,7 +198,7 @@
                         <rect key="frame" x="20" y="230" width="563" height="23"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Device push token (only first 64 hex chars used, other text is ignored)" drawsBackground="YES" completes="NO" numberOfVisibleItems="5" id="Dzy-yi-6QY">
-                            <font key="font" size="10" name="Courier"/>
+                            <font key="font" size="10" name="Monaco"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </comboBoxCell>
@@ -249,7 +249,7 @@
                         </popUpButtonCell>
                     </popUpButton>
                     <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EnU-aP-5PD">
-                        <rect key="frame" x="464" y="203" width="118" height="24"/>
+                        <rect key="frame" x="464" y="199" width="118" height="24"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <segmentedCell key="cell" alignment="left" style="rounded" trackingMode="selectOne" id="Olm-G5-Man">
                             <font key="font" metaFont="system"/>
@@ -370,25 +370,25 @@
                 <constraints>
                     <constraint firstAttribute="trailing" secondItem="pAB-wf-piT" secondAttribute="trailing" constant="20" id="1DK-KM-tMh"/>
                     <constraint firstItem="pAB-wf-piT" firstAttribute="top" secondItem="Q6j-iu-9I9" secondAttribute="bottom" constant="4" id="4hK-j5-BnD"/>
-                    <constraint firstItem="EnU-aP-5PD" firstAttribute="top" secondItem="imk-VN-mp1" secondAttribute="top" id="52s-fR-SJc"/>
+                    <constraint firstItem="EnU-aP-5PD" firstAttribute="top" secondItem="imk-VN-mp1" secondAttribute="top" constant="4" id="52s-fR-SJc"/>
                     <constraint firstItem="aJR-Gv-8Xr" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" constant="20" id="6JP-pH-jau"/>
                     <constraint firstItem="imk-VN-mp1" firstAttribute="top" secondItem="xpc-0j-elb" secondAttribute="bottom" constant="8" id="9KO-B9-3bt"/>
                     <constraint firstItem="imk-VN-mp1" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="20" id="9ZJ-jz-1To"/>
                     <constraint firstItem="c5v-al-Hn5" firstAttribute="top" secondItem="xpc-0j-elb" secondAttribute="bottom" constant="8" id="A7G-lD-MBE"/>
                     <constraint firstAttribute="trailing" secondItem="Q6j-iu-9I9" secondAttribute="trailing" constant="20" id="A8j-am-oIW"/>
-                    <constraint firstItem="Q6j-iu-9I9" firstAttribute="top" secondItem="EnU-aP-5PD" secondAttribute="bottom" constant="8" id="DcC-14-fIg"/>
+                    <constraint firstItem="Q6j-iu-9I9" firstAttribute="top" secondItem="EnU-aP-5PD" secondAttribute="bottom" constant="4" id="DcC-14-fIg"/>
                     <constraint firstAttribute="trailing" secondItem="2E1-cP-egh" secondAttribute="trailing" constant="20" id="Fb7-EE-6Pl"/>
                     <constraint firstItem="pAB-wf-piT" firstAttribute="leading" secondItem="M70-t1-JuG" secondAttribute="trailing" constant="8" id="GxM-KC-Qel"/>
-                    <constraint firstItem="EnU-aP-5PD" firstAttribute="top" secondItem="xpc-0j-elb" secondAttribute="bottom" constant="8" symbolic="YES" id="J5e-d8-3qc"/>
+                    <constraint firstItem="EnU-aP-5PD" firstAttribute="top" secondItem="xpc-0j-elb" secondAttribute="bottom" constant="12" id="J5e-d8-3qc"/>
                     <constraint firstItem="xpc-0j-elb" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="20" id="NPP-1E-QSG"/>
                     <constraint firstAttribute="bottom" secondItem="pAB-wf-piT" secondAttribute="bottom" constant="20" id="PCy-YQ-oFx"/>
                     <constraint firstItem="Q6j-iu-9I9" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="20" id="Q0j-zh-MUZ"/>
-                    <constraint firstItem="z4n-XE-cfI" firstAttribute="top" secondItem="EnU-aP-5PD" secondAttribute="bottom" constant="8" id="RTl-r4-RsH"/>
+                    <constraint firstItem="z4n-XE-cfI" firstAttribute="top" secondItem="EnU-aP-5PD" secondAttribute="bottom" constant="4" id="RTl-r4-RsH"/>
                     <constraint firstItem="c5v-al-Hn5" firstAttribute="leading" secondItem="imk-VN-mp1" secondAttribute="trailing" constant="8" id="Syg-OZ-s0W"/>
                     <constraint firstItem="2E1-cP-egh" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" constant="20" id="VPW-kd-JRb"/>
                     <constraint firstItem="pAB-wf-piT" firstAttribute="top" secondItem="z4n-XE-cfI" secondAttribute="bottom" constant="4" id="VSi-vV-wpY"/>
                     <constraint firstItem="xpc-0j-elb" firstAttribute="top" secondItem="aJR-Gv-8Xr" secondAttribute="bottom" constant="8" id="ejA-7v-S2S"/>
-                    <constraint firstItem="EnU-aP-5PD" firstAttribute="top" secondItem="c5v-al-Hn5" secondAttribute="top" id="emm-N1-qPy"/>
+                    <constraint firstItem="EnU-aP-5PD" firstAttribute="top" secondItem="c5v-al-Hn5" secondAttribute="top" constant="4" id="emm-N1-qPy"/>
                     <constraint firstAttribute="trailing" secondItem="z4n-XE-cfI" secondAttribute="trailing" constant="20" id="gM0-t7-RqF"/>
                     <constraint firstItem="M70-t1-JuG" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="20" id="ief-Fk-3Mg"/>
                     <constraint firstAttribute="trailing" secondItem="gQs-Aa-IJi" secondAttribute="trailing" constant="28" id="oT0-VS-Mam"/>
