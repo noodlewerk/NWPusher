@@ -29,7 +29,7 @@
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2012 noodlewerk. All rights reserved.</string>
 	<key>NSMainNibFile</key>
-	<string>MainMenu</string>
+	<string>Application</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>

@@ -18,13 +18,15 @@
     IBOutlet NSPopUpButton *_certificatePopup;
     IBOutlet NSComboBox *_tokenCombo;
     IBOutlet NSTextView *_payloadField;
+    IBOutlet NSTextView *_logField;
     IBOutlet NSTextField *_countField;
     IBOutlet NSTextField *_infoField;
     IBOutlet NSButton *_pushButton;
     IBOutlet NSButton *_reconnectButton;
     IBOutlet NSPopUpButton *_expiryPopup;
     IBOutlet NSPopUpButton *_priorityPopup;
-    
+    IBOutlet NSScrollView *_logScroll;
+
     NWHub *_hub;
     NSDictionary *_config;
     NSArray *_certificateIdentityPairs;
@@ -55,6 +57,7 @@
     _payloadField.font = [NSFont fontWithName:@"Courier" size:10];
     _payloadField.enabledTextCheckingTypes = 0;
     [self updatePayloadCounter];
+    NWLog(@"");
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification
@@ -109,6 +112,10 @@
         //NSLog(@"failed notification: %@ %@ %lu %lu %lu", notification.payload, notification.token, notification.identifier, notification.expires, notification.priority);
         NWLogWarn(@"Notification error: %@", [NWErrorUtil stringWithError:result]);
     });
+}
+
+- (IBAction)selectOutput:(NSSegmentedControl *)sender {
+    _logScroll.hidden = sender.selectedSegment != 1;
 }
 
 #pragma mark - Certificate and Identity
@@ -503,13 +510,17 @@
 - (void)log:(NSString *)message warning:(BOOL)warning
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        _infoField.textColor = warning ? NSColor.redColor : NSColor.blackColor;
-        _infoField.stringValue = message;
+        NSDictionary *attributes = @{NSForegroundColorAttributeName: warning ? NSColor.redColor : NSColor.blackColor};
+        NSAttributedString *string = [[NSAttributedString alloc] initWithString:message attributes:attributes];
+        _infoField.attributedStringValue = string;
+        [_logField.textStorage appendAttributedString:string];
+        [_logField.textStorage.mutableString appendString:@"\n"];
+        [_logField scrollRangeToVisible:NSMakeRange(_logField.textStorage.length - 1, 1)];
     });
 }
 
 static void NWPusherPrinter(NWLContext context, CFStringRef message, void *info) {
-    BOOL warning = strncmp(context.tag, "warn", 5) == 0;
+    BOOL warning = context.tag && strncmp(context.tag, "warn", 5) == 0;
     id delegate = NSApplication.sharedApplication.delegate;
     [delegate log:(__bridge NSString *)message warning:warning];
 }

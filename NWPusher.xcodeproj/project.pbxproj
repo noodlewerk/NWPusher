@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B3005FC318F43659009BB7C3 /* Application.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3005FC218F43659009BB7C3 /* Application.xib */; };
 		B3376A63172BB71200242EBB /* NWLCore.c in Sources */ = {isa = PBXBuildFile; fileRef = B3376A61172BB71200242EBB /* NWLCore.c */; };
 		B3376A64172BB71200242EBB /* NWLCore.c in Sources */ = {isa = PBXBuildFile; fileRef = B3376A61172BB71200242EBB /* NWLCore.c */; };
 		B33FB1C8172B185C006529CE /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = B33FB1BB172B185C006529CE /* icon.icns */; };
 		B33FB1C9172B185C006529CE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B33FB1BC172B185C006529CE /* main.m */; };
-		B33FB1CA172B185C006529CE /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B33FB1BD172B185C006529CE /* MainMenu.xib */; };
 		B33FB1CB172B185C006529CE /* NWAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B33FB1BF172B185C006529CE /* NWAppDelegate.m */; };
 		B33FB1F8172B1A7A006529CE /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B33FB1EE172B1A7A006529CE /* Default-568h@2x.png */; };
 		B33FB1F9172B1A7A006529CE /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = B33FB1EF172B1A7A006529CE /* Default.png */; };
@@ -51,11 +51,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B3005FC218F43659009BB7C3 /* Application.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Application.xib; sourceTree = "<group>"; };
 		B3376A61172BB71200242EBB /* NWLCore.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = NWLCore.c; path = Mac/NWLCore.c; sourceTree = SOURCE_ROOT; };
 		B3376A62172BB71200242EBB /* NWLCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NWLCore.h; path = Mac/NWLCore.h; sourceTree = SOURCE_ROOT; };
 		B33FB1BB172B185C006529CE /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
 		B33FB1BC172B185C006529CE /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		B33FB1BD172B185C006529CE /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
 		B33FB1BE172B185C006529CE /* NWAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWAppDelegate.h; sourceTree = "<group>"; };
 		B33FB1BF172B185C006529CE /* NWAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWAppDelegate.m; sourceTree = "<group>"; };
 		B33FB1C0172B185C006529CE /* PusherMac-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "PusherMac-Info.plist"; sourceTree = "<group>"; };
@@ -159,7 +159,7 @@
 			isa = PBXGroup;
 			children = (
 				B3AFABEE172C81910027346A /* config.plist */,
-				B33FB1BD172B185C006529CE /* MainMenu.xib */,
+				B3005FC218F43659009BB7C3 /* Application.xib */,
 				B33FB1BE172B185C006529CE /* NWAppDelegate.h */,
 				B33FB1BF172B185C006529CE /* NWAppDelegate.m */,
 				B3376A60172B9F1F00242EBB /* Supporting Files */,
@@ -328,7 +328,7 @@
 			files = (
 				B3C6BE0115FD30E900F1F3F1 /* README.md in Resources */,
 				B33FB1C8172B185C006529CE /* icon.icns in Resources */,
-				B33FB1CA172B185C006529CE /* MainMenu.xib in Resources */,
+				B3005FC318F43659009BB7C3 /* Application.xib in Resources */,
 				B3B4DCD318A7998300F9F258 /* LICENSE.txt in Resources */,
 				B3AFABEF172C81910027346A /* config.plist in Resources */,
 			);
