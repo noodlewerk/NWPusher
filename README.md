@@ -35,22 +35,25 @@ Testing push notifications for your iOS app can be a pain. You might consider se
 
 Enter *Pusher*, a Mac and iPhone app for sending push notifications *directly* to the *Apple Push Notification Service*. No need to set up a server or create an account online. You only need the SSL certificate and a device token to start pushing directly from your Mac, or even from an iPhone!
 
-Pusher comes with a small library for both OS X and iOS, that provides various tools for sending notifications programmatically. On OS X it can use the keychain to retrieve push certificates and keys. Pusher can also be used without keychain, using a PKCS12 file, e.g. when pushing from iOS.
+Pusher comes with a small library for both OS X and iOS, that provides various tools for sending notifications programmatically. On OS X it can use the keychain to retrieve push certificates and keys. Pusher can also be used without keychain, using a PKCS #12 file.
 
 
 Features
 --------
 Mac OS X application for sending push notifications through the APN service:
-- Takes certificates and keys directly from the keychain
-- Preconfigure your device tokens so you don't have to copy-paste them every time
-- Fully customizable payload
-- Automatic configuration for sandbox
-- Reports error messages returned by APNS
+- Takes *certificates and keys* directly from the *keychain*
+- Fully customizable *payload* with *syntax checking*
+- Allows setting *expiration* and *priority*
+- *Stores device tokens* so you don't have to copy-paste them every time
+- Handles *PKCS #12* files (.p12)
+- Automatic configuration for *sandbox*
+- Reports *detailed error messages* returned by APNS
+- Reads from *feedback service*
 
 OS X/iOS library for sending pushes from your own application:
-- iOS compatible, so you can also push directly from your iPhone :o
-- Detailed error handling
 - Modular, no dependencies, use what you like
+- Detailed error handling
+- iOS compatible, so you can also push directly from your iPhone :o
 - Demo applications for both platforms
 
 
