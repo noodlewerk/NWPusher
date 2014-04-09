@@ -163,6 +163,7 @@
         BOOL hasIdentity = (pair[1] != NSNull.null);
         BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
         NSString *summary = [NWSecTools summaryWithCertificate:certificate];
+        // summary = @"com.example.app";
         [_certificatePopup addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@", hasIdentity ? @"imported: " : @"", summary, sandbox ? @" (sandbox)" : @"", suffix]];
         [suffix appendString:@" "];
     }
@@ -475,6 +476,7 @@
 - (void)loadSelectedToken
 {
     _tokenCombo.stringValue = [[self tokensWithCertificate:_selectedCertificate create:YES] lastObject] ?: @"";
+    // _tokenCombo.stringValue = @"552fff0a65b154eb209e9dc91201025da1a4a413dd2ad6d3b51e9b33b90c977a my iphone";
 }
 
 - (void)addTokenAndUpdateCombo
