@@ -7,17 +7,17 @@
 
 #import <Foundation/Foundation.h>
 
-typedef enum { // NWNotificationType
+typedef NS_ENUM(NSInteger, NWNotificationType) {
     kNWNotificationType0 = 0,
     kNWNotificationType1 = 1,
     kNWNotificationType2 = 2,
-} NWNotificationType;
+};
 
 typedef id NWIdentityRef; // SecIdentityRef
 typedef id NWCertificateRef; // SecCertificateRef
 typedef id NWKeyRef; // SecKeyRef
 
-typedef enum { // NWError
+typedef NS_ENUM(NSInteger, NWError) {
     kNWSuccess                                 =    0,
     
     kNWErrorAPNProcessing                      =   -1,
@@ -78,7 +78,7 @@ typedef enum { // NWError
     kNWErrorKeychainCopyMatching               = -401,
     kNWErrorKeychainItemNotFound               = -302,
     kNWErrorKeychainCreateIdentity             = -303,
-} NWError;
+};
 
 
 @interface NWErrorUtil : NSObject

@@ -7,14 +7,14 @@
 
 #import "NWSecTools.h"
 
-typedef enum {
+typedef NS_ENUM(NSInteger, NWCertType) {
     kNWCertTypeNone = 0,
     kNWCertTypeIOSDevelopment = 1,
     kNWCertTypeIOSProduction = 2,
     kNWCertTypeMacDevelopment = 3,
     kNWCertTypeMacProduction = 4,
     kNWCertTypeUnknown = 5,
-} NWCertType;
+};
 
 
 @implementation NWSecTools
