@@ -10,7 +10,7 @@ Pusher
 
 Installation
 ------------
-Install de Mac app using [Homebrew cask](https://github.com/phinze/homebrew-cask):
+Install the Mac app using [Homebrew cask](https://github.com/phinze/homebrew-cask):
 
 ```shell
 brew cask install pusher
