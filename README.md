@@ -244,16 +244,20 @@ Certificate and key files
 -------------------------
 Pusher reads certificate and key data from PKCS12 files. This is a binary format that bundles both X.509 certificates and a private key in one file. Conversion from other file formats to and from PKCS12 is provided by the OpenSSL CLI.
 
-PKCS12 to PEM:
+*PKCS12 to PEM:*
+
     openssl pkcs12 -in pusher.p12 -out pusher.pem -clcerts -aes256
 
-PEM to PKCS12:
-    openssl pkcs12 -export -in pusher.pem -out pusher.p12 -name "Apple Push Services"
+*PEM to PKCS12:*
 
-Inspect PKCS12:
+    openssl pkcs12 -export -in pusher.pem -out pusher.p12
+
+*Inspect PKCS12:*
+
     openssl pkcs12 -in pusher.p12 -info -noout
     
-Inspect PEM:
+*Inspect PEM:*
+
     openssl rsa -in pusher.pem -noout -check
     openssl rsa -in pusher.pem -pubout
     openssl x509 -in pusher.pem -noout -pubkey
