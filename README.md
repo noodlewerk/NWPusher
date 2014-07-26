@@ -10,7 +10,7 @@ Pusher
 
 Installation
 ------------
-Install de Mac app using [Homebrew cask](https://github.com/phinze/homebrew-cask):
+Install the Mac app using [Homebrew cask](https://github.com/phinze/homebrew-cask):
 
 ```shell
 brew cask install pusher
@@ -80,13 +80,14 @@ Both can be exported into a PKCS12 file, which allows you to share these with fe
 <img src="Docs/keychain2.png" alt="PKCS12 file" width="679"/>
 
 ### Device token
-Now you need to obtain a device token, which is a 64 character hex string. This should be done from within the iOS app you're going to push to. Add the following lines to your application delegate:
+Now you need to obtain a device token, which is a 64 character hex string (256 bits indeed). This should be done from within the iOS app you're going to push to. Add the following lines to the application delegate:
 
 ```objective-c
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    [UIApplication.sharedApplication  registerForRemoteNotificationTypes:
+    NSLog(@"Registering device for push notifications...");
+    [UIApplication.sharedApplication registerForRemoteNotificationTypes:
         UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge
         | UIRemoteNotificationTypeSound];
 }
@@ -94,13 +95,13 @@ Now you need to obtain a device token, which is a 64 character hex string. This 
 - (void)application:(UIApplication *)application
     didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token
 {
-    NSLog(@"Device token: %@", token);
+    NSLog(@"Registration successful, device token: %@", token);
 }
 
 - (void)application:(UIApplication *)application
     didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
-    NSLog(@"Failed to get token: %@", error);
+    NSLog(@"Failed to register: %@", error);
 }
 
 - (void)application:(UIApplication *)application
@@ -113,7 +114,7 @@ Now you need to obtain a device token, which is a 64 character hex string. This 
 Now, when you run the application, the 64 character push string will be logged to the console.
 
 ### Push from OS X
-With the SSL certificate and private key in the keychain and the device token on the pasteboard, you're finally ready to send some push notifications. Let's start by sending a notification using the Pusher OS X app. Open the Pusher Xcode project and run the PusherMac target:
+With the SSL certificate and private key in the keychain and the device token on the pasteboard, you're (finally) ready to send some push notifications. Let's start by sending a notification using the Pusher OS X app. Open the Pusher Xcode project and run the PusherMac target:
 
 <img src="Docs/osx.png" alt="Pusher OS X" width="591"/>
 
@@ -238,6 +239,24 @@ When connected read the device token and date of invalidation:
 ```
 
 Apple closes the connection after the last device token is read. Use `-readTokenDatePairs:max:` to read all device tokens in one method call.
+
+Certificate and key files
+-------------------------
+Pusher reads certificate and key data from PKCS12 files. This is a binary format that bundles both X.509 certificates and a private key in one file. Conversion from other file formats to and from PKCS12 is provided by the OpenSSL CLI.
+
+PKCS12 to PEM:
+    openssl pkcs12 -in pusher.p12 -out pusher.pem -clcerts -aes256
+
+PEM to PKCS12:
+    openssl pkcs12 -export -in pusher.pem -out pusher.p12 -name "Apple Push Services"
+
+Inspect PKCS12:
+    openssl pkcs12 -in pusher.p12 -info -noout
+    
+Inspect PEM:
+    openssl rsa -in pusher.pem -noout -check
+    openssl rsa -in pusher.pem -pubout
+    openssl x509 -in pusher.pem -noout -pubkey
 
 Troubleshooting
 ---------------
