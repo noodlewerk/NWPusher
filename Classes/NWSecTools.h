@@ -29,14 +29,4 @@
 + (NWError)keychainIdentityWithCertificate:(NWCertificateRef)certificate identity:(NWIdentityRef *)identity;
 #endif
 
-// deprecated
-#if !TARGET_OS_IPHONE
-+ (NWError)identityWithCertificateRef:(SecCertificateRef)certificate identity:(SecIdentityRef *)identity __attribute__((deprecated));
-+ (NWError)identityWithCertificateData:(NSData *)certificate identity:(SecIdentityRef *)identity __attribute__((deprecated));
-#endif
-+ (NSArray *)keychainCertificates __attribute__((deprecated));
-+ (NSString *)identifierForCertificate:(SecCertificateRef)certificate __attribute__((deprecated));
-+ (SecCertificateRef)certificateForIdentity:(SecIdentityRef)identity __attribute__((deprecated));
-+ (BOOL)isSandboxCertificateRef:(SecCertificateRef)certificate __attribute__((deprecated));
-
 @end

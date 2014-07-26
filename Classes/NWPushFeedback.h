@@ -19,10 +19,4 @@
 - (NWError)readToken:(NSString **)token date:(NSDate **)date;
 - (NWError)readTokenDatePairs:(NSArray **)pairs max:(NSUInteger)max;
 
-// deprecated
-#if !TARGET_OS_IPHONE
-- (NWError)connectWithCertificateRef:(SecCertificateRef)certificate __attribute__((deprecated));
-#endif
-- (NWError)connectWithIdentityRef:(SecIdentityRef)identity __attribute__((deprecated));
-
 @end

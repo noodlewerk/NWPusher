@@ -112,23 +112,4 @@ static NSUInteger const NWTokenMaxSize = 32;
     return kNWSuccess;
 }
 
-#pragma mark - Deprecated
-
-#if !TARGET_OS_IPHONE
-- (NWError)connectWithCertificateRef:(SecCertificateRef)certificate
-{
-    NWIdentityRef identity = nil;
-    NWError error = [NWSecTools keychainIdentityWithCertificate:(__bridge NWCertificateRef)certificate identity:&identity];
-    if (error != kNWSuccess) {
-        return error;
-    }
-    return [self connectWithIdentity:identity];
-}
-#endif
-
-- (NWError)connectWithIdentityRef:(SecIdentityRef)identity
-{
-    return [self connectWithIdentity:(__bridge NWIdentityRef)identity];
-}
-
 @end

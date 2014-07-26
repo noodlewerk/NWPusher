@@ -113,38 +113,4 @@ static NSUInteger const NWPushPort = 2195;
     return kNWSuccess;
 }
 
-#pragma mark - Deprecated
-
-#if !TARGET_OS_IPHONE
-- (NWError)connectWithCertificateRef:(SecCertificateRef)certificate
-{
-    NWIdentityRef identity = nil;
-    NWError error = [NWSecTools keychainIdentityWithCertificate:(__bridge NWCertificateRef)certificate identity:&identity];
-    if (error != kNWSuccess) {
-        return error;
-    }
-    return [self connectWithIdentity:identity];
-}
-#endif
-
-- (NWError)connectWithIdentityRef:(SecIdentityRef)identity
-{
-    return [self connectWithIdentity:(__bridge NWIdentityRef)identity];
-}
-
-+ (NSString *)stringFromResult:(NWError)result
-{
-    return [NWErrorUtil stringWithError:result];
-}
-
-- (NWError)fetchFailedIdentifier:(NSUInteger *)identifier
-{
-    NWError apnError = kNWSuccess;
-    NWError result = [self fetchFailedIdentifier:identifier apnError:&apnError];
-    if (result != kNWSuccess) {
-        return result;
-    }
-    return apnError;
-}
-
 @end

@@ -23,8 +23,4 @@
 - (NWError)read:(NSMutableData *)data length:(NSUInteger *)length;
 - (NWError)write:(NSData *)data length:(NSUInteger *)length;
 
-// deprecated
-- (SecCertificateRef)certificate __attribute__((deprecated));
-- (NWError)reconnect __attribute__((deprecated));
-
 @end

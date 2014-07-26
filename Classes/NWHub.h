@@ -37,10 +37,4 @@
 - (NSUInteger)pushNotifications:(NSArray *)notifications autoReconnect:(BOOL)reconnect;
 - (NSUInteger)flushFailed;
 
-// deprecated
-#if !TARGET_OS_IPHONE
-- (NWError)connectWithCertificateRef:(SecCertificateRef)certificate __attribute__((deprecated));
-#endif
-- (NWError)connectWithIdentityRef:(SecIdentityRef)identity __attribute__((deprecated));
-
 @end

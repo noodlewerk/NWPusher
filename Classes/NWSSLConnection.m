@@ -175,20 +175,6 @@ OSStatus NWSSLWrite(SSLConnectionRef connection, const void *data, size_t *lengt
     if (_context) CFRelease(_context); _context = NULL;
 }
 
-#pragma mark - Deprecated
-
-- (SecCertificateRef)certificate
-{
-    NWCertificateRef result = nil;
-    [NWSecTools certificateWithIdentity:_identity certificate:&result];
-    return (SecCertificateRef)CFBridgingRetain(result);
-}
-
-- (NWError)reconnect
-{
-    return [self connect];
-}
-
 @end
 
 OSStatus NWSSLRead(SSLConnectionRef connection, void *data, size_t *length) {
