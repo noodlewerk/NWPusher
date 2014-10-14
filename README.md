@@ -244,6 +244,36 @@ Certificate and key files
 -------------------------
 Pusher reads certificate and key data from PKCS12 files. This is a binary format that bundles both X.509 certificates and a private key in one file. Conversion from other file formats to and from PKCS12 is provided by the OpenSSL CLI.
 
+*Inspect PKCS12:*
+
+    openssl pkcs12 -in pusher.p12
+
+where the output should be something like:
+
+    ...
+    friendlyName: Apple Development/Production iOS/Mac Push Services: <your-bundle-identifier>
+    localKeyID: <key-id>
+    ...
+    -----BEGIN CERTIFICATE-----
+    ...
+    friendlyName: <private-key-used-for-generating-above-certificate>
+    localKeyID: <same-key-id>
+    ...
+    -----BEGIN PRIVATE KEY-----
+    ...
+
+Make sure your build matches the `Development/Production`, `iOS/Mac`, and bundle identifier.
+
+*Inspect PKCS12 structure:*
+
+    openssl pkcs12 -in pusher.p12 -info -noout
+
+*Inspect PEM:*
+
+    openssl rsa -in pusher.pem -noout -check
+    openssl rsa -in pusher.pem -pubout
+    openssl x509 -in pusher.pem -noout -pubkey
+
 *PKCS12 to PEM:*
 
     openssl pkcs12 -in pusher.p12 -out pusher.pem -clcerts -aes256
@@ -251,16 +281,6 @@ Pusher reads certificate and key data from PKCS12 files. This is a binary format
 *PEM to PKCS12:*
 
     openssl pkcs12 -export -in pusher.pem -out pusher.p12
-
-*Inspect PKCS12:*
-
-    openssl pkcs12 -in pusher.p12 -info -noout
-    
-*Inspect PEM:*
-
-    openssl rsa -in pusher.pem -noout -check
-    openssl rsa -in pusher.pem -pubout
-    openssl x509 -in pusher.pem -noout -pubkey
 
 Troubleshooting
 ---------------
@@ -271,6 +291,24 @@ Some tips on what to look out for:
 - A device token is unique to both the device, the developer's certificate, and to whether the app was built with a production or development (sandbox) certificate. Therefore make sure that the push certificate matches the app's provisioning profile exactly. This doesn't mean the tokens are always different; device tokens can be the same for different bundle identifiers.
 
 - There are two channels through which Apple responds to sent notifications: the notification connection and the feedback connection. Both operate asynchronously, so for example after the second push has been sent, we might get a response to the first push, saying it has an invalid payload. Use a new identifier for every notification so these responses can be linked to the right notification.
+
+If it fails to connect then check:
+
+- Are the cerificates and keys in order? Use the OpenSSL commands listed above to inspect the cerificate. See if there is one push certificate and key present. Make sure you're online, try `ping www.apple.com`.
+
+- Is the certificate properly loaded? Try initializing an identity using `[NWSecTools identityWithPKCS12Data:data password:password identity:&identity]` or `[NWSecTools keychainIdentityWithCertificate:certificate identity:&identity]`. Make sure all return `kNWSuccess`.
+
+- Are you using the right identity? Use `[NWSecTools inspectIdentity:identity]` to inspect the identity instance. In general `NWSecTools` can be helpful for inspecting certificates, identities and the keychain.
+
+- Can you connect with the push servers? Try `[pusher connectWithIdentity:identity]` or `[pusher connectWithPKCS12Data:pkcs12 password:password]`, it should return `kNWSuccess`.
+
+If nothing is delivered to the device then check:
+
+- Is the device online? Is it able to receive push notifications from other services? Try to get pushes from other apps. Many wireless connections work visibly fine, but do not deliver push notifications. Try to switch to another wifi or cellular network.
+
+- Are you pushing to the right device token? This token should be returned by the OS of the receiving device. Also the push certificate should match the provisioning profile of the app.
+
+- Does the push call succeed? Is there no negative response from the push server or feedback server? Both `[pusher pushPayload:payload token:token identifier:rand()]` and `[pusher fetchFailedIdentifier:&identifier apnError:apnError]` should return `kNWSuccess`, but wait a second between pushing and fetching. Also try to connect to the feedback service to read feedback.
 
 Consult Apple's documentation for more troubleshooting tips: [Troubleshooting Push Notifications](https://developer.apple.com/library/mac/technotes/tn2265/_index.html)
 
