@@ -86,16 +86,33 @@ Now you need to obtain a device token, which is a 64 character hex string (256 b
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    NSLog(@"Registering device for push notifications...");
-    [UIApplication.sharedApplication registerForRemoteNotificationTypes:
-        UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge
-        | UIRemoteNotificationTypeSound];
+    if ([application respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+        NSLog(@"Requesting permission for push notifications..."); // iOS 8
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:
+            UIUserNotificationTypeAlert | UIUserNotificationTypeBadge |
+            UIUserNotificationTypeSound categories:nil];
+        [UIApplication.sharedApplication registerUserNotificationSettings:settings];
+    } else {
+        NSLog(@"Registering device for push notifications..."); // iOS 7 and earlier
+        [UIApplication.sharedApplication registerForRemoteNotificationTypes:
+            UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge |
+            UIRemoteNotificationTypeSound];
+    }
+    return YES;
+}
+
+- (void)application:(UIApplication *)application
+    didRegisterUserNotificationSettings:(UIUserNotificationSettings *)settings
+{
+    NSLog(@"Registering device for push notifications..."); // iOS 8
+    [application registerForRemoteNotifications];
 }
 
 - (void)application:(UIApplication *)application
     didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token
 {
-    NSLog(@"Registration successful, device token: %@", token);
+    NSLog(@"Registration successful, bundle identifier: %@, mode: %@, device token: %@",
+        [NSBundle.mainBundle bundleIdentifier], [self modeString], token);
 }
 
 - (void)application:(UIApplication *)application
@@ -104,10 +121,26 @@ Now you need to obtain a device token, which is a 64 character hex string (256 b
     NSLog(@"Failed to register: %@", error);
 }
 
+- (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier
+    forRemoteNotification:(NSDictionary *)notification completionHandler:(void(^)())completionHandler
+{
+    NSLog(@"Received push notification: %@, identifier: %@", notification, identifier); // iOS 8
+    completionHandler();
+}
+
 - (void)application:(UIApplication *)application
     didReceiveRemoteNotification:(NSDictionary *)notification
 {
-    NSLog(@"Received push notification: %@", notification);
+    NSLog(@"Received push notification: %@", notification); // iOS 7 and earlier
+}
+
+- (NSString *)modeString
+{
+#if DEBUG
+    return @"Development (sandbox)";
+#else
+    return @"Production";
+#endif
 }
 ```
 
