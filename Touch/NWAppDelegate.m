@@ -13,8 +13,14 @@
 #import "NWSSLConnection.h"
 #import "NWSecTools.h"
 
+// TODO: Export your push certificate and key in PKCS12 format to pusher.p12 in the root of the project directory.
 static NSString * const pkcs12FileName = @"pusher.p12";
-static NSString * const pkcs12Password = @"pusher";
+
+// TODO: Set the password of this .p12 file below, but be careful *not* to commit passwords to a (public) repository.
+static NSString * const pkcs12Password = @"pa$$word";
+
+// TODO: Set the device token of the device you want to push to, see
+//       `-application:didRegisterForRemoteNotificationsWithDeviceToken:` for more details.
 static NSString * const deviceToken = @"ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789";
 
 static NWPusherViewController *controller = nil;

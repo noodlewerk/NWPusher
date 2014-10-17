@@ -61,10 +61,10 @@ Getting started
 ---------------
 Before you can start sending push notification payloads, there are a few hurdles to take. First you'll need to obtain the *Apple Push Services SSL Certificate* of the app you want to send notifications to. This certificate is used by Pusher to set up the SSL connection through which the payloads will be sent to Apple.
 
-Second you'll need the *device token* of the device you want to send your payload to. Every device has its own unique token that can only be obtained from within the app. While this might sound very complicated, it all comes down to just a few clicks on Apple's Dev Center website, some gray hairs, and a bit of patience.
+Second you'll need the *device token* of the device you want to send your payload to. Every device has its own unique token that can only be obtained from within the app. It's a bit complicated, but in the end it all comes down to just a few clicks on Apple's Dev Center website, some gray hairs, and a bit of patience.
 
 ### Certificate
-Let's start with the SSL certificate. The goal is to get both the certificate *and* the private key into your OS X keychain. If someone else already generated this certificate, you'll need to ask him or her to export these into a PKCS12 file. If there is no certificate generated yet, you can generate the certificate and the private key in the following steps:
+Let's start with the SSL certificate. The goal is to get both the certificate *and* the private key into your OS X keychain. If someone else already generated this certificate, you'll need to ask for exporting these into a PKCS12 file. If there is no certificate generated yet, you can generate the certificate and the private key in the following steps:
 
 1. Log in to [Apple's Dev Center](https://developer.apple.com)
 2. Go to the *Provisioning Portal* or *Certificates, Identifiers & Profiles*
@@ -75,12 +75,14 @@ Keep in mind that you will eventually be downloading a certificate, which you wi
 
 <img src="Docs/keychain1.png" alt="Keychain export" width="681"/>
 
-Both can be exported into a PKCS12 file, which allows you to share these with fellow developers:
+NB: There is `Development` and `Production` certificates, which should (generally) correspond to respectively `DEBUG` and `RELEASE` versions of your app. Make sure you get the right one, check *Development (sandbox) or Production*, *iOS or Mac*, and the *bundle identifier*.
+
+The push certificate should be exported to a PKCS12 file, which allows you to share these with fellow developers:
 
 <img src="Docs/keychain2.png" alt="PKCS12 file" width="679"/>
 
 ### Device token
-Now you need to obtain a device token, which is a 64 character hex string (256 bits indeed). This should be done from within the iOS app you're going to push to. Add the following lines to the application delegate:
+Now you need to obtain a device token, which is a 64 character hex string (256 bits indeed). This should be done from within the iOS app you're going to push to. Add the following lines to the application delegate (Xcode 6 required):
 
 ```objective-c
 - (BOOL)application:(UIApplication *)application
@@ -147,15 +149,15 @@ Now you need to obtain a device token, which is a 64 character hex string (256 b
 Now, when you run the application, the 64 character push string will be logged to the console.
 
 ### Push from OS X
-With the SSL certificate and private key in the keychain and the device token on the pasteboard, you're (finally) ready to send some push notifications. Let's start by sending a notification using the Pusher OS X app. Open the Pusher Xcode project and run the PusherMac target:
+With the SSL certificate and private key in the keychain and the device token on the pasteboard, you're ready to send some push notifications. Let's start by sending a notification using the *Pusher app for Mac OS X*. Open the Pusher Xcode project and run the PusherMac target:
 
 <img src="Docs/osx.png" alt="Pusher OS X" width="591"/>
 
 The combo box at the top lists the available SSL certificates in the keychain. Select the certificate you want to use and paste the device token of the device you're pushing to. The text field below shows the JSON formatted payload text that you're sending. Read more about this format in the Apple documentation under *Apple Push Notification Service*.
 
-Now before you press *Push*, make sure the application you're *sending to* is in the *background*, e.g. by pressing the home button. This way you're sure the app is not going to interfere with the message, yet. Press push, wait a few seconds, and see.
+Now before you press *Push*, make sure the application you're *sending to* is in the *background*, e.g. by pressing the home button. This way you're sure the app is not going to interfere with the message, yet. Press push, wait a few seconds, and see the notification coming in.
 
-If things are not working as expected, send me a message on GitHub or post an issue.
+If things are not working as expected, then take a look at the *Troubleshooting* section below.
 
 ### Push from iOS
 The ultimate experience is of course pushing from an iPhone to an iPhone, directly. This can be done with the Pusher iOS app. Before you run the PusherTouch target, make sure to include the *certificate, private key, and device token* inside the app. Take the PKCS12 file that you exported earlier and include it in the PusherTouch bundle. Then go to `NWAppDelegate.m` in the `Touch` folder and configure `pkcs12FileName`, `pkcs12Password`, and `deviceToken`. Now run the PusherTouch target:
@@ -164,7 +166,7 @@ The ultimate experience is of course pushing from an iPhone to an iPhone, direct
 
 If everything is set up correctly, you only need to *Connect* and *Push*. Then you should receive the `Testing..` push message on the device.
 
-Again, if things are not working as expected, send me a message on GitHub or post an issue.
+Again, if things are not working as expected, take a look at the *Troubleshooting* section below or post an issue on GitHub.
 
 Consult Apple's documentation for more info on the APNS architecture: [Apple Push Notification Service](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html)
 
@@ -178,7 +180,7 @@ pod 'NWPusher', '~> 0.5.1'
 
 Alternatively you can include just the files you need from the `Classes` folder. Make sure you link with `Foundation.framework` and `Security.framework`.
 
-Before any notification can be sent, you first need to create a connection. When this connection is established, any number of payload can be sent.
+Before any notification can be sent, you first need to create a connection. When this connection is established, any number of payloads can be sent.
 
 *Note that Apple doesn't like it when you create a connection for every push.* Therefore be careful to reuse a connection as much as possible in order to prevent Apple from blocking.
 
@@ -244,7 +246,9 @@ Consult Apple's documentation for more info on the client-server communication: 
 
 Feedback Service
 ----------------
-The feedback service is part of the Apple Push Notification Service. The feedback service is basically a list containing device tokens that became invalid. Apple recommends that you read from the feedback service once every 24 hours, and no longer send notifications to listed devices. Communication with the feedback service can be done with the `NWPushFeedback` class. First connect using one of the `-connect*` methods:
+The feedback service is part of the Apple Push Notification Service. The feedback service is basically a list containing device tokens that became invalid. Apple recommends that you read from the feedback service once every 24 hours, and no longer send notifications to listed devices. Note that this can be used to find out who removed your app from their device.
+
+Communication with the feedback service can be done with the `NWPushFeedback` class. First connect using one of the `connect` methods:
 
 ```objective-c
     NSURL *url = [NSBundle.mainBundle URLForResource:@"pusher.p12" withExtension:nil];
@@ -284,7 +288,7 @@ Pusher reads certificate and key data from PKCS12 files. This is a binary format
 where the output should be something like:
 
     ...
-    friendlyName: Apple Development/Production iOS/Mac Push Services: <your-bundle-identifier>
+    friendlyName: Apple Development/Production IOS/Mac Push Services: <your-bundle-identifier>
     localKeyID: <key-id>
     ...
     -----BEGIN CERTIFICATE-----
@@ -315,6 +319,8 @@ Make sure your build matches the `Development/Production`, `iOS/Mac`, and bundle
 
     openssl pkcs12 -export -in pusher.pem -out pusher.p12
 
+Consult the OpenSSL documentation for more details: [OpenSSL Documents - pkcs12](https://www.openssl.org/docs/apps/pkcs12.html)
+
 Troubleshooting
 ---------------
 Apple's Push Notification Service is not very forgiving in nature. If things are done in the wrong order or data is formatted incorrectly the service will refuse to deliver any notification, but generally provides few clues about went wrong and how to fix it. In the worst case, it simply disconnects without even notifying the client.
@@ -327,7 +333,7 @@ Some tips on what to look out for:
 
 If it fails to connect then check:
 
-- Are the cerificates and keys in order? Use the OpenSSL commands listed above to inspect the cerificate. See if there is one push certificate and key present. Make sure you're online, try `ping www.apple.com`.
+- Are the cerificates and keys in order? Use the OpenSSL commands listed above to inspect the cerificate. See if there is one push certificate and key present. Also make sure you're online, try `ping www.apple.com`.
 
 - Is the certificate properly loaded? Try initializing an identity using `[NWSecTools identityWithPKCS12Data:data password:password identity:&identity]` or `[NWSecTools keychainIdentityWithCertificate:certificate identity:&identity]`. Make sure all return `kNWSuccess`.
 
@@ -337,11 +343,11 @@ If it fails to connect then check:
 
 If nothing is delivered to the device then check:
 
-- Is the device online? Is it able to receive push notifications from other services? Try to get pushes from other apps. Many wireless connections work visibly fine, but do not deliver push notifications. Try to switch to another wifi or cellular network.
+- Is the device online? Is it able to receive push notifications from other services? Try to get pushes from other apps, for example a messenger. Many wireless connections work visibly fine, but do not deliver push notifications. Try to switch to another wifi or cellular network.
 
-- Are you pushing to the right device token? This token should be returned by the OS of the receiving device. Also the push certificate should match the provisioning profile of the app.
+- Are you pushing to the right device token? This token should be returned by the OS of the receiving device, in the callback `-application: didRegisterForRemoteNotificationsWithDeviceToken:`. The push certificate should match the provisioning profile of the app, check *Development or Production*, *iOS or Mac*, and the *bundle identifier*.
 
-- Does the push call succeed? Is there no negative response from the push server or feedback server? Both `[pusher pushPayload:payload token:token identifier:rand()]` and `[pusher fetchFailedIdentifier:&identifier apnError:apnError]` should return `kNWSuccess`, but wait a second between pushing and fetching. Also try to connect to the feedback service to read feedback.
+- Does the push call succeed? Isn't there any negative response from the push server or feedback server? Both `[pusher pushPayload:payload token:token identifier:rand()]` and `[pusher fetchFailedIdentifier:&identifier apnError:apnError]` should return `kNWSuccess`, but wait a second between pushing and fetching. Also try to connect to the feedback service to read feedback.
 
 Consult Apple's documentation for more troubleshooting tips: [Troubleshooting Push Notifications](https://developer.apple.com/library/mac/technotes/tn2265/_index.html)
 
