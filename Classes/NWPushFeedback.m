@@ -23,26 +23,26 @@ static NSUInteger const NWTokenMaxSize = 32;
 
 #pragma mark - Apple SSL
 
-- (NWError)connectWithIdentity:(NWIdentityRef)identity
+- (BOOL)connectWithIdentity:(NWIdentityRef)identity error:(NSError *__autoreleasing *)error
 {
     if (_connection) [_connection disconnect]; _connection = nil;
     NSString *host = [NWSecTools isSandboxIdentity:identity] ? NWSandboxPushHost : NWPushHost;
     NWSSLConnection *connection = [[NWSSLConnection alloc] initWithHost:host port:NWPushPort identity:identity];
-    NWError result = [connection connect];
-    if (result == kNWSuccess) {
-        _connection = connection;
+    BOOL connected = [connection connectWithError:error];
+    if (!connected) {
+        return connected;
     }
-    return result;
+    _connection = connection;
+    return YES;
 }
 
-- (NWError)connectWithPKCS12Data:(NSData *)data password:(NSString *)password
+- (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError *__autoreleasing *)error
 {
-    NWIdentityRef identity = nil;
-    NWError result = [NWSecTools identityWithPKCS12Data:data password:password identity:&identity];
-    if (result != kNWSuccess) {
-        return result;
+    NWIdentityRef identity = [NWSecTools identityWithPKCS12Data:data password:password error:error];
+    if (!identity) {
+        return NO;
     }
-    return [self connectWithIdentity:identity];
+    return [self connectWithIdentity:identity error:error];
 }
 
 - (void)disconnect
@@ -53,18 +53,18 @@ static NSUInteger const NWTokenMaxSize = 32;
 
 #pragma mark - Apple push
 
-- (NWError)readTokenData:(NSData **)token date:(NSDate **)date
+- (BOOL)readTokenData:(NSData **)token date:(NSDate **)date error:(NSError *__autoreleasing *)error
 {
     *token = nil;
     *date = nil;
     NSMutableData *data = [NSMutableData dataWithLength:sizeof(uint32_t) + sizeof(uint16_t) + NWTokenMaxSize];
     NSUInteger length = 0;
-    NWError read = [_connection read:data length:&length];
-    if (read != kNWSuccess || length == 0) {
+    BOOL read = [_connection read:data length:&length error:error];
+    if (!read || length == 0) {
         return read;
     }
     if (length != data.length) {
-        return kNWErrorFeedbackLength;
+        return [NWErrorUtil noWithErrorCode:kNWErrorFeedbackLength error:error];
     }
     uint32_t time = 0;
     [data getBytes:&time range:NSMakeRange(0, 4)];
@@ -73,43 +73,78 @@ static NSUInteger const NWTokenMaxSize = 32;
     [data getBytes:&l range:NSMakeRange(4, 2)];
     NSUInteger tokenLength = htons(l);
     if (tokenLength != NWTokenMaxSize) {
-        return kNWErrorFeedbackTokenLength;
+        return [NWErrorUtil noWithErrorCode:kNWErrorFeedbackTokenLength error:error];
     }
     *token = [data subdataWithRange:NSMakeRange(6, length - 6)];
-    return kNWSuccess;
+    return YES;
 }
 
-- (NWError)readToken:(NSString **)token date:(NSDate **)date;
+- (BOOL)readToken:(NSString **)token date:(NSDate **)date error:(NSError *__autoreleasing *)error
 {
     *token = nil;
     NSData *data = nil;
-    NWError read = [self readTokenData:&data date:date];
-    if (read != kNWSuccess) {
+    BOOL read = [self readTokenData:&data date:date error:error];
+    if (!read) {
         return read;
     }
     if (data) *token = [NWNotification hexFromData:data];
-    return read;
+    return YES;
+}
+
+- (NSArray *)readTokenDatePairsWithMax:(NSUInteger)max error:(NSError *__autoreleasing *)error
+{
+    NSMutableArray *pairs = @[].mutableCopy;
+    for (NSUInteger i = 0; i < max; i++) {
+        NSString *token = nil;
+        NSDate *date = nil;
+        NSError *e = nil;
+        BOOL read = [self readToken:&token date:&date error:&e];
+        if (!read && e.code == kNWErrorReadClosedGraceful) {
+            break;
+        }
+        if (!read) {
+            if (error) *error = e;
+            return nil;
+        }
+        if (token && date) {
+            [pairs addObject:@[token, date]];
+        }
+    }
+    return pairs;
+}
+
+// deprecated
+
+- (NWError)connectWithIdentity:(NWIdentityRef)identity
+{
+    NSError *error = nil;
+    return [self connectWithIdentity:identity error:&error] ? kNWSuccess : error.code;
+}
+
+- (NWError)connectWithPKCS12Data:(NSData *)data password:(NSString *)password
+{
+    NSError *error = nil;
+    return [self connectWithPKCS12Data:data password:password error:&error] ? kNWSuccess : error.code;
+}
+
+- (NWError)readTokenData:(NSData **)token date:(NSDate **)date
+{
+    NSError *error = nil;
+    return [self readTokenData:token date:date error:&error] ? kNWSuccess : error.code;
+}
+
+- (NWError)readToken:(NSString **)token date:(NSDate **)date
+{
+    NSError *error = nil;
+    return [self readToken:token date:date error:&error] ? kNWSuccess : error.code;
 }
 
 - (NWError)readTokenDatePairs:(NSArray **)pairs max:(NSUInteger)max
 {
-    NSMutableArray *all = @[].mutableCopy;
-    *pairs = all;
-    for (NSUInteger i = 0; i < max; i++) {
-        NSString *token = nil;
-        NSDate *date = nil;
-        NWError read = [self readToken:&token date:&date];
-        if (read == kNWErrorReadClosedGraceful) {
-            break;
-        }
-        if (read != kNWSuccess) {
-            return read;
-        }
-        if (token && date) {
-            [all addObject:@[token, date]];
-        }
-    }
-    return kNWSuccess;
+    NSError *error = nil;
+    NSArray *p = [self readTokenDatePairsWithMax:max error:&error];
+    if (pairs) *pairs = p;
+    return p ? kNWSuccess : error.code;
 }
 
 @end

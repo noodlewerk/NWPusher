@@ -11,12 +11,20 @@
 
 @interface NWPushFeedback : NSObject
 
-- (NWError)connectWithIdentity:(NWIdentityRef)identity;
-- (NWError)connectWithPKCS12Data:(NSData *)data password:(NSString *)password;
+- (BOOL)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error;
+- (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error;
 - (void)disconnect;
 
-- (NWError)readTokenData:(NSData **)token date:(NSDate **)date;
-- (NWError)readToken:(NSString **)token date:(NSDate **)date;
-- (NWError)readTokenDatePairs:(NSArray **)pairs max:(NSUInteger)max;
+- (BOOL)readTokenData:(NSData **)token date:(NSDate **)date error:(NSError **)error;
+- (BOOL)readToken:(NSString **)token date:(NSDate **)date error:(NSError **)error;
+- (NSArray *)readTokenDatePairsWithMax:(NSUInteger)max error:(NSError **)error;
+
+// deprecated
+
+- (NWError)connectWithIdentity:(NWIdentityRef)identity __deprecated;
+- (NWError)connectWithPKCS12Data:(NSData *)data password:(NSString *)password __deprecated;
+- (NWError)readTokenData:(NSData **)token date:(NSDate **)date __deprecated;
+- (NWError)readToken:(NSString **)token date:(NSDate **)date __deprecated;
+- (NWError)readTokenDatePairs:(NSArray **)pairs max:(NSUInteger)max __deprecated;
 
 @end

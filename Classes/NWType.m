@@ -12,7 +12,7 @@
 + (NSString *)stringWithError:(NWError)error
 {
     switch (error) {
-        case kNWSuccess                                : return @"Success (no error)";
+        case kNWErrorNone                              : return @"No error, that's odd";
             
         case kNWErrorAPNProcessing                     : return @"APN processing error";
         case kNWErrorAPNMissingDeviceToken             : return @"APN missing device token";
@@ -24,6 +24,7 @@
         case kNWErrorAPNInvalidTokenContent            : return @"APN invalid token";
         case kNWErrorAPNUnknownReason                  : return @"APN unkown reason";
         case kNWErrorAPNShutdown                       : return @"APN shutdown";
+        case kNWErrorAPNUnknownErrorCode               : return @"APN unkown error code";
             
         case kNWErrorPushResponseCommand               : return @"Push response command unknown";
         case kNWErrorPushNotConnected                  : return @"Push reconnect requires connection";
@@ -74,6 +75,26 @@
         case kNWErrorKeychainCreateIdentity            : return @"Keychain does not contain certificate";
     }
     return @"Unkown";
+}
+
++ (NSError *)errorWithErrorCode:(NWError)code
+{
+    NSDictionary *info = @{ NSLocalizedDescriptionKey: [self stringWithError:code] };
+    return [NSError errorWithDomain:@"NWPusherErrorDomain" code:code userInfo:info];
+}
+
++ (BOOL)noWithErrorCode:(NWError)code error:(NSError *__autoreleasing *)error
+{
+    NSAssert(code != kNWErrorNone, @"code != kNWErrorNone");
+    if (error) *error = [self errorWithErrorCode:code];
+    return NO;
+}
+
++ (id)nilWithErrorCode:(NWError)code error:(NSError **)error
+{
+    NSAssert(code != kNWErrorNone, @"code != kNWErrorNone");
+    if (error) *error = [self errorWithErrorCode:code];
+    return nil;
 }
 
 @end

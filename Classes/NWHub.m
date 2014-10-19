@@ -43,19 +43,19 @@
     
 #pragma mark - Connecting
 
-- (NWError)connectWithIdentity:(NWIdentityRef)identity
+- (BOOL)connectWithIdentity:(NWIdentityRef)identity error:(NSError *__autoreleasing *)error
 {
-    return [_pusher connectWithIdentity:identity];
+    return [_pusher connectWithIdentity:identity error:error];
 }
 
-- (NWError)connectWithPKCS12Data:(NSData *)data password:(NSString *)password
+- (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError *__autoreleasing *)error
 {
-    return [_pusher connectWithPKCS12Data:data password:password];
+    return [_pusher connectWithPKCS12Data:data password:password error:error];
 }
 
-- (NWError)reconnect
+- (BOOL)reconnectWithError:(NSError *__autoreleasing *)error
 {
-    return [_pusher reconnect];
+    return [_pusher reconnectWithError:error];
 }
 
 - (void)disconnect
@@ -100,39 +100,52 @@
     NSUInteger count = 0;
     for (NWNotification *notification in notifications) {
         if (!notification.identifier) notification.identifier = _index++;
-        BOOL failed = [self pushNotification:notification autoReconnect:reconnect];
-        if (failed) count++;
+        BOOL success = [self pushNotification:notification autoReconnect:reconnect error:nil];
+        if (!success) count++;
     }
     return count;
 }
 
-- (BOOL)pushNotification:(NWNotification *)notification autoReconnect:(BOOL)reconnect
+- (BOOL)pushNotification:(NWNotification *)notification autoReconnect:(BOOL)reconnect error:(NSError *__autoreleasing *)error
 {
-    NWError pushed = [_pusher pushNotification:notification type:_type];
-    if (pushed != kNWSuccess) {
-        [_delegate notification:notification didFailWithResult:pushed];
+    NSError *e = nil;
+    BOOL pushed = [_pusher pushNotification:notification type:_type error:&e];
+    if (!pushed) {
+        if ([_delegate respondsToSelector:@selector(notification:didFailWithResult:)]) {
+            [_delegate notification:notification didFailWithResult:e.code];
+        }
+        if ([_delegate respondsToSelector:@selector(notification:didFailWithError:)]) {
+            [_delegate notification:notification didFailWithError:e];
+        }
     }
-    if (reconnect && pushed == kNWErrorWriteClosedGraceful) {
-        [self reconnect];
+    if (reconnect && !pushed && e.code == kNWErrorWriteClosedGraceful) {
+        [self reconnectWithError:error];
+    } else {
+        if (error) *error = e;
     }
     _notificationForIdentifier[@(notification.identifier)] = @[notification, NSDate.date];
-    return pushed != kNWSuccess;
+    return pushed;
 }
 
 - (BOOL)fetchFailed
 {
     NSUInteger identifier = 0;
-    NWError apnError = kNWSuccess;
-    NWError fetch = [_pusher fetchFailedIdentifier:&identifier apnError:&apnError];
-    if (fetch != kNWSuccess) {
+    NSError *apnError = nil;
+    BOOL fetch = [_pusher fetchFailedIdentifier:&identifier apnError:&apnError error:nil];
+    if (!fetch) {
+        return fetch;
+    }
+    if (!identifier && !apnError) {
         return NO;
     }
-    if (identifier || apnError != kNWSuccess) {
-        NWNotification *notification = _notificationForIdentifier[@(identifier)][0];
-        [_delegate notification:notification didFailWithResult:apnError];
-        return YES;
+    NWNotification *notification = _notificationForIdentifier[@(identifier)][0];
+    if ([_delegate respondsToSelector:@selector(notification:didFailWithResult:)]) {
+        [_delegate notification:notification didFailWithResult:apnError.code];
     }
-    return NO;
+    if ([_delegate respondsToSelector:@selector(notification:didFailWithError:)]) {
+        [_delegate notification:notification didFailWithError:apnError];
+    }
+    return YES;
 }
 
 - (NSUInteger)collectGarbage
@@ -153,6 +166,26 @@
     }
     [self collectGarbage];
     return count - 1;
+}
+
+// deprecated
+
+- (NWError)connectWithIdentity:(NWIdentityRef)identity
+{
+    NSError *error = nil;
+    return [self connectWithIdentity:identity error:&error] ? kNWSuccess : error.code;
+}
+
+- (NWError)connectWithPKCS12Data:(NSData *)data password:(NSString *)password
+{
+    NSError *error = nil;
+    return [self connectWithPKCS12Data:data password:password error:&error] ? kNWSuccess : error.code;
+}
+
+- (NWError)reconnect
+{
+    NSError *error = nil;
+    return [self reconnectWithError:&error] ? kNWSuccess : error.code;
 }
 
 @end

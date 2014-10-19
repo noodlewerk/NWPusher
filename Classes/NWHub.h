@@ -12,7 +12,9 @@
 
 
 @protocol NWHubDelegate <NSObject>
-- (void)notification:(NWNotification *)notification didFailWithResult:(NWError)result;
+- (void)notification:(NWNotification *)notification didFailWithError:(NSError *)error;
+@optional
+- (void)notification:(NWNotification *)notification didFailWithResult:(NWError)result; // TODO: deprecated, remove from 0.6.0
 @end
 
 
@@ -26,9 +28,9 @@
 - (instancetype)initWithDelegate:(id<NWHubDelegate>)delegate;
 - (instancetype)initWithPusher:(NWPusher *)pusher delegate:(id<NWHubDelegate>)delegate;
 
-- (NWError)connectWithIdentity:(NWIdentityRef)identity;
-- (NWError)connectWithPKCS12Data:(NSData *)data password:(NSString *)password;
-- (NWError)reconnect;
+- (BOOL)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error;
+- (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error;
+- (BOOL)reconnectWithError:(NSError **)error;
 - (void)disconnect;
 
 - (NSUInteger)pushPayload:(NSString *)payload token:(NSString *)token;
@@ -36,5 +38,11 @@
 - (NSUInteger)pushPayloads:(NSArray *)payloads token:(NSString *)token;
 - (NSUInteger)pushNotifications:(NSArray *)notifications autoReconnect:(BOOL)reconnect;
 - (NSUInteger)flushFailed;
+
+// deprecated
+
+- (NWError)connectWithIdentity:(NWIdentityRef)identity __deprecated;
+- (NWError)connectWithPKCS12Data:(NSData *)data password:(NSString *)password __deprecated;
+- (NWError)reconnect __deprecated;
 
 @end

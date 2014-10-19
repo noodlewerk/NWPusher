@@ -18,7 +18,8 @@ typedef id NWCertificateRef; // SecCertificateRef
 typedef id NWKeyRef; // SecKeyRef
 
 typedef NS_ENUM(NSInteger, NWError) {
-    kNWSuccess                                 =    0,
+    kNWErrorNone                               =    0,
+    kNWSuccess                                 =    0, // TODO: deprecated, remove from 0.7.0
     
     kNWErrorAPNProcessing                      =   -1,
     kNWErrorAPNMissingDeviceToken              =   -2,
@@ -30,6 +31,7 @@ typedef NS_ENUM(NSInteger, NWError) {
     kNWErrorAPNInvalidTokenContent             =   -8,
     kNWErrorAPNUnknownReason                   =   -9,
     kNWErrorAPNShutdown                        =  -10,
+    kNWErrorAPNUnknownErrorCode                =  -11,
     
     kNWErrorPushResponseCommand                = -107,
     kNWErrorPushNotConnected                   = -111,
@@ -83,7 +85,11 @@ typedef NS_ENUM(NSInteger, NWError) {
 
 @interface NWErrorUtil : NSObject
 
-+ (NSString *)stringWithError:(NWError)error;
++ (BOOL)noWithErrorCode:(NWError)code error:(NSError **)error;
++ (id)nilWithErrorCode:(NWError)code error:(NSError **)error;
+
+// deprecated
+
++ (NSString *)stringWithError:(NWError)error __deprecated;
 
 @end
-

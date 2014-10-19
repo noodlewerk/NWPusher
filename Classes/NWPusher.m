@@ -22,34 +22,34 @@ static NSUInteger const NWPushPort = 2195;
 
 #pragma mark - Apple SSL
 
-- (NWError)connectWithIdentity:(NWIdentityRef)identity
+- (BOOL)connectWithIdentity:(NWIdentityRef)identity error:(NSError *__autoreleasing *)error
 {
     if (_connection) [_connection disconnect]; _connection = nil;
     NSString *host = [NWSecTools isSandboxIdentity:identity] ? NWSandboxPushHost : NWPushHost;
     NWSSLConnection *connection = [[NWSSLConnection alloc] initWithHost:host port:NWPushPort identity:identity];
-    NWError result = [connection connect];
-    if (result == kNWSuccess) {
-        _connection = connection;
+    BOOL connected = [connection connectWithError:error];
+    if (!connected) {
+        return connected;
     }
-    return result;
+    _connection = connection;
+    return YES;
 }
 
-- (NWError)connectWithPKCS12Data:(NSData *)data password:(NSString *)password
+- (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError *__autoreleasing *)error
 {
-    NWIdentityRef identity = nil;
-    NWError result = [NWSecTools identityWithPKCS12Data:data password:password identity:&identity];
-    if (result != kNWSuccess) {
-        return result;
+    NWIdentityRef identity = [NWSecTools identityWithPKCS12Data:data password:password error:error];
+    if (!identity) {
+        return NO;
     }
-    return [self connectWithIdentity:identity];
+    return [self connectWithIdentity:identity error:error];
 }
 
-- (NWError)reconnect
+- (BOOL)reconnectWithError:(NSError *__autoreleasing *)error
 {
     if (!_connection) {
-        return kNWErrorPushNotConnected;
+        return [NWErrorUtil noWithErrorCode:kNWErrorPushNotConnected error:error];
     }
-    return [_connection connect];
+    return [_connection connectWithError:error];
 }
 
 - (void)disconnect
@@ -60,39 +60,38 @@ static NSUInteger const NWPushPort = 2195;
 
 #pragma mark - Apple push
 
-- (NWError)pushPayload:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier
+- (BOOL)pushPayload:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier error:(NSError *__autoreleasing *)error
 {
-    return [self pushNotification:[[NWNotification alloc] initWithPayload:payload token:token identifier:identifier expiration:nil priority:0] type:kNWNotificationType2];
+    return [self pushNotification:[[NWNotification alloc] initWithPayload:payload token:token identifier:identifier expiration:nil priority:0] type:kNWNotificationType2 error:error];
 }
 
-- (NWError)pushNotification:(NWNotification *)notification type:(NWNotificationType)type
+- (BOOL)pushNotification:(NWNotification *)notification type:(NWNotificationType)type error:(NSError *__autoreleasing *)error
 {
     NSUInteger length = 0;
     NSData *data = [notification dataWithType:type];
-    NWError result = [_connection write:data length:&length];
-    if (result != kNWSuccess) {
-        return result;
+    BOOL written = [_connection write:data length:&length error:error];
+    if (!written) {
+        return written;
     }
     if (length != data.length) {
-        return kNWErrorPushWriteFail;
+        return [NWErrorUtil noWithErrorCode:kNWErrorPushWriteFail error:error];
     }
-    return kNWSuccess;
+    return YES;
 }
 
-- (NWError)fetchFailedIdentifier:(NSUInteger *)identifier apnError:(NWError *)apnError
+- (BOOL)fetchFailedIdentifier:(NSUInteger *)identifier apnError:(NSError *__autoreleasing *)apnError error:(NSError *__autoreleasing *)error
 {
-    *apnError = kNWSuccess;
     *identifier = 0;
     NSMutableData *data = [NSMutableData dataWithLength:sizeof(uint8_t) * 2 + sizeof(uint32_t)];
     NSUInteger length = 0;
-    NWError read = [_connection read:data length:&length];
-    if (!length || read != kNWSuccess) {
+    BOOL read = [_connection read:data length:&length error:error];
+    if (!length || !read) {
         return read;
     }
     uint8_t command = 0;
     [data getBytes:&command range:NSMakeRange(0, 1)];
     if (command != 8) {
-        return kNWErrorPushResponseCommand;
+        return [NWErrorUtil noWithErrorCode:kNWErrorPushResponseCommand error:error];
     }
     uint8_t status = 0;
     [data getBytes:&status range:NSMakeRange(1, 1)];
@@ -100,17 +99,59 @@ static NSUInteger const NWPushPort = 2195;
     [data getBytes:&ID range:NSMakeRange(2, 4)];
     *identifier = htonl(ID);
     switch (status) {
-        case 1: *apnError = kNWErrorAPNProcessing; break;
-        case 2: *apnError = kNWErrorAPNMissingDeviceToken; break;
-        case 3: *apnError = kNWErrorAPNMissingTopic; break;
-        case 4: *apnError = kNWErrorAPNMissingPayload; break;
-        case 5: *apnError = kNWErrorAPNInvalidTokenSize; break;
-        case 6: *apnError = kNWErrorAPNInvalidTopicSize; break;
-        case 7: *apnError = kNWErrorAPNInvalidPayloadSize; break;
-        case 8: *apnError = kNWErrorAPNInvalidTokenContent; break;
-        case 10: *apnError = kNWErrorAPNShutdown; break;
+        case 1: [NWErrorUtil noWithErrorCode:kNWErrorAPNProcessing error:apnError]; break;
+        case 2: [NWErrorUtil noWithErrorCode:kNWErrorAPNMissingDeviceToken error:apnError]; break;
+        case 3: [NWErrorUtil noWithErrorCode:kNWErrorAPNMissingTopic error:apnError]; break;
+        case 4: [NWErrorUtil noWithErrorCode:kNWErrorAPNMissingPayload error:apnError]; break;
+        case 5: [NWErrorUtil noWithErrorCode:kNWErrorAPNInvalidTokenSize error:apnError]; break;
+        case 6: [NWErrorUtil noWithErrorCode:kNWErrorAPNInvalidTopicSize error:apnError]; break;
+        case 7: [NWErrorUtil noWithErrorCode:kNWErrorAPNInvalidPayloadSize error:apnError]; break;
+        case 8: [NWErrorUtil noWithErrorCode:kNWErrorAPNInvalidTokenContent error:apnError]; break;
+        case 10: [NWErrorUtil noWithErrorCode:kNWErrorAPNShutdown error:apnError]; break;
+        default: [NWErrorUtil noWithErrorCode:kNWErrorAPNUnknownErrorCode error:apnError]; break;
     }
-    return kNWSuccess;
+    return YES;
+}
+
+// deprecated
+
+- (NWError)connectWithIdentity:(NWIdentityRef)identity
+{
+    NSError *error = nil;
+    return [self connectWithIdentity:identity error:&error] ? kNWSuccess : error.code;
+}
+
+- (NWError)connectWithPKCS12Data:(NSData *)data password:(NSString *)password
+{
+    NSError *error = nil;
+    return [self connectWithPKCS12Data:data password:password error:&error] ? kNWSuccess : error.code;
+}
+
+- (NWError)reconnect
+{
+    NSError *error = nil;
+    return [self reconnectWithError:&error] ? kNWSuccess : error.code;
+}
+
+- (NWError)pushPayload:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier
+{
+    NSError *error = nil;
+    return [self pushPayload:payload token:token identifier:identifier error:&error] ? kNWSuccess : error.code;
+}
+
+- (NWError)pushNotification:(NWNotification *)notification type:(NWNotificationType)type
+{
+    NSError *error = nil;
+    return [self pushNotification:notification type:type error:&error] ? kNWSuccess : error.code;
+}
+
+- (NWError)fetchFailedIdentifier:(NSUInteger *)identifier apnError:(NWError *)apnErrorCode
+{
+    NSError *error = nil;
+    NSError *apnError = nil;
+    BOOL fetched = [self fetchFailedIdentifier:identifier apnError:&apnError error:&error];
+    if (apnErrorCode && apnError) *apnErrorCode = apnError.code;
+    return fetched ? kNWSuccess : error.code;
 }
 
 @end
