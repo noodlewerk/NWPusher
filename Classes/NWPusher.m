@@ -113,13 +113,13 @@ static NSUInteger const NWPushPort = 2195;
     return YES;
 }
 
-+ (NWPusher *)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error
++ (instancetype)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error
 {
     NWPusher *pusher = [[NWPusher alloc] init];
     return identity && [pusher connectWithIdentity:identity error:error] ? pusher : nil;
 }
 
-+ (NWPusher *)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error
++ (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error
 {
     NWPusher *pusher = [[NWPusher alloc] init];
     return data && [pusher connectWithPKCS12Data:data password:password error:error] ? pusher : nil;

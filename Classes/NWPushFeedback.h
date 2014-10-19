@@ -19,8 +19,8 @@
 - (BOOL)readToken:(NSString **)token date:(NSDate **)date error:(NSError **)error;
 - (NSArray *)readTokenDatePairsWithMax:(NSUInteger)max error:(NSError **)error;
 
-+ (NWPushFeedback *)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error;
-+ (NWPushFeedback *)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error;
++ (instancetype)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error;
++ (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error;
 
 // deprecated
 

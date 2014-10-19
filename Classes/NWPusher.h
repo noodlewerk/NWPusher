@@ -24,8 +24,8 @@
 - (BOOL)pushNotification:(NWNotification *)notification type:(NWNotificationType)type error:(NSError **)error;
 - (BOOL)fetchFailedIdentifier:(NSUInteger *)identifier apnError:(NSError **)apnError error:(NSError **)error;
 
-+ (NWPusher *)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error;
-+ (NWPusher *)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error;
++ (instancetype)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error;
++ (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error;
 
 // deprecated
 
