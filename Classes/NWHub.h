@@ -39,6 +39,9 @@
 - (NSUInteger)pushNotifications:(NSArray *)notifications autoReconnect:(BOOL)reconnect;
 - (NSUInteger)flushFailed;
 
++ (NWHub *)connectWithDelegate:(id<NWHubDelegate>)delegate identity:(NWIdentityRef)identity error:(NSError **)error;
++ (NWHub *)connectWithDelegate:(id<NWHubDelegate>)delegate PKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error;
+
 // deprecated
 
 - (NWError)connectWithIdentity:(NWIdentityRef)identity __deprecated;

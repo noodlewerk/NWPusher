@@ -168,6 +168,18 @@
     return count - 1;
 }
 
++ (NWHub *)connectWithDelegate:(id<NWHubDelegate>)delegate identity:(NWIdentityRef)identity error:(NSError **)error
+{
+    NWHub *hub = [[NWHub alloc] initWithDelegate:delegate];
+    return identity && [hub connectWithIdentity:identity error:error] ? hub : nil;
+}
+
++ (NWHub *)connectWithDelegate:(id<NWHubDelegate>)delegate PKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error
+{
+    NWHub *hub = [[NWHub alloc] initWithDelegate:delegate];
+    return data && [hub connectWithPKCS12Data:data password:password error:error] ? hub : nil;
+}
+
 // deprecated
 
 - (NWError)connectWithIdentity:(NWIdentityRef)identity
