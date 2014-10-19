@@ -97,13 +97,27 @@
 
 - (NSUInteger)pushNotifications:(NSArray *)notifications autoReconnect:(BOOL)reconnect
 {
-    NSUInteger count = 0;
+    NSUInteger fails = 0;
     for (NWNotification *notification in notifications) {
         if (!notification.identifier) notification.identifier = _index++;
         BOOL success = [self pushNotification:notification autoReconnect:reconnect error:nil];
-        if (!success) count++;
+        if (!success) {
+            fails++;
+        }
     }
-    return count;
+    return fails;
+}
+
+- (BOOL)pushNotifications:(NSArray *)notifications autoReconnect:(BOOL)reconnect error:(NSError *__autoreleasing *)error
+{
+    for (NWNotification *notification in notifications) {
+        if (!notification.identifier) notification.identifier = _index++;
+        BOOL success = [self pushNotification:notification autoReconnect:reconnect error:error];
+        if (!success) {
+            return success;
+        }
+    }
+    return YES;
 }
 
 - (BOOL)pushNotification:(NWNotification *)notification autoReconnect:(BOOL)reconnect error:(NSError *__autoreleasing *)error
@@ -111,20 +125,20 @@
     NSError *e = nil;
     BOOL pushed = [_pusher pushNotification:notification type:_type error:&e];
     if (!pushed) {
+        if (error) *error = e;
         if ([_delegate respondsToSelector:@selector(notification:didFailWithResult:)]) {
             [_delegate notification:notification didFailWithResult:e.code];
         }
         if ([_delegate respondsToSelector:@selector(notification:didFailWithError:)]) {
             [_delegate notification:notification didFailWithError:e];
         }
-    }
-    if (reconnect && !pushed && e.code == kNWErrorWriteClosedGraceful) {
-        [self reconnectWithError:error];
-    } else {
-        if (error) *error = e;
+        if (reconnect && e.code == kNWErrorWriteClosedGraceful) {
+            [self reconnectWithError:error];
+        }
+        return pushed;
     }
     _notificationForIdentifier[@(notification.identifier)] = @[notification, NSDate.date];
-    return pushed;
+    return YES;
 }
 
 - (BOOL)fetchFailed
