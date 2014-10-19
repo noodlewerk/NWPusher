@@ -108,11 +108,11 @@
     [self reconnect];
 }
 
-- (void)notification:(NWNotification *)notification didFailWithResult:(NWError)result
+- (void)notification:(NWNotification *)notification didFailWithError:(NSError *)error
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         //NSLog(@"failed notification: %@ %@ %lu %lu %lu", notification.payload, notification.token, notification.identifier, notification.expires, notification.priority);
-        NWLogWarn(@"Notification error: %@", [NWErrorUtil stringWithError:result]);
+        NWLogWarn(@"Notification error: %@", error.localizedDescription);
     });
 }
 
@@ -128,10 +128,10 @@
 
 - (void)loadCertificatesFromKeychain
 {
-    NSArray *certs = nil;
-    NWError keychain = [NWSecTools keychainCertificates:&certs];
-    if (keychain != kNWSuccess) {
-        NWLogWarn(@"Unable to access keychain: %@", [NWErrorUtil stringWithError:keychain]);
+    NSError *error = nil;
+    NSArray *certs = [NWSecTools keychainCertificatesWithError:&error];
+    if (!certs) {
+        NWLogWarn(@"Unable to access keychain: %@", error.localizedDescription);
     }
     if (!certs.count) {
         NWLogWarn(@"No push certificates in keychain.");
@@ -194,17 +194,17 @@
             }
             NSString *password = input.stringValue;
             NSData *data = [NSData dataWithContentsOfURL:url];
-            NSArray *ids = nil;
-            NWError identdata = [NWSecTools identitiesWithPKCS12Data:data password:password identities:&ids];
-            if (identdata != kNWSuccess) {
-                NWLogWarn(@"Unable to read p12 file: %@", [NWErrorUtil stringWithError:identdata]);
+            NSError *error = nil;
+            NSArray *ids = [NWSecTools identitiesWithPKCS12Data:data password:password error:&error];
+            if (!ids) {
+                NWLogWarn(@"Unable to read p12 file: %@", error.localizedDescription);
                 return;
             }
             for (NWIdentityRef identity in ids) {
-                NWCertificateRef certificate = nil;
-                NWError certident = [NWSecTools certificateWithIdentity:identity certificate:&certificate];
-                if (certident != kNWSuccess) {
-                    NWLogWarn(@"Unable to import p12 file: %@", [NWErrorUtil stringWithError:certident]);
+                NSError *error = nil;
+                NWCertificateRef certificate = [NWSecTools certificateWithIdentity:identity error:&error];
+                if (!certificate) {
+                    NWLogWarn(@"Unable to import p12 file: %@", error.localizedDescription);
                     return;
                 }
                 [pairs addObject:@[certificate, identity]];
@@ -312,23 +312,17 @@
         NWLogInfo(@"Connecting to APN..  (%@%@)", summary, sandbox ? @" sandbox" : @"");
         
         dispatch_async(_serial, ^{
-            NWHub *hub = [[NWHub alloc] initWithDelegate:self];
-            NWError connected = kNWSuccess;
-            NWIdentityRef ident = identity;
-            if (!ident) {
-                connected = [NWSecTools keychainIdentityWithCertificate:certificate identity:&ident];
-            }
-            if (connected == kNWSuccess) {
-                connected = [hub connectWithIdentity:ident];
-            }
+            NSError *error = nil;
+            NWIdentityRef ident = identity ?: [NWSecTools keychainIdentityWithCertificate:certificate error:&error];
+            NWHub *hub = [NWHub connectWithDelegate:self identity:ident error:&error];
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (connected == kNWSuccess) {
+                if (hub) {
                     NWLogInfo(@"Connected  (%@%@)", summary, sandbox ? @" sandbox" : @"");
                     _hub = hub;
                     _pushButton.enabled = YES;
                     _reconnectButton.enabled = YES;
                 } else {
-                    NWLogWarn(@"Unable to connect: %@", [NWErrorUtil stringWithError:connected]);
+                    NWLogWarn(@"Unable to connect: %@", error.localizedDescription);
                     [hub disconnect];
                     [_certificatePopup selectItemAtIndex:0];
                 }
@@ -343,13 +337,14 @@
     _pushButton.enabled = NO;
     _reconnectButton.enabled = NO;
     dispatch_async(_serial, ^{
-        NWError connected = [_hub reconnect];
+        NSError *error =  nil;
+        BOOL connected = [_hub reconnectWithError:&error];
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (connected == kNWSuccess) {
+            if (connected) {
                 NWLogInfo(@"Reconnected");
                 _pushButton.enabled = YES;
             } else {
-                NWLogWarn(@"Unable to reconnect: %@", [NWErrorUtil stringWithError:connected]);
+                NWLogWarn(@"Unable to reconnect: %@", error.localizedDescription);
             }
             _reconnectButton.enabled = YES;
         });
@@ -388,21 +383,17 @@
         BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
         NSString *summary = [NWSecTools summaryWithCertificate:certificate];
         NWLogInfo(@"Connecting to feedback service..  (%@%@)", summary, sandbox ? @" sandbox" : @"");
-        NWIdentityRef identity = nil;
-        NWError connected = [NWSecTools keychainIdentityWithCertificate:_selectedCertificate identity:&identity];
-        NWPushFeedback *feedback = [[NWPushFeedback alloc] init];
-        if (connected == kNWSuccess) {
-            connected = [feedback connectWithIdentity:identity];
-        }
-        if (connected != kNWSuccess) {
-            NWLogWarn(@"Unable to connect to feedback service: %@", [NWErrorUtil stringWithError:connected]);
+        NSError *error = nil;
+        NWIdentityRef identity = [NWSecTools keychainIdentityWithCertificate:_selectedCertificate error:&error];
+        NWPushFeedback *feedback = [NWPushFeedback connectWithIdentity:identity error:&error];
+        if (!feedback) {
+            NWLogWarn(@"Unable to connect to feedback service: %@", error.localizedDescription);
             return;
         }
         NWLogInfo(@"Reading feedback service..  (%@%@)", summary, sandbox ? @" sandbox" : @"");
-        NSArray *pairs = nil;
-        NWError read = [feedback readTokenDatePairs:&pairs max:1000];
-        if (read != kNWSuccess) {
-            NWLogWarn(@"Unable to read feedback: %@", [NWErrorUtil stringWithError:read]);
+        NSArray *pairs = [feedback readTokenDatePairsWithMax:1000 error:&error];
+        if (!pairs) {
+            NWLogWarn(@"Unable to read feedback: %@", error.localizedDescription);
             return;
         }
         for (NSArray *pair in pairs) {

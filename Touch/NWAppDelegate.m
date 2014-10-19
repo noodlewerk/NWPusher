@@ -81,12 +81,13 @@ static NWPusherViewController *controller = nil;
         dispatch_async(_serial, ^{
             NSURL *url = [NSBundle.mainBundle URLForResource:pkcs12FileName withExtension:nil];
             NSData *pkcs12 = [NSData dataWithContentsOfURL:url];
-            NWHub *hub = [[NWHub alloc] initWithDelegate:self];
-            NWError connected = [hub connectWithPKCS12Data:pkcs12 password:pkcs12Password];
+            NSError *error = nil;
+            NWHub *hub = [NWHub connectWithDelegate:self PKCS12Data:pkcs12 password:pkcs12Password error:&error];
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (connected == kNWSuccess) {
-                    NWCertificateRef certificate = nil;
-                    [NWSecTools certificateWithIdentity:hub.pusher.connection.identity certificate:&certificate];
+                if (hub) {
+                    NSError *error = nil;
+                    NWCertificateRef certificate = [NWSecTools certificateWithIdentity:hub.pusher.connection.identity error:&error];
+                    NWError(error);
                     BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
                     NSString *summary = [NWSecTools summaryWithCertificate:certificate];
                     NWLogInfo(@"Connected to APN: %@%@", summary, sandbox ? @" (sandbox)" : @"");
@@ -94,7 +95,7 @@ static NWPusherViewController *controller = nil;
                     _pushButton.enabled = YES;
                     [_connectButton setTitle:@"Disconnect" forState:UIControlStateNormal];
                 } else {
-                    NWLogWarn(@"Unable to connect: %@", [NWErrorUtil stringWithError:connected]);
+                    NWLogWarn(@"Unable to connect: %@", error.localizedDescription);
                 }
                 _connectButton.enabled = YES;
             });
@@ -122,11 +123,11 @@ static NWPusherViewController *controller = nil;
     });
 }
 
-- (void)notification:(NWNotification *)notification didFailWithResult:(NWError)result
+- (void)notification:(NWNotification *)notification didFailWithError:(NSError *)error
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         //NSLog(@"failed notification: %@ %@ %lu %lu %lu", notification.payload, notification.token, notification.identifier, notification.expires, notification.priority);
-        NWLogWarn(@"Notification error: %@", [NWErrorUtil stringWithError:result]);
+        NWLogWarn(@"Notification error: %@", error.localizedDescription);
     });
 }
 
