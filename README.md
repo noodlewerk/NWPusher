@@ -1,11 +1,12 @@
-![NWPusher icon](Touch/Icon@2x.png)
+<img src="Touch/Icon@2x.png" alt="Pusher Icon" width="72"/>
+
 
 Pusher
 ======
 
-*iOS/OS X application and library for playing with the Apple Push Notification Service (APNS).*
+*OS X and iOS application and framework to play with the Apple Push Notification Service (APNS)*
 
-<img src="Docs/osx.png" alt="Pusher OS X" width="591"/>
+<img src="Docs/osx1.png" alt="Pusher OS X" width="612"/>
 
 
 Installation
@@ -20,7 +21,7 @@ Or download the latest `Pusher.app` binary:
 
 - [Download latest binary](https://github.com/noodlewerk/NWPusher/releases/latest)
 
-Alternatively, you can include NWPusher as a library, using [CocoaPods](http://cocoapods.org/):
+Alternatively, you can include NWPusher as a framework, using [CocoaPods](http://cocoapods.org/):
 
 ```ruby
 pod 'NWPusher', '~> 0.5.1'
@@ -35,7 +36,7 @@ Testing push notifications for your iOS app can be a pain. You might consider se
 
 Enter *Pusher*, a Mac and iPhone app for sending push notifications *directly* to the *Apple Push Notification Service*. No need to set up a server or create an account online. You only need the SSL certificate and a device token to start pushing directly from your Mac, or even from an iPhone!
 
-Pusher comes with a small library for both OS X and iOS, that provides various tools for sending notifications programmatically. On OS X it can use the keychain to retrieve push certificates and keys. Pusher can also be used without keychain, using a PKCS #12 file.
+Pusher comes with a small framework for both OS X and iOS, that provides various tools for sending notifications programmatically. On OS X it can use the keychain to retrieve push certificates and keys. Pusher can also be used without keychain, using a PKCS #12 file.
 
 
 Features
@@ -50,7 +51,7 @@ Mac OS X application for sending push notifications through the APN service:
 - Reports *detailed error messages* returned by APNS
 - Reads from *feedback service*
 
-OS X/iOS library for sending pushes from your own application:
+OS X and iOS framework for sending pushes from your own application:
 - Modular, no dependencies, use what you like
 - Detailed error handling
 - iOS compatible, so you can also push directly from your iPhone :o
@@ -151,13 +152,15 @@ Now, when you run the application, the 64 character push string will be logged t
 ### Push from OS X
 With the SSL certificate and private key in the keychain and the device token on the pasteboard, you're ready to send some push notifications. Let's start by sending a notification using the *Pusher app for Mac OS X*. Open the Pusher Xcode project and run the PusherMac target:
 
-<img src="Docs/osx.png" alt="Pusher OS X" width="591"/>
+<img src="Docs/osx1.png" alt="Pusher OS X" width="612"/>
 
 The combo box at the top lists the available SSL certificates in the keychain. Select the certificate you want to use and paste the device token of the device you're pushing to. The text field below shows the JSON formatted payload text that you're sending. Read more about this format in the Apple documentation under *Apple Push Notification Service*.
 
 Now before you press *Push*, make sure the application you're *sending to* is in the *background*, e.g. by pressing the home button. This way you're sure the app is not going to interfere with the message, yet. Press push, wait a few seconds, and see the notification coming in.
 
 If things are not working as expected, then take a look at the *Troubleshooting* section below.
+
+<img src="Docs/osx2.png" alt="Pusher OS X" width="612"/>
 
 ### Push from iOS
 The ultimate experience is of course pushing from an iPhone to an iPhone, directly. This can be done with the Pusher iOS app. Before you run the PusherTouch target, make sure to include the *certificate, private key, and device token* inside the app. Take the PKCS12 file that you exported earlier and include it in the PusherTouch bundle. Then go to `NWAppDelegate.m` in the `Touch` folder and configure `pkcs12FileName`, `pkcs12Password`, and `deviceToken`. Now run the PusherTouch target:
@@ -172,7 +175,7 @@ Consult Apple's documentation for more info on the APNS architecture: [Apple Pus
 
 Pushing from code
 -----------------
-Pusher can also be used as a library to send notifications programmatically. The included Xcode project provides examples for both OS X and iOS. The easiest way to include NWPusher is through CocoaPods:
+Pusher can also be used as a framework to send notifications programmatically. The included Xcode project provides examples for both OS X and iOS. The easiest way to include NWPusher is through CocoaPods:
 
 ```ruby
 pod 'NWPusher', '~> 0.5.1'
@@ -189,10 +192,12 @@ To create a connection directly from a PKCS12 (.p12) file:
 ```objective-c
     NSURL *url = [NSBundle.mainBundle URLForResource:@"pusher.p12" withExtension:nil];
     NSData *pkcs12 = [NSData dataWithContentsOfURL:url];
-    NWPusher *pusher = [[NWPusher alloc] init];
-    NWError connect = [pusher connectWithPKCS12Data:pkcs12 password:@"pa$$word"];
-    if (connect != kNWSuccess) {
-        NSLog(@"Unable to connect: %@", [NWErrorUtil stringWithError:connect]);
+    NSError *error = nil;
+    NWPusher *pusher = [NWPusher connectWithPKCS12Data:pkcs12 password:@"pa$$word" error:&error];
+    if (pusher) {
+        NSLog(@"Connected to APNS");
+    } else {
+        NSLog(@"Unable to connect: %@", error);
     }
 ```
 
@@ -201,9 +206,12 @@ When pusher is successfully connected, send a payload to your device:
 ```objective-c
     NSString *payload = @"{\"aps\":{\"alert\":\"Testing..\"}}";
     NSString *token = @"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
-    NWError push = [pusher pushPayload:payload token:token identifier:rand()];
-    if (push != kNWSuccess) {
-        NSLog(@"Unable to sent: %@", [NWErrorUtil stringWithError:push]);
+    NSError *error = nil;
+    BOOL pushed = [pusher pushPayload:payload token:token identifier:rand() error:&error];
+    if (pushed) {
+        NSLog(@"Pushed to APNS");
+    } else {
+        NSLog(@"Unable to push: %@", error);
     }
 ```
 
@@ -211,32 +219,39 @@ After a second or so, we can take a look to see if the notification was accepted
 
 ```objective-c
     NSUInteger identifier = 0;
-    NWError apnError = kNWSuccess;
-    NWError fetch = [pusher fetchFailedIdentifier:&identifier apnError:apnError];
-    if (fetch != kNWSuccess) {
-        NSLog(@"Unable to read response: %@", [NWErrorUtil stringWithError:push]);
-    } else if (apnError != kNWSuccess) {
-        NSLog(@"Notification with identifier %i rejected: %@", (int)identifier, [NWErrorUtil stringWithError:apnError]);
+    NSError *apnError = nil;
+    NSError *error = nil;
+    BOOL fetched = [pusher fetchFailedIdentifier:&identifier apnError:&apnError error:&error];
+    if (fetched && apnError) {
+        NSLog(@"Notification with identifier %i rejected: %@", (int)identifier, apnError);
+    } else if (fetched) {
+        NSLog(@"Fetched and none failed");
+    } else {
+        NSLog(@"Unable to fetch failed: %@", error);
     }
 ```
 
 Alternatively on OS X you can also use the keychain to obtain the SSL certificate. In that case first collect all certificates:
 
 ```objective-c
-    NSArray *certificates = nil;
-    NWError keychain = [NWSecTools keychainCertificates:&certificates];
-    if (keychain != kNWSuccess) {
-        NSLog(@"Unable to access keychain: %@", [NWErrorUtil stringWithError:keychain]);
+    NSError *error = nil;
+    NSArray *certificates = [NWSecTools keychainCertificatesWithError:&error];
+    if (certificates) {
+        NSLog(@"Loaded %i certificates", (int)certificates.count);
+    } else {
+        NSLog(@"Unable to access keychain: %@", error);
     }
 ```
 
 After selecting the right certificate, obtain the identity from the keychain:
 
 ```objective-c
-    NWIdentityRef identity = nil;
-    NWError ident = [NWSecTools keychainIdentityWithCertificate:certificate identity:&identity];
-    if (ident != kNWSuccess) {
-        NSLog(@"Unable to create identity: %@", [NWErrorUtil stringWithError:ident]);
+    NSError *error = nil;
+    NWIdentityRef identity = [NWSecTools keychainIdentityWithCertificate:certificate error:&error];
+    if (identity) {
+        NSLog(@"Loaded identity: %@", [NWSecTools inspectIdentity:identity]);
+    } else {
+        NSLog(@"Unable to create identity: %@", error);
     }
 ```
 
@@ -253,29 +268,28 @@ Communication with the feedback service can be done with the `NWPushFeedback` cl
 ```objective-c
     NSURL *url = [NSBundle.mainBundle URLForResource:@"pusher.p12" withExtension:nil];
     NSData *pkcs12 = [NSData dataWithContentsOfURL:url];
-    NWPushFeedback *feedback = [[NWPushFeedback alloc] init];
-    NWError connect = [feedback connectWithPKCS12Data:pkcs12 password:@"pa$$word"];
-    if (connect != kNWSuccess) {
-        NSLog(@"Unable to connect to feedback service: %@", [NWErrorUtil stringWithError:connect]);
+    NSError *error = nil;
+    NWPushFeedback *feedback = [NWPushFeedback connectWithPKCS12Data:pkcs12 password:@"pa$$word" error:&error];
+    if (feedback) {
+        NSLog(@"Connected to feedback service");
+    } else {
+        NSLog(@"Unable to connect to feedback service: %@", error);
     }
 ```
 
 When connected read the device token and date of invalidation:
 
 ```objective-c
-    NSString *token = nil;
-    NSDate *date = nil;
-    NWError read = [feedback readToken:&token date:&date];
-    if (read == kNWErrorReadClosedGraceful) {
-        NSLog(@"All tokens have been read, connection closed");
-    } else if (read != kNWSuccess) {
-        NSLog(@"Unable to read feedback: %@", [NWErrorUtil stringWithError:read]);
+    NSError *error = nil;
+    NSArray *pairs = [feedback readTokenDatePairsWithMax:100 error:&error];
+    if (pairs) {
+        NSLog(@"Read token-date pairs: %@", pairs);
     } else {
-        NSLog(@"Feedback service invalidated token: %@ on date: %@", token, date);
+        NSLog(@"Unable to read feedback: %@", error);
     }
 ```
 
-Apple closes the connection after the last device token is read. Use `-readTokenDatePairs:max:` to read all device tokens in one method call.
+Apple closes the connection after the last device token is read.
 
 Certificate and key files
 -------------------------
@@ -329,17 +343,17 @@ Some tips on what to look out for:
 
 - A device token is unique to both the device, the developer's certificate, and to whether the app was built with a production or development (sandbox) certificate. Therefore make sure that the push certificate matches the app's provisioning profile exactly. This doesn't mean the tokens are always different; device tokens can be the same for different bundle identifiers.
 
-- There are two channels through which Apple responds to sent notifications: the notification connection and the feedback connection. Both operate asynchronously, so for example after the second push has been sent, we might get a response to the first push, saying it has an invalid payload. Use a new identifier for every notification so these responses can be linked to the right notification.
+- There are two channels through which Apple responds to pushed notifications: the notification connection and the feedback connection. Both operate asynchronously, so for example after the second push has been sent, we might get a response to the first push, saying it has an invalid payload. Use a new identifier for every notification so these responses can be linked to the right notification.
 
 If it fails to connect then check:
 
 - Are the cerificates and keys in order? Use the OpenSSL commands listed above to inspect the cerificate. See if there is one push certificate and key present. Also make sure you're online, try `ping www.apple.com`.
 
-- Is the certificate properly loaded? Try initializing an identity using `[NWSecTools identityWithPKCS12Data:data password:password identity:&identity]` or `[NWSecTools keychainIdentityWithCertificate:certificate identity:&identity]`. Make sure all return `kNWSuccess`.
+- Is the certificate properly loaded? Try initializing an identity using `[NWSecTools identityWithPKCS12Data:data password:password error:&error]` or `[NWSecTools keychainIdentityWithCertificate:certificate error:&error]`.
 
 - Are you using the right identity? Use `[NWSecTools inspectIdentity:identity]` to inspect the identity instance. In general `NWSecTools` can be helpful for inspecting certificates, identities and the keychain.
 
-- Can you connect with the push servers? Try `[pusher connectWithIdentity:identity]` or `[pusher connectWithPKCS12Data:pkcs12 password:password]`, it should return `kNWSuccess`.
+- Can you connect with the push servers? Try `[NWPusher connectWithIdentity:identity error:&error]` or `[NWPusher connectWithPKCS12Data:pkcs12 password:password error:&error]`.
 
 If nothing is delivered to the device then check:
 
@@ -347,7 +361,7 @@ If nothing is delivered to the device then check:
 
 - Are you pushing to the right device token? This token should be returned by the OS of the receiving device, in the callback `-application: didRegisterForRemoteNotificationsWithDeviceToken:`. The push certificate should match the provisioning profile of the app, check *Development or Production*, *iOS or Mac*, and the *bundle identifier*.
 
-- Does the push call succeed? Isn't there any negative response from the push server or feedback server? Both `[pusher pushPayload:payload token:token identifier:rand()]` and `[pusher fetchFailedIdentifier:&identifier apnError:apnError]` should return `kNWSuccess`, but wait a second between pushing and fetching. Also try to connect to the feedback service to read feedback.
+- Does the push call succeed? Isn't there any negative response from the push server or feedback server? Both `[pusher pushPayload:payload token:token identifier:rand() error:&error]` and `[pusher fetchFailedIdentifier:&identifier apnError:&apnError error:&error]` should return `YES`, but wait a second between pushing and fetching. Also try to connect to the feedback service to read feedback.
 
 Consult Apple's documentation for more troubleshooting tips: [Troubleshooting Push Notifications](https://developer.apple.com/library/mac/technotes/tn2265/_index.html)
 

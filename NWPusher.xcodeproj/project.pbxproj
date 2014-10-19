@@ -79,6 +79,7 @@
 		B33FB213172B303D006529CE /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
 		B34BF1B218DDF401004BA9F7 /* NWType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWType.h; sourceTree = "<group>"; };
 		B34BF1B318DDF401004BA9F7 /* NWType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWType.m; sourceTree = "<group>"; };
+		B360423219F4315C00B0E97D /* CHANGLOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGLOG.md; sourceTree = "<group>"; };
 		B3AFABEE172C81910027346A /* config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = config.plist; sourceTree = "<group>"; };
 		B3B4DCD218A7998300F9F258 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		B3C6BD7B15FD24D200F1F3F1 /* Pusher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pusher.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -184,6 +185,7 @@
 			isa = PBXGroup;
 			children = (
 				B3C6BE0015FD30E900F1F3F1 /* README.md */,
+				B360423219F4315C00B0E97D /* CHANGLOG.md */,
 				B3B4DCD218A7998300F9F258 /* LICENSE.txt */,
 				B3F232991896766B0043DA98 /* NWPusher.podspec */,
 				B3F2329D189682D30043DA98 /* Classes */,

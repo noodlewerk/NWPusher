@@ -9,9 +9,9 @@
 
 @implementation NWErrorUtil
 
-+ (NSString *)stringWithError:(NWError)error
++ (NSString *)stringWithCode:(NWError)code
 {
-    switch (error) {
+    switch (code) {
         case kNWErrorNone                              : return @"No error, that's odd";
             
         case kNWErrorAPNProcessing                     : return @"APN processing error";
@@ -79,7 +79,7 @@
 
 + (NSError *)errorWithErrorCode:(NWError)code
 {
-    NSDictionary *info = @{ NSLocalizedDescriptionKey: [self stringWithError:code] };
+    NSDictionary *info = @{ NSLocalizedDescriptionKey: [self stringWithCode:code] };
     return [NSError errorWithDomain:@"NWPusherErrorDomain" code:code userInfo:info];
 }
 
@@ -95,6 +95,13 @@
     NSAssert(code != kNWErrorNone, @"code != kNWErrorNone");
     if (error) *error = [self errorWithErrorCode:code];
     return nil;
+}
+
+// deprecated
+
++ (NSString *)stringWithError:(NWError)error
+{
+    return [self stringWithCode:error];
 }
 
 @end
