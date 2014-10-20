@@ -113,6 +113,24 @@ static NSUInteger const NWPushPort = 2195;
     return YES;
 }
 
+- (NSArray *)fetchFailedIdentifierErrorPairsWithMax:(NSUInteger)max error:(NSError *__autoreleasing *)error
+{
+    NSMutableArray *pairs = @[].mutableCopy;
+    for (NSUInteger i = 0; i < max; i++) {
+        NSUInteger identifier = 0;
+        NSError *apnError = nil;
+        BOOL fetched = [self fetchFailedIdentifier:&identifier apnError:&apnError error:error];
+        if (!fetched) {
+            return nil;
+        }
+        if (!apnError) {
+            break;
+        }
+        [pairs addObject:@[@(identifier), apnError]];
+    }
+    return pairs;
+}
+
 + (instancetype)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error
 {
     NWPusher *pusher = [[NWPusher alloc] init];

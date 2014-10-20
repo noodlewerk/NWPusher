@@ -22,7 +22,9 @@
 
 - (BOOL)pushPayload:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier error:(NSError **)error;
 - (BOOL)pushNotification:(NWNotification *)notification type:(NWNotificationType)type error:(NSError **)error;
+
 - (BOOL)fetchFailedIdentifier:(NSUInteger *)identifier apnError:(NSError **)apnError error:(NSError **)error;
+- (NSArray *)fetchFailedIdentifierErrorPairsWithMax:(NSUInteger)max error:(NSError **)error;
 
 + (instancetype)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error;
 + (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error;
