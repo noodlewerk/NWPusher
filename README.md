@@ -329,6 +329,10 @@ Make sure your build matches the `Development/Production`, `iOS/Mac`, and bundle
 
     openssl pkcs12 -in pusher.p12 -out pusher.pem -clcerts -aes256
 
+Alternatively you can use the command below, which does *not* encrypt the private key (not recommended):
+
+    openssl pkcs12 -in pusher.p12 -out pusher.pem -nodes -clcerts
+
 *PEM to PKCS12:*
 
     openssl pkcs12 -export -in pusher.pem -out pusher.p12
