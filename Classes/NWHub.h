@@ -39,18 +39,19 @@
 - (NSUInteger)pushPayload:(NSString *)payload token:(NSString *)token;
 - (NSUInteger)pushPayload:(NSString *)payload tokens:(NSArray *)tokens;
 - (NSUInteger)pushPayloads:(NSArray *)payloads token:(NSString *)token;
-- (NSUInteger)pushNotifications:(NSArray *)notifications autoReconnect:(BOOL)reconnect;
+- (NSUInteger)pushNotifications:(NSArray *)notifications;
+- (NSUInteger)fetchFailed;
 
-- (BOOL)pushPayload:(NSString *)payload token:(NSString *)token error:(NSError **)error;
 - (BOOL)pushNotification:(NWNotification *)notification autoReconnect:(BOOL)reconnect error:(NSError **)error;
-- (BOOL)pushNotifications:(NSArray *)notifications autoReconnect:(BOOL)reconnect error:(NSError **)error;
-
-- (NSUInteger)flushFailed;
+- (BOOL)fetchFailed:(BOOL *)failed autoReconnect:(BOOL)reconnect error:(NSError **)error;
+- (BOOL)trimIdentifiers;
 
 // deprecated
 
 - (NWError)connectWithIdentity:(NWIdentityRef)identity __deprecated;
 - (NWError)connectWithPKCS12Data:(NSData *)data password:(NSString *)password __deprecated;
 - (NWError)reconnect __deprecated;
+- (NSUInteger)pushNotifications:(NSArray *)notifications autoReconnect:(BOOL)reconnect __deprecated;
+- (NSUInteger)flushFailed __deprecated;
 
 @end

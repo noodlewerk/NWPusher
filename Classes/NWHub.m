@@ -81,7 +81,7 @@
 {
     NSUInteger identifier = _index++;
     NWNotification *notification = [[NWNotification alloc] initWithPayload:payload token:token identifier:identifier expiration:nil priority:0];
-    return [self pushNotifications:@[notification] autoReconnect:NO];
+    return [self pushNotifications:@[notification]];
 }
 
 - (NSUInteger)pushPayload:(NSString *)payload tokens:(NSArray *)tokens
@@ -92,7 +92,7 @@
         NWNotification *notification = [[NWNotification alloc] initWithPayload:payload token:token identifier:identifier expiration:nil priority:0];
         [notifications addObject:notification];
     }
-    return [self pushNotifications:notifications autoReconnect:NO];
+    return [self pushNotifications:notifications];
 }
 
 - (NSUInteger)pushPayloads:(NSArray *)payloads token:(NSString *)token
@@ -103,15 +103,15 @@
         NWNotification *notification = [[NWNotification alloc] initWithPayload:payload token:token identifier:identifier expiration:nil priority:0];
         [notifications addObject:notification];
     }
-    return [self pushNotifications:notifications autoReconnect:NO];
+    return [self pushNotifications:notifications];
 }
 
-- (NSUInteger)pushNotifications:(NSArray *)notifications autoReconnect:(BOOL)reconnect
+- (NSUInteger)pushNotifications:(NSArray *)notifications
 {
     NSUInteger fails = 0;
     for (NWNotification *notification in notifications) {
         if (!notification.identifier) notification.identifier = _index++;
-        BOOL success = [self pushNotification:notification autoReconnect:reconnect error:nil];
+        BOOL success = [self pushNotification:notification autoReconnect:YES error:nil];
         if (!success) {
             fails++;
         }
@@ -120,13 +120,6 @@
 }
 
 #pragma mark - Pushing with NSError
-
-- (BOOL)pushPayload:(NSString *)payload token:(NSString *)token error:(NSError *__autoreleasing *)error
-{
-    NSUInteger identifier = _index++;
-    NWNotification *notification = [[NWNotification alloc] initWithPayload:payload token:token identifier:identifier expiration:nil priority:0];
-    return [self pushNotifications:@[notification] autoReconnect:NO error:error];
-}
 
 - (BOOL)pushNotification:(NWNotification *)notification autoReconnect:(BOOL)reconnect error:(NSError *__autoreleasing *)error
 {
@@ -163,45 +156,62 @@
 
 #pragma mark - Fetching failed
 
-- (BOOL)fetchFailed
+- (NSUInteger)fetchFailed
+{
+    NSUInteger count = 0;
+    [self fetchFailed:&count max:1000 autoReconnect:YES error:nil];
+    return count;
+}
+
+- (BOOL)fetchFailed:(NSUInteger *)failed max:(NSUInteger)max autoReconnect:(BOOL)reconnect error:(NSError *__autoreleasing *)error
+{
+    for (NSUInteger i = 0; i < max; i++) {
+        BOOL f = NO;
+        BOOL fetched = [self fetchFailed:&f autoReconnect:reconnect error:error];
+        if (!fetched) {
+            return fetched;
+        }
+        if (!f) {
+            if (failed) *failed = i;
+            break;
+        }
+    }
+    [self trimIdentifiers];
+    return YES;
+}
+
+- (BOOL)fetchFailed:(BOOL *)failed autoReconnect:(BOOL)reconnect error:(NSError *__autoreleasing *)error
 {
     NSUInteger identifier = 0;
     NSError *apnError = nil;
-    BOOL fetch = [_pusher fetchFailedIdentifier:&identifier apnError:&apnError error:nil];
+    BOOL fetch = [_pusher fetchFailedIdentifier:&identifier apnError:&apnError error:error];
     if (!fetch) {
         return fetch;
     }
-    if (!identifier && !apnError) {
-        return NO;
-    }
-    NWNotification *notification = _notificationForIdentifier[@(identifier)][0];
-    if ([_delegate respondsToSelector:@selector(notification:didFailWithResult:)]) {
-        [_delegate notification:notification didFailWithResult:apnError.code];
-    }
-    if ([_delegate respondsToSelector:@selector(notification:didFailWithError:)]) {
-        [_delegate notification:notification didFailWithError:apnError];
+    if (failed) *failed = !!apnError;
+    if (apnError) {
+        NWNotification *notification = _notificationForIdentifier[@(identifier)][0];
+        if ([_delegate respondsToSelector:@selector(notification:didFailWithResult:)]) {
+            [_delegate notification:notification didFailWithResult:apnError.code];
+        }
+        if ([_delegate respondsToSelector:@selector(notification:didFailWithError:)]) {
+            [_delegate notification:notification didFailWithError:apnError];
+        }
+        if (reconnect) {
+            [self reconnectWithError:error];
+        }
     }
     return YES;
 }
 
-- (NSUInteger)collectGarbage
+- (BOOL)trimIdentifiers
 {
     NSDate *oldBefore = [NSDate dateWithTimeIntervalSinceNow:-_feedbackSpan];
     NSArray *old = [[_notificationForIdentifier keysOfEntriesPassingTest:^BOOL(id key, id obj, BOOL *stop) {
         return [oldBefore compare:obj[1]] == NSOrderedDescending;
     }] allObjects];
     [_notificationForIdentifier removeObjectsForKeys:old];
-    return old.count;
-}
-
-- (NSUInteger)flushFailed
-{
-    NSUInteger count = 0;
-    for (BOOL failed = YES; failed; count++) {
-        failed = [self fetchFailed];
-    }
-    [self collectGarbage];
-    return count - 1;
+    return !!old.count;
 }
 
 #pragma mark - Deprecated
@@ -222,6 +232,17 @@
 {
     NSError *error = nil;
     return [self reconnectWithError:&error] ? kNWSuccess : error.code;
+}
+
+- (NSUInteger)flushFailed
+{
+    return [self fetchFailed];
+}
+
+- (NSUInteger)pushNotifications:(NSArray *)notifications autoReconnect:(BOOL)reconnect
+{
+    NSAssert(reconnect, @"autoReconnect == false is ignored");
+    return [self pushNotifications:notifications];
 }
 
 @end

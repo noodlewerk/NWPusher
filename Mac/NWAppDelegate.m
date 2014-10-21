@@ -101,6 +101,7 @@
 {
     [self addTokenAndUpdateCombo];
     [self push];
+    [self upPayloadTextIndex];
 }
 
 - (IBAction)reconnect:(NSButton *)sender
@@ -360,15 +361,24 @@
     NWLogInfo(@"Pushing..");
     dispatch_async(_serial, ^{
         NWNotification *notification = [[NWNotification alloc] initWithPayload:payload token:token identifier:0 expiration:expiry priority:priority];
-        NSUInteger failed = [_hub pushNotifications:@[notification] autoReconnect:NO];
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC));
-        dispatch_after(popTime, _serial, ^(void){
-            NSUInteger failed2 = failed + [_hub flushFailed];
-            if (!failed2) NWLogInfo(@"Payload has been pushed");
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self upPayloadTextIndex];
+        NSError *error = nil;
+        BOOL pushed = [_hub pushNotification:notification autoReconnect:YES error:&error];
+        if (pushed) {
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC));
+            dispatch_after(popTime, _serial, ^(void){
+                NSError *error = nil;
+                BOOL failed = NO;
+                BOOL fetched = [_hub fetchFailed:&failed autoReconnect:YES error:&error];
+                if (fetched) {
+                    if (!failed) NWLogInfo(@"Payload has been pushed");
+                } else {
+                    NWLogWarn(@"Unable to fetch failed: %@", error.localizedDescription);
+                }
+                [_hub trimIdentifiers];
             });
-        });
+        } else {
+            NWLogWarn(@"Unable to push: %@", error.localizedDescription);
+        }
     });
 }
 

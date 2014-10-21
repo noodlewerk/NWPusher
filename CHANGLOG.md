@@ -3,6 +3,9 @@ Change Log
 
 ### master (unreleased)
 
+* Set NWHub defaults to autoConnect:YES
+* Add a bunch of helpers to NWHub and NWPusher
+
 ### 0.5.2 (2014-10-19)
 
 * Add convenient connect methods

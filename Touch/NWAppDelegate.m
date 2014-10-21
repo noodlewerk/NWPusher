@@ -117,7 +117,7 @@ static NWPusherViewController *controller = nil;
         NSUInteger failed = [_hub pushPayload:payload token:token];
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC));
         dispatch_after(popTime, _serial, ^(void){
-            NSUInteger failed2 = failed + [_hub flushFailed];
+            NSUInteger failed2 = failed + [_hub fetchFailed];
             if (!failed2) NWLogInfo(@"Payload has been pushed");
         });
     });

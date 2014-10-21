@@ -15,12 +15,12 @@
 - (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error;
 - (void)disconnect;
 
++ (instancetype)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error;
++ (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error;
+
 - (BOOL)readTokenData:(NSData **)token date:(NSDate **)date error:(NSError **)error;
 - (BOOL)readToken:(NSString **)token date:(NSDate **)date error:(NSError **)error;
 - (NSArray *)readTokenDatePairsWithMax:(NSUInteger)max error:(NSError **)error;
-
-+ (instancetype)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error;
-+ (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error;
 
 // deprecated
 
