@@ -13,9 +13,6 @@ static NSUInteger const NWPayloadMaxSize = 256;
 
 @implementation NWNotification
 
-
-#pragma mark - Init
-
 - (instancetype)initWithPayload:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier expiration:(NSDate *)date priority:(NSUInteger)priority
 {
     self = [super init];
@@ -42,6 +39,8 @@ static NSUInteger const NWPayloadMaxSize = 256;
     }
     return self;
 }
+
+#pragma mark - Accessors
 
 - (NSString *)payload
 {

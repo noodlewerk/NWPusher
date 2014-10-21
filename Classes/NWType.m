@@ -77,6 +77,8 @@
     return @"Unkown";
 }
 
+#pragma mark - Helpers
+
 + (NSError *)errorWithErrorCode:(NWError)code
 {
     NSDictionary *info = @{ NSLocalizedDescriptionKey: [self stringWithCode:code] };
@@ -97,7 +99,7 @@
     return nil;
 }
 
-// deprecated
+#pragma mark - Deprecated
 
 + (NSString *)stringWithError:(NWError)error
 {

@@ -40,6 +40,8 @@ OSStatus NWSSLWrite(SSLConnectionRef connection, const void *data, size_t *lengt
     [self disconnect];
 }
 
+#pragma mark - Connecting
+
 - (BOOL)connectWithError:(NSError *__autoreleasing *)error
 {
     [self disconnect];
@@ -135,6 +137,15 @@ OSStatus NWSSLWrite(SSLConnectionRef connection, const void *data, size_t *lengt
     return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakeFail error:error];
 }
 
+- (void)disconnect
+{
+    if (_context) SSLClose(_context);
+    if (_socket >= 0) close(_socket); _socket = -1;
+    if (_context) CFRelease(_context); _context = NULL;
+}
+
+#pragma mark - Read Write
+
 - (BOOL)read:(NSMutableData *)data length:(NSUInteger *)length error:(NSError *__autoreleasing *)error
 {
     *length = 0;
@@ -167,14 +178,7 @@ OSStatus NWSSLWrite(SSLConnectionRef connection, const void *data, size_t *lengt
     return [NWErrorUtil noWithErrorCode:kNWErrorWriteFail error:error];
 }
 
-- (void)disconnect
-{
-    if (_context) SSLClose(_context);
-    if (_socket >= 0) close(_socket); _socket = -1;
-    if (_context) CFRelease(_context); _context = NULL;
-}
-
-// deprecated
+#pragma mark - Deprecated
 
 - (NWError)connect
 {

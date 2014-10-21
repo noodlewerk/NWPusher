@@ -19,6 +19,8 @@ typedef NS_ENUM(NSInteger, NWCertType) {
 
 @implementation NWSecTools
 
+#pragma mark - Initialization
+
 + (NWIdentityRef)identityWithPKCS12Data:(NSData *)pkcs12 password:(NSString *)password error:(NSError *__autoreleasing *)error
 {
     NSArray *identities = [self identitiesWithPKCS12Data:pkcs12 password:password error:error];
@@ -78,7 +80,7 @@ typedef NS_ENUM(NSInteger, NWCertType) {
     return certs;
 }
 
-#pragma mark - Certificate types
+#pragma mark - Inspection
 
 + (NWCertType)typeWithCertificate:(NWCertificateRef)certificate summary:(NSString **)summary
 {
@@ -150,6 +152,30 @@ typedef NS_ENUM(NSInteger, NWCertType) {
             break;
     }
     return nil;
+}
+
++ (NSDictionary *)inspectIdentity:(NWIdentityRef)identity
+{
+    if (!identity) return nil;
+    NSMutableDictionary *result = @{}.mutableCopy;
+    SecCertificateRef certificate = NULL;
+    OSStatus certstat = SecIdentityCopyCertificate((__bridge SecIdentityRef)identity, &certificate);
+    result[@"has_certificate"] = @(!!certificate);
+    if (certstat) result[@"certificate_error"] = @(certstat);
+    if (certificate) {
+        result[@"subject_summary"] = CFBridgingRelease(SecCertificateCopySubjectSummary(certificate));
+        result[@"der_data"] = CFBridgingRelease(SecCertificateCopyData(certificate));
+        CFRelease(certificate);
+    }
+    SecKeyRef key = NULL;
+    OSStatus keystat = SecIdentityCopyPrivateKey((__bridge SecIdentityRef)identity, &key);
+    result[@"has_key"] = @(!!key);
+    if (keystat) result[@"key_error"] = @(keystat);
+    if (key) {
+        result[@"block_size"] = @(SecKeyGetBlockSize(key));
+        CFRelease(key);
+    }
+    return result;
 }
 
 #pragma mark - Sec wrappers
@@ -239,33 +265,7 @@ typedef NS_ENUM(NSInteger, NWCertType) {
 }
 #endif
 
-#pragma mark - Debug
-
-+ (NSDictionary *)inspectIdentity:(NWIdentityRef)identity
-{
-    if (!identity) return nil;
-    NSMutableDictionary *result = @{}.mutableCopy;
-    SecCertificateRef certificate = NULL;
-    OSStatus certstat = SecIdentityCopyCertificate((__bridge SecIdentityRef)identity, &certificate);
-    result[@"has_certificate"] = @(!!certificate);
-    if (certstat) result[@"certificate_error"] = @(certstat);
-    if (certificate) {
-        result[@"subject_summary"] = CFBridgingRelease(SecCertificateCopySubjectSummary(certificate));
-        result[@"der_data"] = CFBridgingRelease(SecCertificateCopyData(certificate));
-        CFRelease(certificate);
-    }
-    SecKeyRef key = NULL;
-    OSStatus keystat = SecIdentityCopyPrivateKey((__bridge SecIdentityRef)identity, &key);
-    result[@"has_key"] = @(!!key);
-    if (keystat) result[@"key_error"] = @(keystat);
-    if (key) {
-        result[@"block_size"] = @(SecKeyGetBlockSize(key));
-        CFRelease(key);
-    }
-    return result;
-}
-
-// deprecated
+#pragma mark - Deprecated
 
 + (NWError)identityWithPKCS12Data:(NSData *)pkcs12 password:(NSString *)password identity:(NWIdentityRef *)identity
 {

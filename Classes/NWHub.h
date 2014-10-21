@@ -33,18 +33,19 @@
 - (BOOL)reconnectWithError:(NSError **)error;
 - (void)disconnect;
 
++ (instancetype)connectWithDelegate:(id<NWHubDelegate>)delegate identity:(NWIdentityRef)identity error:(NSError **)error;
++ (instancetype)connectWithDelegate:(id<NWHubDelegate>)delegate PKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error;
+
 - (NSUInteger)pushPayload:(NSString *)payload token:(NSString *)token;
 - (NSUInteger)pushPayload:(NSString *)payload tokens:(NSArray *)tokens;
 - (NSUInteger)pushPayloads:(NSArray *)payloads token:(NSString *)token;
-
 - (NSUInteger)pushNotifications:(NSArray *)notifications autoReconnect:(BOOL)reconnect;
-- (BOOL)pushNotifications:(NSArray *)notifications autoReconnect:(BOOL)reconnect error:(NSError **)error;
+
+- (BOOL)pushPayload:(NSString *)payload token:(NSString *)token error:(NSError **)error;
 - (BOOL)pushNotification:(NWNotification *)notification autoReconnect:(BOOL)reconnect error:(NSError **)error;
+- (BOOL)pushNotifications:(NSArray *)notifications autoReconnect:(BOOL)reconnect error:(NSError **)error;
 
 - (NSUInteger)flushFailed;
-
-+ (instancetype)connectWithDelegate:(id<NWHubDelegate>)delegate identity:(NWIdentityRef)identity error:(NSError **)error;
-+ (instancetype)connectWithDelegate:(id<NWHubDelegate>)delegate PKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error;
 
 // deprecated
 

@@ -20,8 +20,7 @@ static NSUInteger const NWTokenMaxSize = 32;
     NWSSLConnection *_connection;
 }
 
-
-#pragma mark - Apple SSL
+#pragma mark - Connecting
 
 - (BOOL)connectWithIdentity:(NWIdentityRef)identity error:(NSError *__autoreleasing *)error
 {
@@ -50,8 +49,20 @@ static NSUInteger const NWTokenMaxSize = 32;
     [_connection disconnect]; _connection = nil;
 }
 
++ (instancetype)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error
+{
+    NWPushFeedback *feedback = [[NWPushFeedback alloc] init];
+    return identity && [feedback connectWithIdentity:identity error:error] ? feedback : nil;
+}
 
-#pragma mark - Apple push
++ (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error
+{
+    NWPushFeedback *feedback = [[NWPushFeedback alloc] init];
+    return data && [feedback connectWithPKCS12Data:data password:password error:error] ? feedback : nil;
+}
+
+
+#pragma mark - Reading feedback
 
 - (BOOL)readTokenData:(NSData **)token date:(NSDate **)date error:(NSError *__autoreleasing *)error
 {
@@ -113,19 +124,7 @@ static NSUInteger const NWTokenMaxSize = 32;
     return pairs;
 }
 
-+ (instancetype)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error
-{
-    NWPushFeedback *feedback = [[NWPushFeedback alloc] init];
-    return identity && [feedback connectWithIdentity:identity error:error] ? feedback : nil;
-}
-
-+ (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error
-{
-    NWPushFeedback *feedback = [[NWPushFeedback alloc] init];
-    return data && [feedback connectWithPKCS12Data:data password:password error:error] ? feedback : nil;
-}
-
-// deprecated
+#pragma mark - Deprecated
 
 - (NWError)connectWithIdentity:(NWIdentityRef)identity
 {

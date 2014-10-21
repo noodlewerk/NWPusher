@@ -19,8 +19,7 @@ static NSUInteger const NWPushPort = 2195;
     NSUInteger _index;
 }
 
-
-#pragma mark - Apple SSL
+#pragma mark - Connecting
 
 - (BOOL)connectWithIdentity:(NWIdentityRef)identity error:(NSError *__autoreleasing *)error
 {
@@ -57,8 +56,19 @@ static NSUInteger const NWPushPort = 2195;
     [_connection disconnect]; _connection = nil;
 }
 
++ (instancetype)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error
+{
+    NWPusher *pusher = [[NWPusher alloc] init];
+    return identity && [pusher connectWithIdentity:identity error:error] ? pusher : nil;
+}
 
-#pragma mark - Apple push
++ (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error
+{
+    NWPusher *pusher = [[NWPusher alloc] init];
+    return data && [pusher connectWithPKCS12Data:data password:password error:error] ? pusher : nil;
+}
+
+#pragma mark - Pushing payload
 
 - (BOOL)pushPayload:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier error:(NSError *__autoreleasing *)error
 {
@@ -78,6 +88,8 @@ static NSUInteger const NWPushPort = 2195;
     }
     return YES;
 }
+
+#pragma mark - Fetching failed
 
 - (BOOL)fetchFailedIdentifier:(NSUInteger *)identifier apnError:(NSError *__autoreleasing *)apnError error:(NSError *__autoreleasing *)error
 {
@@ -131,19 +143,7 @@ static NSUInteger const NWPushPort = 2195;
     return pairs;
 }
 
-+ (instancetype)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error
-{
-    NWPusher *pusher = [[NWPusher alloc] init];
-    return identity && [pusher connectWithIdentity:identity error:error] ? pusher : nil;
-}
-
-+ (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error
-{
-    NWPusher *pusher = [[NWPusher alloc] init];
-    return data && [pusher connectWithPKCS12Data:data password:password error:error] ? pusher : nil;
-}
-
-// deprecated
+#pragma mark - Deprecated
 
 - (NWError)connectWithIdentity:(NWIdentityRef)identity
 {

@@ -63,8 +63,19 @@
     [_pusher disconnect];
 }
     
++ (instancetype)connectWithDelegate:(id<NWHubDelegate>)delegate identity:(NWIdentityRef)identity error:(NSError **)error
+{
+    NWHub *hub = [[NWHub alloc] initWithDelegate:delegate];
+    return identity && [hub connectWithIdentity:identity error:error] ? hub : nil;
+}
 
-#pragma mark - Pushing
++ (instancetype)connectWithDelegate:(id<NWHubDelegate>)delegate PKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error
+{
+    NWHub *hub = [[NWHub alloc] initWithDelegate:delegate];
+    return data && [hub connectWithPKCS12Data:data password:password error:error] ? hub : nil;
+}
+
+#pragma mark - Pushing without NSError
     
 - (NSUInteger)pushPayload:(NSString *)payload token:(NSString *)token
 {
@@ -108,16 +119,13 @@
     return fails;
 }
 
-- (BOOL)pushNotifications:(NSArray *)notifications autoReconnect:(BOOL)reconnect error:(NSError *__autoreleasing *)error
+#pragma mark - Pushing with NSError
+
+- (BOOL)pushPayload:(NSString *)payload token:(NSString *)token error:(NSError *__autoreleasing *)error
 {
-    for (NWNotification *notification in notifications) {
-        if (!notification.identifier) notification.identifier = _index++;
-        BOOL success = [self pushNotification:notification autoReconnect:reconnect error:error];
-        if (!success) {
-            return success;
-        }
-    }
-    return YES;
+    NSUInteger identifier = _index++;
+    NWNotification *notification = [[NWNotification alloc] initWithPayload:payload token:token identifier:identifier expiration:nil priority:0];
+    return [self pushNotifications:@[notification] autoReconnect:NO error:error];
 }
 
 - (BOOL)pushNotification:(NWNotification *)notification autoReconnect:(BOOL)reconnect error:(NSError *__autoreleasing *)error
@@ -140,6 +148,20 @@
     _notificationForIdentifier[@(notification.identifier)] = @[notification, NSDate.date];
     return YES;
 }
+
+- (BOOL)pushNotifications:(NSArray *)notifications autoReconnect:(BOOL)reconnect error:(NSError *__autoreleasing *)error
+{
+    for (NWNotification *notification in notifications) {
+        if (!notification.identifier) notification.identifier = _index++;
+        BOOL success = [self pushNotification:notification autoReconnect:reconnect error:error];
+        if (!success) {
+            return success;
+        }
+    }
+    return YES;
+}
+
+#pragma mark - Fetching failed
 
 - (BOOL)fetchFailed
 {
@@ -182,19 +204,7 @@
     return count - 1;
 }
 
-+ (instancetype)connectWithDelegate:(id<NWHubDelegate>)delegate identity:(NWIdentityRef)identity error:(NSError **)error
-{
-    NWHub *hub = [[NWHub alloc] initWithDelegate:delegate];
-    return identity && [hub connectWithIdentity:identity error:error] ? hub : nil;
-}
-
-+ (instancetype)connectWithDelegate:(id<NWHubDelegate>)delegate PKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error
-{
-    NWHub *hub = [[NWHub alloc] initWithDelegate:delegate];
-    return data && [hub connectWithPKCS12Data:data password:password error:error] ? hub : nil;
-}
-
-// deprecated
+#pragma mark - Deprecated
 
 - (NWError)connectWithIdentity:(NWIdentityRef)identity
 {
