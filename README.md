@@ -369,6 +369,14 @@ If nothing is delivered to the device then check:
 
 Consult Apple's documentation for more troubleshooting tips: [Troubleshooting Push Notifications](https://developer.apple.com/library/mac/technotes/tn2265/_index.html)
 
+Build with Xcode
+----------------
+The source comes with an Xcode project file that should take care of building the OS X and iOS demo applications. Alternatively you can also build `Pusher.app` from the commandline with `xcodebuild`:
+
+    xcodebuild -project NWPusher.xcodeproj -target PusherMac -configuration Release clean install
+
+After a successful build, `Pusher.app` can be found in the `build` folder of the project.
+
 License
 -------
 Pusher is licensed under the terms of the BSD 2-Clause License, see the included LICENSE file.
