@@ -16,9 +16,7 @@ static NSString * const NWPushHost = @"feedback.push.apple.com";
 static NSUInteger const NWPushPort = 2196;
 static NSUInteger const NWTokenMaxSize = 32;
 
-@implementation NWPushFeedback {
-    NWSSLConnection *_connection;
-}
+@implementation NWPushFeedback
 
 #pragma mark - Connecting
 

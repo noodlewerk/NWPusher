@@ -14,7 +14,7 @@
 @protocol NWHubDelegate <NSObject>
 - (void)notification:(NWNotification *)notification didFailWithError:(NSError *)error;
 @optional
-- (void)notification:(NWNotification *)notification didFailWithResult:(NWError)result; // TODO: deprecated, remove from 0.6.0
+- (void)notification:(NWNotification *)notification didFailWithResult:(NWError)result __deprecated; // TODO: deprecated, remove from 0.6.0
 @end
 
 
@@ -24,6 +24,8 @@
 @property (nonatomic, weak) id<NWHubDelegate> delegate;
 @property (nonatomic, assign) NWNotificationType type;
 @property (nonatomic, assign) NSTimeInterval feedbackSpan;
+
+@property (nonatomic, assign) NSUInteger index;
 
 - (instancetype)initWithDelegate:(id<NWHubDelegate>)delegate;
 - (instancetype)initWithPusher:(NWPusher *)pusher delegate:(id<NWHubDelegate>)delegate;

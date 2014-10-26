@@ -15,9 +15,7 @@ static NSString * const NWSandboxPushHost = @"gateway.sandbox.push.apple.com";
 static NSString * const NWPushHost = @"gateway.push.apple.com";
 static NSUInteger const NWPushPort = 2195;
 
-@implementation NWPusher {
-    NSUInteger _index;
-}
+@implementation NWPusher
 
 #pragma mark - Connecting
 

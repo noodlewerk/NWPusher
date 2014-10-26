@@ -12,7 +12,6 @@
 
 
 @implementation NWHub {
-    NSUInteger _index;
     NSMutableDictionary *_notificationForIdentifier;
 }
     

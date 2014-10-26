@@ -8,8 +8,11 @@
 #import "NWType.h"
 #import <Foundation/Foundation.h>
 
+@class NWSSLConnection;
 
 @interface NWPushFeedback : NSObject
+
+@property (nonatomic, strong) NWSSLConnection *connection;
 
 - (BOOL)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error;
 - (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error;
