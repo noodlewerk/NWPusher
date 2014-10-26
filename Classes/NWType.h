@@ -49,11 +49,11 @@ typedef NS_ENUM(NSInteger, NWError) {
     kNWErrorAPNInvalidPayloadSize              =   -7,
     /** APN invalid token. */
     kNWErrorAPNInvalidTokenContent             =   -8,
-    /** APN unkown reason. */
+    /** APN unknown reason. */
     kNWErrorAPNUnknownReason                   =   -9,
     /** APN shutdown. */
     kNWErrorAPNShutdown                        =  -10,
-    /** APN unkown error code. */
+    /** APN unknown error code. */
     kNWErrorAPNUnknownErrorCode                =  -11,
     
     /** Push response command unknown. */
@@ -74,7 +74,7 @@ typedef NS_ENUM(NSInteger, NWError) {
     kNWErrorSocketConnect                      = -201,
     /** Socket host cannot be resolved. */
     kNWErrorSocketResolveHostName              = -219,
-    /** Socket file contol failed. */
+    /** Socket file control failed. */
     kNWErrorSocketFileControl                  = -220,
     /** Socket options cannot be set. */
     kNWErrorSocketOptions                      = -221,
@@ -144,7 +144,7 @@ typedef NS_ENUM(NSInteger, NWError) {
     kNWErrorKeychainCreateIdentity             = -303,
 };
 
-/** A collection of helper methods to support Cocoa-sytle error handling (NSError). */
+/** A collection of helper methods to support Cocoa-style error handling (NSError). */
 @interface NWErrorUtil : NSObject
 
 /** @name Helpers */

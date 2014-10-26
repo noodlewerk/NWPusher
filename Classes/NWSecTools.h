@@ -39,7 +39,7 @@
 + (NWCertificateRef)certificateWithData:(NSData *)data;
 
 #if !TARGET_OS_IPHONE
-/** Searches the OS Keychain for an identity (the key) that matches the certifiate. (OS X only) */
+/** Searches the OS Keychain for an identity (the key) that matches the certificate. (OS X only) */
 + (NWIdentityRef)keychainIdentityWithCertificate:(NWCertificateRef)certificate error:(NSError **)error;
 #endif
 

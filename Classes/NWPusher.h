@@ -15,7 +15,7 @@
 
 /** @name Properties */
 
-/** The SSL connection though which all notifications are pushed. */
+/** The SSL connection through which all notifications are pushed. */
 @property (nonatomic, strong) NWSSLConnection *connection;
 
 /** @name Initialization */
