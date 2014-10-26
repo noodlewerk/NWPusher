@@ -77,6 +77,7 @@
 		B33FB211172B303D006529CE /* Icon-72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72@2x.png"; sourceTree = "<group>"; };
 		B33FB212172B303D006529CE /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		B33FB213172B303D006529CE /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
+		B343578419FC360B007A67C1 /* AppledocSettings.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = AppledocSettings.plist; sourceTree = "<group>"; };
 		B34BF1B218DDF401004BA9F7 /* NWType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWType.h; sourceTree = "<group>"; };
 		B34BF1B318DDF401004BA9F7 /* NWType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWType.m; sourceTree = "<group>"; };
 		B360423219F4315C00B0E97D /* CHANGLOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGLOG.md; sourceTree = "<group>"; };
@@ -188,6 +189,7 @@
 				B360423219F4315C00B0E97D /* CHANGLOG.md */,
 				B3B4DCD218A7998300F9F258 /* LICENSE.txt */,
 				B3F232991896766B0043DA98 /* NWPusher.podspec */,
+				B343578419FC360B007A67C1 /* AppledocSettings.plist */,
 				B3F2329D189682D30043DA98 /* Classes */,
 				B33FB1BA172B185C006529CE /* Mac */,
 				B33FB1ED172B1A7A006529CE /* Touch */,

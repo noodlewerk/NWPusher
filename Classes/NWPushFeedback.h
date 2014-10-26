@@ -10,19 +10,41 @@
 
 @class NWSSLConnection;
 
+/** Reads tokens and dates from the APNS Feedback Service. */
 @interface NWPushFeedback : NSObject
+
+/** @name Properties */
 
 @property (nonatomic, strong) NWSSLConnection *connection;
 
-- (BOOL)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error;
-- (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error;
-- (void)disconnect;
+/** @name Initialization */
 
+/** Setup connection with feedback service based on identity. */
 + (instancetype)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error;
+
+/** Setup connection with feedback service based on PKCS #12 data. */
 + (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error;
 
+/** @name Connecting */
+
+/** Connect with feedback service based on identity. */
+- (BOOL)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error;
+
+/** Connect with feedback service based on PKCS #12 data. */
+- (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error;
+
+/** Disconnect from feedback service. The server will automatically drop the connection after all feedback data has been read. */
+- (void)disconnect;
+
+/** @name Reading */
+
+/** Read a single token-date pair, where token is data. */
 - (BOOL)readTokenData:(NSData **)token date:(NSDate **)date error:(NSError **)error;
+
+/** Read a single token-date pair, where token is hex string. */
 - (BOOL)readToken:(NSString **)token date:(NSDate **)date error:(NSError **)error;
+
+/** Read all (or max) token-date pairs, where token is hex string. */
 - (NSArray *)readTokenDatePairsWithMax:(NSUInteger)max error:(NSError **)error;
 
 // deprecated

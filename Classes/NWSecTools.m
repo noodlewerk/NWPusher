@@ -7,12 +7,19 @@
 
 #import "NWSecTools.h"
 
+/** Types of push certificates. */
 typedef NS_ENUM(NSInteger, NWCertType) {
+    /** None. */
     kNWCertTypeNone = 0,
+    /** iOS Development. */
     kNWCertTypeIOSDevelopment = 1,
+    /** iOS Production. */
     kNWCertTypeIOSProduction = 2,
+    /** OS X Development. */
     kNWCertTypeMacDevelopment = 3,
+    /** OS X Production. */
     kNWCertTypeMacProduction = 4,
+    /** Unknown. */
     kNWCertTypeUnknown = 5,
 };
 

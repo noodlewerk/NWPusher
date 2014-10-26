@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>--ignore</key>
+	<array>
+		<string>Mac</string>
+		<string>Touch</string>
+	</array>
+	<key>--project-company</key>
+	<string>Noodlewerk</string>
+	<key>--project-name</key>
+	<string>NWPusher</string>
+	<key>--company-id</key>
+	<string>com.noodlewerk</string>
+	<key>--warn-missing-arg</key>
+	<false/>
+	<key>--repeat-first-par</key>
+	<false/>
+	<key>--output</key>
+	<string>.</string>
+</dict>
+</plist>

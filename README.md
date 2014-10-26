@@ -377,6 +377,14 @@ The source comes with an Xcode project file that should take care of building th
 
 After a successful build, `Pusher.app` can be found in the `build` folder of the project.
 
+Documentation
+-------------
+Documentation generated and installed using *appledoc* by running from the project root:
+
+    appledoc .
+
+See the [appledoc documentation](http://gentlebytes.com/appledoc/) for more info.
+
 License
 -------
 Pusher is licensed under the terms of the BSD 2-Clause License, see the included LICENSE file.

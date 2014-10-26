@@ -3,6 +3,8 @@ Change Log
 
 ### master (unreleased)
 
+* Documentation to all framework stuff
+
 ### 0.5.3 (2014-10-22)
 
 * Set NWHub defaults to autoConnect:YES
