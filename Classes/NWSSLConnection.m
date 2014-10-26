@@ -125,7 +125,7 @@ OSStatus NWSSLWrite(SSLConnectionRef connection, const void *data, size_t *lengt
 - (BOOL)handshakeSSLWithError:(NSError *__autoreleasing *)error
 {
     OSStatus status = errSSLWouldBlock;
-    for (NSUInteger i = 0; i < 1 << 26 && status == errSSLWouldBlock; i++) {
+    for (NSUInteger i = 0; i < 1 << 26 && status == errSSLWouldBlock; i++) { // 26? works.
         status = SSLHandshake(_context);
     }
     switch (status) {

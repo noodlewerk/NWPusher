@@ -367,12 +367,12 @@
             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC));
             dispatch_after(popTime, _serial, ^(void){
                 NSError *error = nil;
-                BOOL failed = NO;
-                BOOL fetched = [_hub fetchFailed:&failed autoReconnect:YES error:&error];
-                if (fetched) {
+                NWNotification *failed = nil;
+                BOOL read = [_hub readFailed:&failed autoReconnect:YES error:&error];
+                if (read) {
                     if (!failed) NWLogInfo(@"Payload has been pushed");
                 } else {
-                    NWLogWarn(@"Unable to fetch failed: %@", error.localizedDescription);
+                    NWLogWarn(@"Unable to read failed: %@", error.localizedDescription);
                 }
                 [_hub trimIdentifiers];
             });

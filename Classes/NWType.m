@@ -22,9 +22,9 @@
         case kNWErrorAPNInvalidTopicSize               : return @"APN invalid topic size";
         case kNWErrorAPNInvalidPayloadSize             : return @"APN invalid payload size";
         case kNWErrorAPNInvalidTokenContent            : return @"APN invalid token";
-        case kNWErrorAPNUnknownReason                  : return @"APN unkown reason";
+        case kNWErrorAPNUnknownReason                  : return @"APN unknown reason";
         case kNWErrorAPNShutdown                       : return @"APN shutdown";
-        case kNWErrorAPNUnknownErrorCode               : return @"APN unkown error code";
+        case kNWErrorAPNUnknownErrorCode               : return @"APN unknown error code";
             
         case kNWErrorPushResponseCommand               : return @"Push response command unknown";
         case kNWErrorPushNotConnected                  : return @"Push reconnect requires connection";
@@ -36,7 +36,7 @@
         case kNWErrorSocketCreate                      : return @"Socket cannot be created";
         case kNWErrorSocketResolveHostName             : return @"Socket host cannot be resolved";
         case kNWErrorSocketConnect                     : return @"Socket connecting failed";
-        case kNWErrorSocketFileControl                 : return @"Socket file contol failed";
+        case kNWErrorSocketFileControl                 : return @"Socket file control failed";
         case kNWErrorSocketOptions                     : return @"Socket options cannot be set";
             
         case kNWErrorSSLConnection                     : return @"SSL connection cannot be set";
@@ -68,13 +68,13 @@
         case kNWErrorPKCS12AuthFailed                  : return @"PKCS12 data password incorrect";
         case kNWErrorPKCS12Password                    : return @"PKCS12 data wrong password";
         case kNWErrorPKCS12NoItems                     : return @"PKCS12 data contains no identities";
-        case kNWErrorPKCS12MutlipleItems               : return @"PKCS12 data contains multiple identities";
+        case kNWErrorPKCS12MultipleItems               : return @"PKCS12 data contains multiple identities";
             
         case kNWErrorKeychainCopyMatching              : return @"Keychain cannot be searched";
         case kNWErrorKeychainItemNotFound              : return @"Keychain does not contain private key";
         case kNWErrorKeychainCreateIdentity            : return @"Keychain does not contain certificate";
     }
-    return @"Unkown";
+    return @"Unknown";
 }
 
 #pragma mark - Helpers
@@ -92,7 +92,7 @@
     return NO;
 }
 
-+ (id)nilWithErrorCode:(NWError)code error:(NSError **)error
++ (id)nilWithErrorCode:(NWError)code error:(NSError *__autoreleasing *)error
 {
     NSAssert(code != kNWErrorNone, @"code != kNWErrorNone");
     if (error) *error = [self errorWithErrorCode:code];

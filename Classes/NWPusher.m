@@ -54,13 +54,13 @@ static NSUInteger const NWPushPort = 2195;
     [_connection disconnect]; _connection = nil;
 }
 
-+ (instancetype)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error
++ (instancetype)connectWithIdentity:(NWIdentityRef)identity error:(NSError *__autoreleasing *)error
 {
     NWPusher *pusher = [[NWPusher alloc] init];
     return identity && [pusher connectWithIdentity:identity error:error] ? pusher : nil;
 }
 
-+ (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error
++ (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError *__autoreleasing *)error
 {
     NWPusher *pusher = [[NWPusher alloc] init];
     return data && [pusher connectWithPKCS12Data:data password:password error:error] ? pusher : nil;
@@ -87,9 +87,9 @@ static NSUInteger const NWPushPort = 2195;
     return YES;
 }
 
-#pragma mark - Fetching failed
+#pragma mark - Reading failed
 
-- (BOOL)fetchFailedIdentifier:(NSUInteger *)identifier apnError:(NSError *__autoreleasing *)apnError error:(NSError *__autoreleasing *)error
+- (BOOL)readFailedIdentifier:(NSUInteger *)identifier apnError:(NSError *__autoreleasing *)apnError error:(NSError *__autoreleasing *)error
 {
     *identifier = 0;
     NSMutableData *data = [NSMutableData dataWithLength:sizeof(uint8_t) * 2 + sizeof(uint32_t)];
@@ -123,14 +123,14 @@ static NSUInteger const NWPushPort = 2195;
     return YES;
 }
 
-- (NSArray *)fetchFailedIdentifierErrorPairsWithMax:(NSUInteger)max error:(NSError *__autoreleasing *)error
+- (NSArray *)readFailedIdentifierErrorPairsWithMax:(NSUInteger)max error:(NSError *__autoreleasing *)error
 {
     NSMutableArray *pairs = @[].mutableCopy;
     for (NSUInteger i = 0; i < max; i++) {
         NSUInteger identifier = 0;
         NSError *apnError = nil;
-        BOOL fetched = [self fetchFailedIdentifier:&identifier apnError:&apnError error:error];
-        if (!fetched) {
+        BOOL read = [self readFailedIdentifier:&identifier apnError:&apnError error:error];
+        if (!read) {
             return nil;
         }
         if (!apnError) {
@@ -177,9 +177,19 @@ static NSUInteger const NWPushPort = 2195;
 {
     NSError *error = nil;
     NSError *apnError = nil;
-    BOOL fetched = [self fetchFailedIdentifier:identifier apnError:&apnError error:&error];
+    BOOL read = [self readFailedIdentifier:identifier apnError:&apnError error:&error];
     if (apnErrorCode && apnError) *apnErrorCode = apnError.code;
-    return fetched ? kNWSuccess : error.code;
+    return read ? kNWSuccess : error.code;
+}
+
+- (BOOL)fetchFailedIdentifier:(NSUInteger *)identifier apnError:(NSError *__autoreleasing *)apnError error:(NSError *__autoreleasing *)error
+{
+    return [self readFailedIdentifier:identifier apnError:apnError error:error];
+}
+
+- (NSArray *)fetchFailedIdentifierErrorPairsWithMax:(NSUInteger)max error:(NSError *__autoreleasing *)error
+{
+    return [self readFailedIdentifierErrorPairsWithMax:max error:error];
 }
 
 @end

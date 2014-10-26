@@ -38,7 +38,7 @@ typedef NS_ENUM(NSInteger, NWCertType) {
         return [NWErrorUtil nilWithErrorCode:kNWErrorPKCS12NoItems error:error];
     }
     if (identities.count > 1) {
-        return [NWErrorUtil nilWithErrorCode:kNWErrorPKCS12MutlipleItems error:error];
+        return [NWErrorUtil nilWithErrorCode:kNWErrorPKCS12MultipleItems error:error];
     }
     return identities.lastObject;
 }

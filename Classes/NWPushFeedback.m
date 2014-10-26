@@ -47,13 +47,13 @@ static NSUInteger const NWTokenMaxSize = 32;
     [_connection disconnect]; _connection = nil;
 }
 
-+ (instancetype)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error
++ (instancetype)connectWithIdentity:(NWIdentityRef)identity error:(NSError *__autoreleasing *)error
 {
     NWPushFeedback *feedback = [[NWPushFeedback alloc] init];
     return identity && [feedback connectWithIdentity:identity error:error] ? feedback : nil;
 }
 
-+ (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error
++ (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError *__autoreleasing *)error
 {
     NWPushFeedback *feedback = [[NWPushFeedback alloc] init];
     return data && [feedback connectWithPKCS12Data:data password:password error:error] ? feedback : nil;

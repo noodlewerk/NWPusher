@@ -221,13 +221,13 @@ After a second or so, we can take a look to see if the notification was accepted
     NSUInteger identifier = 0;
     NSError *apnError = nil;
     NSError *error = nil;
-    BOOL fetched = [pusher fetchFailedIdentifier:&identifier apnError:&apnError error:&error];
-    if (fetched && apnError) {
+    BOOL read = [pusher readFailedIdentifier:&identifier apnError:&apnError error:&error];
+    if (read && apnError) {
         NSLog(@"Notification with identifier %i rejected: %@", (int)identifier, apnError);
-    } else if (fetched) {
-        NSLog(@"Fetched and none failed");
+    } else if (read) {
+        NSLog(@"Read and none failed");
     } else {
-        NSLog(@"Unable to fetch failed: %@", error);
+        NSLog(@"Unable to read failed: %@", error);
     }
 ```
 
@@ -365,7 +365,7 @@ If nothing is delivered to the device then check:
 
 - Are you pushing to the right device token? This token should be returned by the OS of the receiving device, in the callback `-application: didRegisterForRemoteNotificationsWithDeviceToken:`. The push certificate should match the provisioning profile of the app, check *Development or Production*, *iOS or Mac*, and the *bundle identifier*.
 
-- Does the push call succeed? Isn't there any negative response from the push server or feedback server? Both `[pusher pushPayload:payload token:token identifier:rand() error:&error]` and `[pusher fetchFailedIdentifier:&identifier apnError:&apnError error:&error]` should return `YES`, but wait a second between pushing and fetching. Also try to connect to the feedback service to read feedback.
+- Does the push call succeed? Isn't there any negative response from the push server or feedback server? Both `[pusher pushPayload:payload token:token identifier:rand() error:&error]` and `[pusher readFailedIdentifier:&identifier apnError:&apnError error:&error]` should return `YES`, but wait a second between pushing and reading. Also try to connect to the feedback service to read feedback.
 
 Consult Apple's documentation for more troubleshooting tips: [Troubleshooting Push Notifications](https://developer.apple.com/library/mac/technotes/tn2265/_index.html)
 

@@ -15,10 +15,10 @@
 /** The notification failed during or after pushing. */
 - (void)notification:(NWNotification *)notification didFailWithError:(NSError *)error;
 @optional
-- (void)notification:(NWNotification *)notification didFailWithResult:(NWError)result __deprecated; // TODO: deprecated, remove from 0.6.0
+- (void)notification:(NWNotification *)notification didFailWithResult:(NWError)result; // TODO: deprecated, remove from 0.6.0
 @end
 
-/** Helper on top of NWPusher that hides the details of pushing and fetching. */
+/** Helper on top of NWPusher that hides the details of pushing and reading. */
 @interface NWHub : NSObject
 
 /** @name Properties */
@@ -81,7 +81,7 @@
 - (NSUInteger)pushNotifications:(NSArray *)notifications;
 
 /** Read the response from the server to see if any pushes have failed. */
-- (NSUInteger)fetchFailed;
+- (NSUInteger)readFailed;
 
 /** @name Pushing (pros) */
 
@@ -89,9 +89,9 @@
 - (BOOL)pushNotification:(NWNotification *)notification autoReconnect:(BOOL)reconnect error:(NSError **)error;
 
 /** Read the response from the server and reconnect if anything failed. */
-- (BOOL)fetchFailed:(BOOL *)failed autoReconnect:(BOOL)reconnect error:(NSError **)error;
+- (BOOL)readFailed:(NWNotification **)notification autoReconnect:(BOOL)reconnect error:(NSError **)error;
 
-/** Let go of old notification, after you fetched the failed notifications. */
+/** Let go of old notification, after you read the failed notifications. */
 - (BOOL)trimIdentifiers;
 
 // deprecated
@@ -101,5 +101,7 @@
 - (NWError)reconnect __deprecated;
 - (NSUInteger)pushNotifications:(NSArray *)notifications autoReconnect:(BOOL)reconnect __deprecated;
 - (NSUInteger)flushFailed __deprecated;
+- (NSUInteger)fetchFailed __deprecated;
+- (BOOL)fetchFailed:(BOOL *)failed autoReconnect:(BOOL)reconnect error:(NSError **)error __deprecated;
 
 @end

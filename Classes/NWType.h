@@ -134,7 +134,7 @@ typedef NS_ENUM(NSInteger, NWError) {
     /** PKCS12 data contains no identities. */
     kNWErrorPKCS12NoItems                      = -307,
     /** PKCS12 data contains multiple identities. */
-    kNWErrorPKCS12MutlipleItems                = -309,
+    kNWErrorPKCS12MultipleItems                = -309,
     
     /** Keychain cannot be searched. */
     kNWErrorKeychainCopyMatching               = -401,

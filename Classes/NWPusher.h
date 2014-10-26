@@ -51,10 +51,10 @@
 /** @name Reading */
 
 /** Read back from the server the notification identifiers of failed pushes. */
-- (BOOL)fetchFailedIdentifier:(NSUInteger *)identifier apnError:(NSError **)apnError error:(NSError **)error;
+- (BOOL)readFailedIdentifier:(NSUInteger *)identifier apnError:(NSError **)apnError error:(NSError **)error;
 
 /** Read back multiple notification identifiers of, up to max, failed pushes. */
-- (NSArray *)fetchFailedIdentifierErrorPairsWithMax:(NSUInteger)max error:(NSError **)error;
+- (NSArray *)readFailedIdentifierErrorPairsWithMax:(NSUInteger)max error:(NSError **)error;
 
 // deprecated
 
@@ -64,5 +64,7 @@
 - (NWError)pushPayload:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier __deprecated;
 - (NWError)pushNotification:(NWNotification *)notification type:(NWNotificationType)type __deprecated;
 - (NWError)fetchFailedIdentifier:(NSUInteger *)identifier apnError:(NWError *)apnError __deprecated;
+- (BOOL)fetchFailedIdentifier:(NSUInteger *)identifier apnError:(NSError **)apnError error:(NSError **)error __deprecated;
+- (NSArray *)fetchFailedIdentifierErrorPairsWithMax:(NSUInteger)max error:(NSError **)error __deprecated;
 
 @end
