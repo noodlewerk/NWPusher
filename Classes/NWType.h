@@ -30,8 +30,6 @@ typedef id NWKeyRef;
 typedef NS_ENUM(NSInteger, NWError) {
     /** No error, that's odd. */
     kNWErrorNone                               =    0,
-    /** Deprecated in favor of `kNWErrorNone`, removed in 0.7.0 */
-    kNWSuccess                                 =    0,
 
     /** APN processing error. */
     kNWErrorAPNProcessing                      =   -1,
