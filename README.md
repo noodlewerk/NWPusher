@@ -1,4 +1,4 @@
-<img src="Touch/Icon@2x.png" alt="Pusher Icon" width="72"/>
+<img src="icon.png" alt="Pusher Icon" width="72"/>
 
 
 Pusher
