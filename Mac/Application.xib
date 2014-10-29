@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="5053" systemVersion="13C64" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment defaultVersion="1070" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="5053"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6250"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner">
@@ -21,7 +21,7 @@
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
-        <customObject id="-3" userLabel="Application">
+        <customObject id="-3" userLabel="Application" customClass="NSObject">
             <connections>
                 <outlet property="delegate" destination="kaW-YJ-UA5" id="0Xg-Lu-QoV"/>
             </connections>
@@ -158,7 +158,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="600" height="300"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="878"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
             <value key="minSize" type="size" width="500" height="200"/>
             <view key="contentView" id="se5-gp-TjO">
                 <rect key="frame" x="0.0" y="0.0" width="600" height="300"/>
@@ -166,7 +166,6 @@
                 <subviews>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="2E1-cP-egh">
                         <rect key="frame" x="480" y="252" width="106" height="32"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="94" id="Rut-jE-8JY"/>
                         </constraints>
@@ -180,7 +179,6 @@
                     </button>
                     <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="aJR-Gv-8Xr">
                         <rect key="frame" x="18" y="256" width="463" height="26"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <popUpButtonCell key="cell" type="push" title="Select certificate" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="RvW-sH-WOM" id="XcZ-r4-iAc">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="menu"/>
@@ -196,7 +194,6 @@
                     </popUpButton>
                     <comboBox verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xpc-0j-elb">
                         <rect key="frame" x="20" y="230" width="563" height="23"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Device push token (only first 64 hex chars used, other text is ignored)" drawsBackground="YES" completes="NO" numberOfVisibleItems="5" id="Dzy-yi-6QY">
                             <font key="font" size="10" name="Monaco"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -209,7 +206,6 @@
                     </comboBox>
                     <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="imk-VN-mp1">
                         <rect key="frame" x="18" y="202" width="155" height="26"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="150" id="rN0-Vp-M6c"/>
                         </constraints>
@@ -231,17 +227,16 @@
                         </popUpButtonCell>
                     </popUpButton>
                     <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="c5v-al-Hn5">
-                        <rect key="frame" x="176" y="202" width="155" height="26"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <rect key="frame" x="176" y="202" width="160" height="26"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="150" id="DV9-wc-su5"/>
+                            <constraint firstAttribute="width" constant="155" id="DV9-wc-su5"/>
                         </constraints>
-                        <popUpButtonCell key="cell" type="push" title="Priority: None" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="5dF-Og-jd1" id="ijp-4f-mXC">
+                        <popUpButtonCell key="cell" type="push" title="Priority: None" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="5dF-Og-jd1" id="ijp-4f-mXC">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="menu"/>
                             <menu key="menu" title="OtherViews" id="XbO-4x-lw5">
                                 <items>
-                                    <menuItem title="Priority: None" id="5dF-Og-jd1"/>
+                                    <menuItem title="Priority: None" state="on" id="5dF-Og-jd1"/>
                                     <menuItem title="Conserve power (5)" id="7DJ-kb-Wf3"/>
                                     <menuItem title="Immediately (10)" id="eBG-1S-cUL"/>
                                 </items>
@@ -249,9 +244,8 @@
                         </popUpButtonCell>
                     </popUpButton>
                     <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EnU-aP-5PD">
-                        <rect key="frame" x="464" y="199" width="118" height="24"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <segmentedCell key="cell" alignment="left" style="rounded" trackingMode="selectOne" id="Olm-G5-Man">
+                        <rect key="frame" x="461" y="199" width="121" height="24"/>
+                        <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" id="Olm-G5-Man">
                             <font key="font" metaFont="system"/>
                             <segments>
                                 <segment label="Payload" selected="YES"/>
@@ -264,7 +258,6 @@
                     </segmentedControl>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="pAB-wf-piT">
                         <rect key="frame" x="504" y="13" width="82" height="32"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="70" id="huG-oV-gOx"/>
                         </constraints>
@@ -278,7 +271,6 @@
                     </button>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="M70-t1-JuG">
                         <rect key="frame" x="18" y="23" width="486" height="14"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="d6h-q1-H0e">
                             <font key="font" metaFont="smallSystem"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -287,7 +279,6 @@
                     </textField>
                     <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Q6j-iu-9I9">
                         <rect key="frame" x="20" y="45" width="560" height="152"/>
-                        <autoresizingMask key="autoresizingMask"/>
                         <clipView key="contentView" id="e4e-ov-ymY">
                             <rect key="frame" x="1" y="1" width="558" height="150"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -301,7 +292,7 @@
                                     <attributedString key="textStorage">
                                         <fragment content="..">
                                             <attributes>
-                                                <font key="NSFont" metaFont="toolTip"/>
+                                                <font key="NSFont" metaFont="controlContent" size="11"/>
                                                 <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
                                             </attributes>
                                         </fragment>
@@ -327,7 +318,6 @@
                     </scrollView>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gQs-Aa-IJi">
                         <rect key="frame" x="470" y="49" width="104" height="14"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="100" id="Vlu-lQ-8rQ"/>
                         </constraints>
@@ -339,7 +329,6 @@
                     </textField>
                     <scrollView hidden="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="z4n-XE-cfI">
                         <rect key="frame" x="20" y="45" width="560" height="152"/>
-                        <autoresizingMask key="autoresizingMask"/>
                         <clipView key="contentView" id="uaF-sl-etn">
                             <rect key="frame" x="1" y="1" width="558" height="150"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

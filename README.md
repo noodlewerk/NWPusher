@@ -364,7 +364,7 @@ If nothing is delivered to the device then check:
 
 - Is the device online? Is it able to receive push notifications from other services? Try to get pushes from other apps, for example a messenger. Many wireless connections work visibly fine, but do not deliver push notifications. Try to switch to another wifi or cellular network.
 
-- Are you pushing to the right device token? This token should be returned by the OS of the receiving device, in the callback `-application: didRegisterForRemoteNotificationsWithDeviceToken:`. The push certificate should match the provisioning profile of the app, check *Development or Production*, *iOS or Mac*, and the *bundle identifier*.
+- Are you pushing to the right device token? This token should be returned by the OS of the receiving device, in the callback `-application: didRegisterForRemoteNotificationsWithDeviceToken:`. The push certificate should match the provisioning profile of the app, check *Development or Production*, *iOS or Mac*, and the *bundle identifier*. Make sure the receiving app is closed, so it cannot interfere with the delivery.
 
 - Does the push call succeed? Isn't there any negative response from the push server or feedback server? Both `[pusher pushPayload:payload token:token identifier:rand() error:&error]` and `[pusher readFailedIdentifier:&identifier apnError:&apnError error:&error]` should return `YES`, but wait a second between pushing and reading. Also try to connect to the feedback service to read feedback.
 
