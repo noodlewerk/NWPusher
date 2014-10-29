@@ -54,12 +54,4 @@
 /** Read all (or max) token-date pairs, where token is hex string. */
 - (NSArray *)readTokenDatePairsWithMax:(NSUInteger)max error:(NSError **)error;
 
-// deprecated
-
-- (NWError)connectWithIdentity:(NWIdentityRef)identity __deprecated;
-- (NWError)connectWithPKCS12Data:(NSData *)data password:(NSString *)password __deprecated;
-- (NWError)readTokenData:(NSData **)token date:(NSDate **)date __deprecated;
-- (NWError)readToken:(NSString **)token date:(NSDate **)date __deprecated;
-- (NWError)readTokenDatePairs:(NSArray **)pairs max:(NSUInteger)max __deprecated;
-
 @end

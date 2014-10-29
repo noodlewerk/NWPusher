@@ -54,10 +54,4 @@
 /** Write length number of bytes from data object. */
 - (BOOL)write:(NSData *)data length:(NSUInteger *)length error:(NSError **)error;
 
-// deprecated
-
-- (NWError)connect __deprecated;
-- (NWError)read:(NSMutableData *)data length:(NSUInteger *)length __deprecated;
-- (NWError)write:(NSData *)data length:(NSUInteger *)length __deprecated;
-
 @end

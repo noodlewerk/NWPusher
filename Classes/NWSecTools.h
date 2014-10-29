@@ -58,16 +58,4 @@
 /** Composes a dictionary describing the characteristics of the identity. */
 + (NSDictionary *)inspectIdentity:(NWIdentityRef)identity;
 
-// deprecated
-
-+ (NWError)identityWithPKCS12Data:(NSData *)pkcs12 password:(NSString *)password identity:(NWIdentityRef *)identity __deprecated;
-+ (NWError)identitiesWithPKCS12Data:(NSData *)pkcs12 password:(NSString *)password identities:(NSArray **)identities __deprecated;
-+ (NWError)keychainCertificates:(NSArray **)certificates __deprecated;
-+ (NWError)certificateWithIdentity:(NWIdentityRef)identity certificate:(NWCertificateRef *)certificate __deprecated;
-+ (NWError)keyWithIdentity:(NWIdentityRef)identity key:(NWKeyRef *)key __deprecated;
-
-#if !TARGET_OS_IPHONE
-+ (NWError)keychainIdentityWithCertificate:(NWCertificateRef)certificate identity:(NWIdentityRef *)identity __deprecated;
-#endif
-
 @end

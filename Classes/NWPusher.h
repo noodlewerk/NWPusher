@@ -67,15 +67,4 @@
 /** Read back multiple notification identifiers of, up to max, failed pushes. */
 - (NSArray *)readFailedIdentifierErrorPairsWithMax:(NSUInteger)max error:(NSError **)error;
 
-// deprecated
-
-- (NWError)connectWithIdentity:(NWIdentityRef)identity __deprecated;
-- (NWError)connectWithPKCS12Data:(NSData *)data password:(NSString *)password __deprecated;
-- (NWError)reconnect __deprecated;
-- (NWError)pushPayload:(NSString *)payload token:(NSString *)token identifier:(NSUInteger)identifier __deprecated;
-- (NWError)pushNotification:(NWNotification *)notification type:(NWNotificationType)type __deprecated;
-- (NWError)fetchFailedIdentifier:(NSUInteger *)identifier apnError:(NWError *)apnError __deprecated;
-- (BOOL)fetchFailedIdentifier:(NSUInteger *)identifier apnError:(NSError **)apnError error:(NSError **)error __deprecated;
-- (NSArray *)fetchFailedIdentifierErrorPairsWithMax:(NSUInteger)max error:(NSError **)error __deprecated;
-
 @end

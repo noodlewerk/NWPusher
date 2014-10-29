@@ -122,38 +122,4 @@ static NSUInteger const NWTokenMaxSize = 32;
     return pairs;
 }
 
-#pragma mark - Deprecated
-
-- (NWError)connectWithIdentity:(NWIdentityRef)identity
-{
-    NSError *error = nil;
-    return [self connectWithIdentity:identity error:&error] ? kNWSuccess : error.code;
-}
-
-- (NWError)connectWithPKCS12Data:(NSData *)data password:(NSString *)password
-{
-    NSError *error = nil;
-    return [self connectWithPKCS12Data:data password:password error:&error] ? kNWSuccess : error.code;
-}
-
-- (NWError)readTokenData:(NSData **)token date:(NSDate **)date
-{
-    NSError *error = nil;
-    return [self readTokenData:token date:date error:&error] ? kNWSuccess : error.code;
-}
-
-- (NWError)readToken:(NSString **)token date:(NSDate **)date
-{
-    NSError *error = nil;
-    return [self readToken:token date:date error:&error] ? kNWSuccess : error.code;
-}
-
-- (NWError)readTokenDatePairs:(NSArray **)pairs max:(NSUInteger)max
-{
-    NSError *error = nil;
-    NSArray *p = [self readTokenDatePairsWithMax:max error:&error];
-    if (pairs) *pairs = p;
-    return p ? kNWSuccess : error.code;
-}
-
 @end

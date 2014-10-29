@@ -123,9 +123,6 @@
     BOOL pushed = [_pusher pushNotification:notification type:_type error:&e];
     if (!pushed) {
         if (error) *error = e;
-        if ([_delegate respondsToSelector:@selector(notification:didFailWithResult:)]) {
-            [_delegate notification:notification didFailWithResult:e.code];
-        }
         if ([_delegate respondsToSelector:@selector(notification:didFailWithError:)]) {
             [_delegate notification:notification didFailWithError:e];
         }
@@ -188,9 +185,6 @@
     if (apnError) {
         NWNotification *n = _notificationForIdentifier[@(identifier)][0];
         if (notification) *notification = n ?: (NWNotification *)NSNull.null;
-        if ([_delegate respondsToSelector:@selector(notification:didFailWithResult:)]) {
-            [_delegate notification:n didFailWithResult:apnError.code];
-        }
         if ([_delegate respondsToSelector:@selector(notification:didFailWithError:)]) {
             [_delegate notification:n didFailWithError:apnError];
         }
@@ -209,50 +203,6 @@
     }] allObjects];
     [_notificationForIdentifier removeObjectsForKeys:old];
     return !!old.count;
-}
-
-#pragma mark - Deprecated
-
-- (NWError)connectWithIdentity:(NWIdentityRef)identity
-{
-    NSError *error = nil;
-    return [self connectWithIdentity:identity error:&error] ? kNWSuccess : error.code;
-}
-
-- (NWError)connectWithPKCS12Data:(NSData *)data password:(NSString *)password
-{
-    NSError *error = nil;
-    return [self connectWithPKCS12Data:data password:password error:&error] ? kNWSuccess : error.code;
-}
-
-- (NWError)reconnect
-{
-    NSError *error = nil;
-    return [self reconnectWithError:&error] ? kNWSuccess : error.code;
-}
-
-- (NSUInteger)pushNotifications:(NSArray *)notifications autoReconnect:(BOOL)reconnect
-{
-    NSAssert(reconnect, @"autoReconnect == false is ignored");
-    return [self pushNotifications:notifications];
-}
-
-- (NSUInteger)flushFailed
-{
-    return [self readFailed];
-}
-
-- (NSUInteger)fetchFailed
-{
-    return [self readFailed];
-}
-
-- (BOOL)fetchFailed:(BOOL *)failed autoReconnect:(BOOL)reconnect error:(NSError *__autoreleasing *)error
-{
-    NWNotification *n = nil;
-    BOOL r = [self readFailed:&n autoReconnect:reconnect error:error];
-    if (failed) *failed = !!n;
-    return r;
 }
 
 @end

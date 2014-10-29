@@ -158,8 +158,4 @@ typedef NS_ENUM(NSInteger, NWError) {
 /** Assigns the error with provided code and associated description, for returning `nil`. */
 + (id)nilWithErrorCode:(NWError)code error:(NSError **)error;
 
-// deprecated
-
-+ (NSString *)stringWithError:(NWError)error __deprecated;
-
 @end

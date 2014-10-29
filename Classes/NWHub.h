@@ -17,8 +17,6 @@
 @protocol NWHubDelegate <NSObject>
 /** The notification failed during or after pushing. */
 - (void)notification:(NWNotification *)notification didFailWithError:(NSError *)error;
-@optional
-- (void)notification:(NWNotification *)notification didFailWithResult:(NWError)result; // TODO: deprecated, remove from 0.6.0
 @end
 
 /** Helper on top of `NWPusher` that hides the details of pushing and reading.
@@ -144,15 +142,5 @@
  @see feedbackSpan
  */
 - (BOOL)trimIdentifiers;
-
-// deprecated
-
-- (NWError)connectWithIdentity:(NWIdentityRef)identity __deprecated;
-- (NWError)connectWithPKCS12Data:(NSData *)data password:(NSString *)password __deprecated;
-- (NWError)reconnect __deprecated;
-- (NSUInteger)pushNotifications:(NSArray *)notifications autoReconnect:(BOOL)reconnect __deprecated;
-- (NSUInteger)flushFailed __deprecated;
-- (NSUInteger)fetchFailed __deprecated;
-- (BOOL)fetchFailed:(BOOL *)failed autoReconnect:(BOOL)reconnect error:(NSError **)error __deprecated;
 
 @end

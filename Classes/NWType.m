@@ -99,11 +99,4 @@
     return nil;
 }
 
-#pragma mark - Deprecated
-
-+ (NSString *)stringWithError:(NWError)error
-{
-    return [self stringWithCode:error];
-}
-
 @end

@@ -178,26 +178,6 @@ OSStatus NWSSLWrite(SSLConnectionRef connection, const void *data, size_t *lengt
     return [NWErrorUtil noWithErrorCode:kNWErrorWriteFail error:error];
 }
 
-#pragma mark - Deprecated
-
-- (NWError)connect
-{
-    NSError *error = nil;
-    return [self connectWithError:&error] ? kNWSuccess : error.code;
-}
-
-- (NWError)read:(NSMutableData *)data length:(NSUInteger *)length
-{
-    NSError *error = nil;
-    return [self read:data length:length error:&error] ? kNWSuccess : error.code;
-}
-
-- (NWError)write:(NSData *)data length:(NSUInteger *)length
-{
-    NSError *error = nil;
-    return [self write:data length:length error:&error] ? kNWSuccess : error.code;
-}
-
 @end
 
 OSStatus NWSSLRead(SSLConnectionRef connection, void *data, size_t *length) {
