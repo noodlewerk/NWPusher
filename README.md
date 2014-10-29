@@ -75,13 +75,13 @@ Let's start with the SSL certificate. The goal is to get both the certificate *a
 
 Keep in mind that you will eventually be downloading a certificate, which you will need to install in your keychain together with the private key. This should look something like this:
 
-<img src="Docs/keychain1.png" alt="Keychain export" width="681"/>
+<img src="Docs/keychain1.png" alt="Keychain export" width="690"/>
 
 NB: There is `Development` and `Production` certificates, which should (generally) correspond to respectively `DEBUG` and `RELEASE` versions of your app. Make sure you get the right one, check *Development (sandbox) or Production*, *iOS or Mac*, and the *bundle identifier*.
 
 The push certificate should be exported to a PKCS12 file, which allows you to share these with fellow developers:
 
-<img src="Docs/keychain2.png" alt="PKCS12 file" width="679"/>
+<img src="Docs/keychain2.png" alt="PKCS12 file" width="690"/>
 
 ### Device token
 Now you need to obtain a device token, which is a 64 character hex string (256 bits indeed). This should be done from within the iOS app you're going to push to. Add the following lines to the application delegate (Xcode 6 required):
