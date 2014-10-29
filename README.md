@@ -32,11 +32,11 @@ Or simply include the source files you need. NWPusher has a modular architecture
 
 About
 -----
-Testing push notifications for your iOS app can be a pain. You might consider setting up your own server or use one of the many push webservices online. Either way it's a lot of work to get all these systems connected properly.
+Testing push notifications for your iOS or Mac app can be a pain. You might consider setting up your own server or use one of the many push webservices online. Either way it's a lot of work to get all these systems connected properly. When it is all working properly, push notifications come in fast (< 1 sec) and reliably. However when nothing comes in, it can be very hard to find out why.
 
-Enter *Pusher*, a Mac and iPhone app for sending push notifications *directly* to the *Apple Push Notification Service*. No need to set up a server or create an account online. You only need the SSL certificate and a device token to start pushing directly from your Mac, or even from an iPhone!
+That's why I made *Pusher*. It is a Mac and iPhone app for sending push notifications *directly* to the *Apple Push Notification Service*. No need to set up a server or create an account online. You only need the SSL certificate and a device token to start pushing directly from your Mac, or even from an iPhone! Pusher has detailed error reporting and logs, which are very helpful with verifying your setup.
 
-Pusher comes with a small framework for both OS X and iOS, that provides various tools for sending notifications programmatically. On OS X it can use the keychain to retrieve push certificates and keys. Pusher can also be used without keychain, using a PKCS #12 file.
+Pusher comes with a small framework for both OS X and iOS. It provides various tools for sending notifications programmatically. On OS X it can use the keychain to retrieve push certificates and keys. Pusher can also be used without keychain, using a PKCS #12 file. If you want to get a better understanding of how push notifications work, then this framework is a good place to start and play around.
 
 
 Features
@@ -53,6 +53,7 @@ Mac OS X application for sending push notifications through the APN service:
 
 OS X and iOS framework for sending pushes from your own application:
 - Modular, no dependencies, use what you like
+- Fully documented source code
 - Detailed error handling
 - iOS compatible, so you can also push directly from your iPhone :o
 - Demo applications for both platforms
@@ -351,7 +352,7 @@ Some tips on what to look out for:
 
 If it fails to connect then check:
 
-- Are the cerificates and keys in order? Use the OpenSSL commands listed above to inspect the cerificate. See if there is one push certificate and key present. Also make sure you're online, try `ping www.apple.com`.
+- Are the certificates and keys in order? Use the OpenSSL commands listed above to inspect the certificate. See if there is one push certificate and key present. Also make sure you're online, try `ping www.apple.com`.
 
 - Is the certificate properly loaded? Try initializing an identity using `[NWSecTools identityWithPKCS12Data:data password:password error:&error]` or `[NWSecTools keychainIdentityWithCertificate:certificate error:&error]`.
 

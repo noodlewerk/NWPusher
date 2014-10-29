@@ -144,7 +144,10 @@ typedef NS_ENUM(NSInteger, NWError) {
     kNWErrorKeychainCreateIdentity             = -303,
 };
 
-/** A collection of helper methods to support Cocoa-style error handling (NSError). */
+/** A collection of helper methods to support Cocoa-style error handling (`NSError`).
+ 
+ Most methods in this framework return `NO` or `nil` to indicate an error occurred. In that case an error object will be assigned. This class provides a mapping from codes to description string and some methods to instantiate the `NSError` object.
+ */
 @interface NWErrorUtil : NSObject
 
 /** @name Helpers */

@@ -10,7 +10,18 @@
 
 @class NWNotification, NWSSLConnection;
 
-/** Serializes notification objects and pushes them to the APNS. */
+/** Serializes notification objects and pushes them to the APNS. 
+ 
+ This is the heart of the framework. As the (inconvenient) name suggest, it's also one of the first classes that was added to the framework. This class provides a straightforward interface to the APNS server, including connecting, pushing to and reading from the server.
+ 
+ Connecting is done based on an identity or PKCS #12 data. The identity is an instance of `SecIdentityRef` and contains a certificate and private key. The PKCS #12 data can be deserialized into such an identity. One can reconnect or disconnect at any time, and should if the connection has been dropped by the server. The latter can happen quite easily, for example when there is something wrong with the device token or payload of the notification.
+ 
+ Notifications are pushed one at a time. It is serialized and sent over the wire. If the server then concludes there is something wrong with that notification, it will write back error data. If you send out multiple notifications in a row, these errors might not match up. Therefore every error contains the identifier of the erroneous notification.
+ 
+ Make sure to read this error data from the server, so you can lookup the notification that caused it and prevent the issue in the future. As mentioned earlier, the server easily drops the connection if there is something out of the ordinary. NB: if you read right after pushing, it is very unlikely that data about that push already got back from the server.
+ 
+ Make sure to read Apple's documentation on *Apple Push Notification Service* and *Provider Communication*.
+ */
 @interface NWPusher : NSObject
 
 /** @name Properties */

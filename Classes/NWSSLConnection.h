@@ -9,7 +9,15 @@
 #import <Foundation/Foundation.h>
 
 
-/** Provides an interface to the SSL connection with APNS. `NWIdentityRef` represents a `SecIdentityRef`. Methods return `nil` or `NO` if an error occurred.
+/** An SSL (TLS) connection to the APNS server.
+
+ This class is basically an Objective-C wrapper around `SSLContextRef` and `SSLConnectionRef`, which are part of the native Secure Transport framework. This class provides a generic interface for SSL (TLS) connections, independent of NWPusher.
+ 
+ A SSL connection is set up using the host name, host port and an identity. The host name will be resolved using DNS. The identity is an instance of `SecIdentityRef` and contains both a certificate and a private key. See the *Secure Transport Reference* for more info on that.
+ 
+ Read more about provider communication in Apple's documentation under *Apple Push Notification Service*.
+ 
+ Methods return `NO` if an error occurred.
  */
 @interface NWSSLConnection : NSObject
 

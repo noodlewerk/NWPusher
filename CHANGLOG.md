@@ -3,8 +3,8 @@ Change Log
 
 ### master (unreleased)
 
-* Deprecated fetching
-* Documentation to all framework stuff
+* Deprecate fetching
+* Document all framework stuff
 
 ### 0.5.3 (2014-10-22)
 

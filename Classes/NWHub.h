@@ -10,7 +10,10 @@
 
 @class NWNotification, NWPusher;
 
-/** Allows callback on errors while pushing to and reading from server. */
+/** Allows callback on errors while pushing to and reading from server. 
+ 
+ Check out `NWHub` for more details.
+ */
 @protocol NWHubDelegate <NSObject>
 /** The notification failed during or after pushing. */
 - (void)notification:(NWNotification *)notification didFailWithError:(NSError *)error;
@@ -18,7 +21,7 @@
 - (void)notification:(NWNotification *)notification didFailWithResult:(NWError)result; // TODO: deprecated, remove from 0.6.0
 @end
 
-/** Helper on top of NWPusher that hides the details of pushing and reading.
+/** Helper on top of `NWPusher` that hides the details of pushing and reading.
  
  This class provides a more convenient way of pushing notifications to the APNS server. It deals with the trouble of assigning a unique identifier to every notification and the handling of error responses from the server. It hides the latency that comes with transmitting the pushes, allowing you to simply push your notifications and getting notified of errors through the delegate. If this feels over-abstracted, then definitely check out the `NWPusher` class, which will give you full control.
  

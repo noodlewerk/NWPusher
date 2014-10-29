@@ -10,9 +10,7 @@
 
 /** A collection of tools for reading, converting and inspecting Keychain objects and PKCS #12 files.
 
- This is practically the glue that connects this framework to the Security framework and allows interacting with the OS Keychain and PKCS #12 files.
-
- `NWIdentityRef`, `NWCertificateRef` and `NWKeyRef` represent respectively `SecIdentityRef`, `SecCertificateRef`, `SecKeyRef`. Methods return `nil` or `NO` if an error occurred.
+ This is practically the glue that connects this framework to the Security framework and allows interacting with the OS Keychain and PKCS #12 files. It is mostly an Objective-C around the Security framework, including the benefits of ARC. `NWIdentityRef`, `NWCertificateRef` and `NWKeyRef` represent respectively `SecIdentityRef`, `SecCertificateRef`, `SecKeyRef`. It uses Cocoa-style error handling, so methods return `nil` or `NO` if an error occurred.
  */
 @interface NWSecTools : NSObject
 
