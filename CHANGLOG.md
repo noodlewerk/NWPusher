@@ -3,6 +3,8 @@ Change Log
 
 ### master (unreleased)
 
+### 0.6.0 (2014-10-30)
+
 * Remove kNWSuccess
 * Remove deprecated
 
