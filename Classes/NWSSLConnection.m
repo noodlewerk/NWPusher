@@ -8,6 +8,7 @@
 #import "NWSSLConnection.h"
 #include <netdb.h>
 
+#define NWSSL_HANDSHAKE_TRY_COUNT 1 << 26
 
 OSStatus NWSSLRead(SSLConnectionRef connection, void *data, size_t *length);
 OSStatus NWSSLWrite(SSLConnectionRef connection, const void *data, size_t *length);
@@ -125,7 +126,7 @@ OSStatus NWSSLWrite(SSLConnectionRef connection, const void *data, size_t *lengt
 - (BOOL)handshakeSSLWithError:(NSError *__autoreleasing *)error
 {
     OSStatus status = errSSLWouldBlock;
-    for (NSUInteger i = 0; i < 1 << 26 && status == errSSLWouldBlock; i++) { // 26? works.
+    for (NSUInteger i = 0; i < NWSSL_HANDSHAKE_TRY_COUNT && status == errSSLWouldBlock; i++) {
         status = SSLHandshake(_context);
     }
     switch (status) {
