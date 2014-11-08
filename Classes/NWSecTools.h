@@ -52,7 +52,7 @@
 /** Tells if the certificate is for pushing to the Development (sandbox) server. */
 + (BOOL)isSandboxCertificate:(NWCertificateRef)certificate;
 
-/** Tells if the certificate can be used for connecting with APNS. */
+/** Tells if the certificate can be used for connecting with APNs. */
 + (BOOL)isPushCertificate:(NWCertificateRef)certificate;
 
 /** Composes a dictionary describing the characteristics of the identity. */

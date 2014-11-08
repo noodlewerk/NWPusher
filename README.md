@@ -4,7 +4,7 @@
 Pusher
 ======
 
-*OS X and iOS application and framework to play with the Apple Push Notification Service (APNS)*
+*OS X and iOS application and framework to play with the Apple Push Notification service (APNs)*
 
 <img src="Docs/osx1.png" alt="Pusher OS X" width="612"/>
 
@@ -48,7 +48,7 @@ Mac OS X application for sending push notifications through the APN service:
 - *Stores device tokens* so you don't have to copy-paste them every time
 - Handles *PKCS #12* files (.p12)
 - Automatic configuration for *sandbox*
-- Reports *detailed error messages* returned by APNS
+- Reports *detailed error messages* returned by APNs
 - Reads from *feedback service*
 
 OS X and iOS framework for sending pushes from your own application:
@@ -84,7 +84,7 @@ The push certificate should be exported to a PKCS12 file, which allows you to sh
 <img src="Docs/keychain2.png" alt="PKCS12 file" width="690"/>
 
 ### Device token
-Now you need to obtain a device token, which is a 64 character hex string (256 bits indeed). This should be done from within the iOS app you're going to push to. Add the following lines to the application delegate (Xcode 6 required):
+Now you need to obtain a device token, which is a 64 character hex string (256 bits). This should be done from within the iOS app you're going to push to. Add the following lines to the application delegate (Xcode 6 required):
 
 ```objective-c
 - (BOOL)application:(UIApplication *)application
@@ -172,7 +172,7 @@ If everything is set up correctly, you only need to *Connect* and *Push*. Then y
 
 Again, if things are not working as expected, take a look at the *Troubleshooting* section below or post an issue on GitHub.
 
-Consult Apple's documentation for more info on the APNS architecture: [Apple Push Notification Service](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html)
+Consult Apple's documentation for more info on the APNs architecture: [Apple Push Notification Service](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html)
 
 Pushing from code
 -----------------
@@ -196,7 +196,7 @@ To create a connection directly from a PKCS12 (.p12) file:
     NSError *error = nil;
     NWPusher *pusher = [NWPusher connectWithPKCS12Data:pkcs12 password:@"pa$$word" error:&error];
     if (pusher) {
-        NSLog(@"Connected to APNS");
+        NSLog(@"Connected to APNs");
     } else {
         NSLog(@"Unable to connect: %@", error);
     }
@@ -210,7 +210,7 @@ When pusher is successfully connected, send a payload to your device:
     NSError *error = nil;
     BOOL pushed = [pusher pushPayload:payload token:token identifier:rand() error:&error];
     if (pushed) {
-        NSLog(@"Pushed to APNS");
+        NSLog(@"Pushed to APNs");
     } else {
         NSLog(@"Unable to push: %@", error);
     }
@@ -262,7 +262,7 @@ Consult Apple's documentation for more info on the client-server communication: 
 
 Feedback Service
 ----------------
-The feedback service is part of the Apple Push Notification Service. The feedback service is basically a list containing device tokens that became invalid. Apple recommends that you read from the feedback service once every 24 hours, and no longer send notifications to listed devices. Note that this can be used to find out who removed your app from their device.
+The feedback service is part of the Apple Push Notification service. The feedback service is basically a list containing device tokens that became invalid. Apple recommends that you read from the feedback service once every 24 hours, and no longer send notifications to listed devices. Note that this can be used to find out who removed your app from their device.
 
 Communication with the feedback service can be done with the `NWPushFeedback` class. First connect using one of the `connect` methods:
 

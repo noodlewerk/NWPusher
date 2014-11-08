@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 
-/** An SSL (TLS) connection to the APNS server.
+/** An SSL (TLS) connection to the APNs.
 
  This class is basically an Objective-C wrapper around `SSLContextRef` and `SSLConnectionRef`, which are part of the native Secure Transport framework. This class provides a generic interface for SSL (TLS) connections, independent of NWPusher.
  

@@ -10,9 +10,9 @@
 
 @class NWSSLConnection;
 
-/** Reads tokens and dates from the APNS Feedback Service.
+/** Reads tokens and dates from the APNs feedback service.
  
- The Feedback Service is a separate server that provides a list of all device tokens that it tried to deliver a notification to, but was unable to. This usually indicates that this device no longer has the app installed. This way, the Feedback Service provides reliable way of finding out who uninstalled the app, which can be fed back into your database.
+ The feedback service is a separate server that provides a list of all device tokens that it tried to deliver a notification to, but was unable to. This usually indicates that this device no longer has the app installed. This way, the feedback service provides reliable way of finding out who uninstalled the app, which can be fed back into your database.
  
  Apple recommends reading from the service once a day. After a device token has been read, it will not be returned again until the next failed delivery. In practice: connect once a day, read all device tokens, and update your own database accordingly.
  

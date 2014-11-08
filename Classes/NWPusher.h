@@ -10,9 +10,9 @@
 
 @class NWNotification, NWSSLConnection;
 
-/** Serializes notification objects and pushes them to the APNS. 
+/** Serializes notification objects and pushes them to the APNs.
  
- This is the heart of the framework. As the (inconvenient) name suggest, it's also one of the first classes that was added to the framework. This class provides a straightforward interface to the APNS server, including connecting, pushing to and reading from the server.
+ This is the heart of the framework. As the (inconvenient) name suggest, it's also one of the first classes that was added to the framework. This class provides a straightforward interface to the APNs, including connecting, pushing to and reading from the server.
  
  Connecting is done based on an identity or PKCS #12 data. The identity is an instance of `SecIdentityRef` and contains a certificate and private key. The PKCS #12 data can be deserialized into such an identity. One can reconnect or disconnect at any time, and should if the connection has been dropped by the server. The latter can happen quite easily, for example when there is something wrong with the device token or payload of the notification.
  
@@ -39,10 +39,10 @@
 
 /** @name Connecting */
 
-/** Connect with the APNS server using the identity. */
+/** Connect with the APNs using the identity. */
 - (BOOL)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error;
 
-/** Connect with the APNS server using the identity from PKCS #12 data. */
+/** Connect with the APNs using the identity from PKCS #12 data. */
 - (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error;
 
 /** Reconnect using the same identity, disconnects if necessary. */

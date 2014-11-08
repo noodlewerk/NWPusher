@@ -21,7 +21,7 @@
 
 /** Helper on top of `NWPusher` that hides the details of pushing and reading.
  
- This class provides a more convenient way of pushing notifications to the APNS server. It deals with the trouble of assigning a unique identifier to every notification and the handling of error responses from the server. It hides the latency that comes with transmitting the pushes, allowing you to simply push your notifications and getting notified of errors through the delegate. If this feels over-abstracted, then definitely check out the `NWPusher` class, which will give you full control.
+ This class provides a more convenient way of pushing notifications to the APNs. It deals with the trouble of assigning a unique identifier to every notification and the handling of error responses from the server. It hides the latency that comes with transmitting the pushes, allowing you to simply push your notifications and getting notified of errors through the delegate. If this feels over-abstracted, then definitely check out the `NWPusher` class, which will give you full control.
  
  There are two set of methods for pushing notifications: the easy and the pros. The former will just do the pushing and reconnect if the connection breaks. This is your low-worry solution, provided that you call `readFailed` every so often (seconds) to handle error data from the server. The latter will give you a little more control and a little more responsibility.
  */
@@ -121,7 +121,7 @@
 
 /** Read the response from the server and reconnect if anything failed.
  
- If the APNS server finds something wrong with a notification, it will write back the identifier and error code. As this involves transmission to and from the server, it takes just a little while to get this failure info. This method should therefore be invoked a little (say a second) after pushing to see if anything was wrong. On a slow connection this might take longer than the interval between push messages, in which case the reported notification was *not* the last one sent.
+ If the APNs finds something wrong with a notification, it will write back the identifier and error code. As this involves transmission to and from the server, it takes just a little while to get this failure info. This method should therefore be invoked a little (say a second) after pushing to see if anything was wrong. On a slow connection this might take longer than the interval between push messages, in which case the reported notification was *not* the last one sent.
  
  From the server we only get the notification identifier and the error message. This method translates this back into the original notification by keeping track of all notifications sent in the past 30 seconds. If somehow the original notification cannot be found, it will assign `NSNull`.
  

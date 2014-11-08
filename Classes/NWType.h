@@ -7,13 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
-/** The current and past data formats supported by APNS. */
+/** The current and past data formats supported by APNs. For more information see Apple documentation under 'Legacy Information'. */
 typedef NS_ENUM(NSInteger, NWNotificationType) {
-    /** The oldest format, simply concatenates the device token and payload. */
+    /** The 'Simple Notification Format'. The oldest format, simply concatenates the device token and payload. */
     kNWNotificationType0 = 0,
-    /** Similar to the previous format, but includes and identifier and expiration date. */
+    /** The 'Enhanced Notification Format'. Similar to the previous format, but includes and identifier and expiration date. */
     kNWNotificationType1 = 1,
-    /** A new, more extensible format that allows for attributes like priority. */
+    /** The 'Binary Interface and Notification Format'. The latest, more extensible format that allows for attributes like priority. */
     kNWNotificationType2 = 2,
 };
 
