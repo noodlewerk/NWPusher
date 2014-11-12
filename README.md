@@ -182,7 +182,7 @@ Pusher can also be used as a framework to send notifications programmatically. T
 pod 'NWPusher', '~> 0.6.0'
 ```
 
-Alternatively you can include just the files you need from the `Classes` folder. Make sure you link with `Foundation.framework` and `Security.framework`.
+CocoaPods also compiles documentation, which can be accessed through [CocoaDocs](http://cocoadocs.org/docsets/NWPusher). Alternatively you can include just the files you need from the `Classes` folder. Make sure you link with `Foundation.framework` and `Security.framework`.
 
 Before any notification can be sent, you first need to create a connection. When this connection is established, any number of payloads can be sent.
 
