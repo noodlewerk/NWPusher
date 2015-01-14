@@ -3,6 +3,8 @@ Change Log
 
 ### master (unreleased)
 
+* Add SSL handshake error codes
+
 ### 0.6.0 (2014-10-30)
 
 * Remove kNWSuccess

@@ -47,6 +47,12 @@
         case kNWErrorSSLDroppedByServer                : return @"SSL handshake dropped by server";
         case kNWErrorSSLAuthFailed                     : return @"SSL handshake authentication failed";
         case kNWErrorSSLHandshakeFail                  : return @"SSL handshake failed";
+        case kNWErrorSSLHandshakeUnknownRootCert       : return @"SSL handshake root not a known anchor";
+        case kNWErrorSSLHandshakeNoRootCert            : return @"SSL handshake chain not verifiable to root";
+        case kNWErrorSSLHandshakeCertExpired           : return @"SSL handshake chain has expired certificates";
+        case kNWErrorSSLHandshakeXCertChainInvalid     : return @"SSL handshake invalid certificate chain";
+        case kNWErrorSSLHandshakeClientCertRequested   : return @"SSL handshake expecting client cert";
+        case kNWErrorSSLHandshakeServerAuthCompleted   : return @"SSL handshake auth interrupted";
         case kNWErrorSSLHandshakeTimeout               : return @"SSL handshake timeout";
             
         case kNWErrorReadDroppedByServer               : return @"Read connection dropped by server";

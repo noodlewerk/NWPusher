@@ -134,6 +134,12 @@ OSStatus NWSSLWrite(SSLConnectionRef connection, const void *data, size_t *lengt
         case errSSLWouldBlock: return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakeTimeout error:error];
         case errSecIO: return [NWErrorUtil noWithErrorCode:kNWErrorSSLDroppedByServer error:error];
         case errSecAuthFailed: return [NWErrorUtil noWithErrorCode:kNWErrorSSLAuthFailed error:error];
+        case errSSLUnknownRootCert: return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakeUnknownRootCert error:error];
+        case errSSLNoRootCert: return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakeNoRootCert error:error];
+        case errSSLCertExpired: return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakeCertExpired error:error];
+        case errSSLXCertChainInvalid: return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakeXCertChainInvalid error:error];
+        case errSSLClientCertRequested: return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakeClientCertRequested error:error];
+        case errSSLServerAuthCompleted: return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakeServerAuthCompleted error:error];
     }
     return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakeFail error:error];
 }
