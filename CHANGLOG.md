@@ -3,6 +3,8 @@ Change Log
 
 ### master (unreleased)
 
+### 0.6.1 (2015-01-14)
+
 * Add SSL handshake error codes
 
 ### 0.6.0 (2014-10-30)
