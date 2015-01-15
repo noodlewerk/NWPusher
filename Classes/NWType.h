@@ -164,8 +164,10 @@ typedef NS_ENUM(NSInteger, NWError) {
 
 /** Assigns the error with provided code and associated description, for returning `NO`. */
 + (BOOL)noWithErrorCode:(NWError)code error:(NSError **)error;
++ (BOOL)noWithErrorCode:(NWError)code reason:(NSInteger)reason error:(NSError **)error;
 
 /** Assigns the error with provided code and associated description, for returning `nil`. */
 + (id)nilWithErrorCode:(NWError)code error:(NSError **)error;
++ (id)nilWithErrorCode:(NWError)code reason:(NSInteger)reason error:(NSError **)error;
 
 @end

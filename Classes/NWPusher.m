@@ -82,7 +82,7 @@ static NSUInteger const NWPushPort = 2195;
         return written;
     }
     if (length != data.length) {
-        return [NWErrorUtil noWithErrorCode:kNWErrorPushWriteFail error:error];
+        return [NWErrorUtil noWithErrorCode:kNWErrorPushWriteFail reason:length error:error];
     }
     return YES;
 }
@@ -101,7 +101,7 @@ static NSUInteger const NWPushPort = 2195;
     uint8_t command = 0;
     [data getBytes:&command range:NSMakeRange(0, 1)];
     if (command != 8) {
-        return [NWErrorUtil noWithErrorCode:kNWErrorPushResponseCommand error:error];
+        return [NWErrorUtil noWithErrorCode:kNWErrorPushResponseCommand reason:command error:error];
     }
     uint8_t status = 0;
     [data getBytes:&status range:NSMakeRange(1, 1)];
@@ -118,7 +118,7 @@ static NSUInteger const NWPushPort = 2195;
         case 7: [NWErrorUtil noWithErrorCode:kNWErrorAPNInvalidPayloadSize error:apnError]; break;
         case 8: [NWErrorUtil noWithErrorCode:kNWErrorAPNInvalidTokenContent error:apnError]; break;
         case 10: [NWErrorUtil noWithErrorCode:kNWErrorAPNShutdown error:apnError]; break;
-        default: [NWErrorUtil noWithErrorCode:kNWErrorAPNUnknownErrorCode error:apnError]; break;
+        default: [NWErrorUtil noWithErrorCode:kNWErrorAPNUnknownErrorCode reason:status error:apnError]; break;
     }
     return YES;
 }

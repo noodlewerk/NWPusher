@@ -73,7 +73,7 @@ static NSUInteger const NWTokenMaxSize = 32;
         return read;
     }
     if (length != data.length) {
-        return [NWErrorUtil noWithErrorCode:kNWErrorFeedbackLength error:error];
+        return [NWErrorUtil noWithErrorCode:kNWErrorFeedbackLength reason:length error:error];
     }
     uint32_t time = 0;
     [data getBytes:&time range:NSMakeRange(0, 4)];
@@ -82,7 +82,7 @@ static NSUInteger const NWTokenMaxSize = 32;
     [data getBytes:&l range:NSMakeRange(4, 2)];
     NSUInteger tokenLength = htons(l);
     if (tokenLength != NWTokenMaxSize) {
-        return [NWErrorUtil noWithErrorCode:kNWErrorFeedbackTokenLength error:error];
+        return [NWErrorUtil noWithErrorCode:kNWErrorFeedbackTokenLength reason:tokenLength error:error];
     }
     *token = [data subdataWithRange:NSMakeRange(6, length - 6)];
     return YES;

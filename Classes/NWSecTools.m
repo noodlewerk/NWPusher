@@ -38,7 +38,7 @@ typedef NS_ENUM(NSInteger, NWCertType) {
         return [NWErrorUtil nilWithErrorCode:kNWErrorPKCS12NoItems error:error];
     }
     if (identities.count > 1) {
-        return [NWErrorUtil nilWithErrorCode:kNWErrorPKCS12MultipleItems error:error];
+        return [NWErrorUtil nilWithErrorCode:kNWErrorPKCS12MultipleItems reason:identities.count error:error];
     }
     return identities.lastObject;
 }
@@ -208,7 +208,7 @@ typedef NS_ENUM(NSInteger, NWCertType) {
     OSStatus status = identity ? SecIdentityCopyCertificate((__bridge SecIdentityRef)identity, &cert) : errSecParam;
     NWCertificateRef certificate = CFBridgingRelease(cert);
     if (status != errSecSuccess || !cert) {
-        return [NWErrorUtil nilWithErrorCode:kNWErrorIdentityCopyCertificate error:error];
+        return [NWErrorUtil nilWithErrorCode:kNWErrorIdentityCopyCertificate reason:status error:error];
     }
     return certificate;
 }
@@ -219,7 +219,7 @@ typedef NS_ENUM(NSInteger, NWCertType) {
     OSStatus status = identity ? SecIdentityCopyPrivateKey((__bridge SecIdentityRef)identity, &k) : errSecParam;
     NWKeyRef key = CFBridgingRelease(k);
     if (status != errSecSuccess || !k) {
-        return [NWErrorUtil nilWithErrorCode:kNWErrorIdentityCopyPrivateKey error:error];
+        return [NWErrorUtil nilWithErrorCode:kNWErrorIdentityCopyPrivateKey reason:status error:error];
     }
     return key;
 }
@@ -238,7 +238,7 @@ typedef NS_ENUM(NSInteger, NWCertType) {
             case errSecPkcs12VerifyFailure: return [NWErrorUtil nilWithErrorCode:kNWErrorPKCS12Password error:error];
 #endif
         }
-        return [NWErrorUtil nilWithErrorCode:kNWErrorPKCS12Import error:error];
+        return [NWErrorUtil nilWithErrorCode:kNWErrorPKCS12Import reason:status error:error];
     }
     return dicts;
 }
@@ -251,7 +251,7 @@ typedef NS_ENUM(NSInteger, NWCertType) {
     OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)options, (CFTypeRef *)&certs);
     NSArray *certificates = CFBridgingRelease(certs);
     if (status != errSecSuccess || !certs) {
-        return [NWErrorUtil nilWithErrorCode:kNWErrorKeychainCopyMatching error:error];
+        return [NWErrorUtil nilWithErrorCode:kNWErrorKeychainCopyMatching reason:status error:error];
     }
     return certificates;
 }
@@ -266,7 +266,7 @@ typedef NS_ENUM(NSInteger, NWCertType) {
         switch (status) {
             case errSecItemNotFound: return [NWErrorUtil nilWithErrorCode:kNWErrorKeychainItemNotFound error:error];
         }
-        return [NWErrorUtil nilWithErrorCode:kNWErrorKeychainCreateIdentity error:error];
+        return [NWErrorUtil nilWithErrorCode:kNWErrorKeychainCreateIdentity reason:status error:error];
     }
     return identity;
 }

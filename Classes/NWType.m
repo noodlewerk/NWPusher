@@ -85,23 +85,35 @@
 
 #pragma mark - Helpers
 
-+ (NSError *)errorWithErrorCode:(NWError)code
++ (NSError *)errorWithErrorCode:(NWError)code reason:(NSInteger)reason
 {
-    NSDictionary *info = @{ NSLocalizedDescriptionKey: [self stringWithCode:code] };
+    NSString *description = [self stringWithCode:code];
+    if (reason) description = [NSString stringWithFormat:@"%@ (%li)", description, reason];
+    NSDictionary *info = @{ NSLocalizedDescriptionKey:description };
     return [NSError errorWithDomain:@"NWPusherErrorDomain" code:code userInfo:info];
 }
 
 + (BOOL)noWithErrorCode:(NWError)code error:(NSError *__autoreleasing *)error
 {
+    return [self noWithErrorCode:code reason:0 error:error];
+}
+
++ (BOOL)noWithErrorCode:(NWError)code reason:(NSInteger)reason error:(NSError *__autoreleasing *)error
+{
     NSAssert(code != kNWErrorNone, @"code != kNWErrorNone");
-    if (error) *error = [self errorWithErrorCode:code];
+    if (error) *error = [self errorWithErrorCode:code reason:reason];
     return NO;
 }
 
 + (id)nilWithErrorCode:(NWError)code error:(NSError *__autoreleasing *)error
 {
+    return [self nilWithErrorCode:code reason:0 error:error];
+}
+
++ (id)nilWithErrorCode:(NWError)code reason:(NSInteger)reason error:(NSError *__autoreleasing *)error
+{
     NSAssert(code != kNWErrorNone, @"code != kNWErrorNone");
-    if (error) *error = [self errorWithErrorCode:code];
+    if (error) *error = [self errorWithErrorCode:code reason:reason];
     return nil;
 }
 

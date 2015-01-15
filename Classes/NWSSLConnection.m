@@ -68,7 +68,7 @@ OSStatus NWSSLWrite(SSLConnectionRef connection, const void *data, size_t *lengt
 {
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0) {
-        return [NWErrorUtil noWithErrorCode:kNWErrorSocketCreate error:error];
+        return [NWErrorUtil noWithErrorCode:kNWErrorSocketCreate reason:sock error:error];
     }
     struct sockaddr_in addr;
     memset(&addr, 0, sizeof(struct sockaddr_in));
@@ -83,15 +83,15 @@ OSStatus NWSSLWrite(SSLConnectionRef connection, const void *data, size_t *lengt
     addr.sin_family = AF_INET;
     int conn = connect(sock, (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
     if (conn < 0) {
-        return [NWErrorUtil noWithErrorCode:kNWErrorSocketConnect error:error];
+        return [NWErrorUtil noWithErrorCode:kNWErrorSocketConnect reason:conn error:error];
     }
     int cntl = fcntl(sock, F_SETFL, O_NONBLOCK);
     if (cntl < 0) {
-        return [NWErrorUtil noWithErrorCode:kNWErrorSocketFileControl error:error];
+        return [NWErrorUtil noWithErrorCode:kNWErrorSocketFileControl reason:cntl error:error];
     }
     int set = 1, sopt = setsockopt(sock, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int));
     if (sopt < 0) {
-        return [NWErrorUtil noWithErrorCode:kNWErrorSocketOptions error:error];
+        return [NWErrorUtil noWithErrorCode:kNWErrorSocketOptions reason:sopt error:error];
     }
     _socket = sock;
     return YES;
@@ -105,19 +105,19 @@ OSStatus NWSSLWrite(SSLConnectionRef connection, const void *data, size_t *lengt
     }
     OSStatus setio = SSLSetIOFuncs(context, NWSSLRead, NWSSLWrite);
     if (setio != errSecSuccess) {
-        return [NWErrorUtil noWithErrorCode:kNWErrorSSLIOFuncs error:error];
+        return [NWErrorUtil noWithErrorCode:kNWErrorSSLIOFuncs reason:setio error:error];
     }
     OSStatus setconn = SSLSetConnection(context, (SSLConnectionRef)(NSInteger)_socket);
     if (setconn != errSecSuccess) {
-        return [NWErrorUtil noWithErrorCode:kNWErrorSSLConnection error:error];
+        return [NWErrorUtil noWithErrorCode:kNWErrorSSLConnection reason:setconn error:error];
     }
     OSStatus setpeer = SSLSetPeerDomainName(context, _host.UTF8String, strlen(_host.UTF8String));
     if (setpeer != errSecSuccess) {
-        return [NWErrorUtil noWithErrorCode:kNWErrorSSLPeerDomainName error:error];
+        return [NWErrorUtil noWithErrorCode:kNWErrorSSLPeerDomainName reason:setpeer error:error];
     }
     OSStatus setcert = SSLSetCertificate(context, (__bridge CFArrayRef)@[_identity]);
     if (setcert != errSecSuccess) {
-        return [NWErrorUtil noWithErrorCode:kNWErrorSSLCertificate error:error];
+        return [NWErrorUtil noWithErrorCode:kNWErrorSSLCertificate reason:setcert error:error];
     }
     _context = context;
     return YES;
@@ -141,7 +141,7 @@ OSStatus NWSSLWrite(SSLConnectionRef connection, const void *data, size_t *lengt
         case errSSLClientCertRequested: return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakeClientCertRequested error:error];
         case errSSLServerAuthCompleted: return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakeServerAuthCompleted error:error];
     }
-    return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakeFail error:error];
+    return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakeFail reason:status error:error];
 }
 
 - (void)disconnect
@@ -166,7 +166,7 @@ OSStatus NWSSLWrite(SSLConnectionRef connection, const void *data, size_t *lengt
         case errSSLClosedAbort: return [NWErrorUtil noWithErrorCode:kNWErrorReadClosedAbort error:error];
         case errSSLClosedGraceful: return [NWErrorUtil noWithErrorCode:kNWErrorReadClosedGraceful error:error];
     }
-    return [NWErrorUtil noWithErrorCode:kNWErrorReadFail error:error];
+    return [NWErrorUtil noWithErrorCode:kNWErrorReadFail reason:status error:error];
 }
 
 - (BOOL)write:(NSData *)data length:(NSUInteger *)length error:(NSError *__autoreleasing *)error
@@ -182,7 +182,7 @@ OSStatus NWSSLWrite(SSLConnectionRef connection, const void *data, size_t *lengt
         case errSSLClosedAbort: return [NWErrorUtil noWithErrorCode:kNWErrorWriteClosedAbort error:error];
         case errSSLClosedGraceful: return [NWErrorUtil noWithErrorCode:kNWErrorWriteClosedGraceful error:error];
     }
-    return [NWErrorUtil noWithErrorCode:kNWErrorWriteFail error:error];
+    return [NWErrorUtil noWithErrorCode:kNWErrorWriteFail reason:status error:error];
 }
 
 @end

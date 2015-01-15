@@ -3,6 +3,8 @@ Change Log
 
 ### master (unreleased)
 
+* Add underlying error reason code
+
 ### 0.6.1 (2015-01-14)
 
 * Add SSL handshake error codes
