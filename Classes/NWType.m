@@ -88,7 +88,7 @@
 + (NSError *)errorWithErrorCode:(NWError)code reason:(NSInteger)reason
 {
     NSString *description = [self stringWithCode:code];
-    if (reason) description = [NSString stringWithFormat:@"%@ (%li)", description, reason];
+    if (reason) description = [NSString stringWithFormat:@"%@ (%i)", description, (int)reason];
     NSDictionary *info = @{ NSLocalizedDescriptionKey:description };
     return [NSError errorWithDomain:@"NWPusherErrorDomain" code:code userInfo:info];
 }
