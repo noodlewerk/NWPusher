@@ -24,7 +24,7 @@ Or download the latest `Pusher.app` binary:
 Alternatively, you can include NWPusher as a framework, using [CocoaPods](http://cocoapods.org/):
 
 ```ruby
-pod 'NWPusher', '~> 0.6.1'
+pod 'NWPusher', '~> 0.6.0'
 ```
 
 Or simply include the source files you need. NWPusher has a modular architecture and does not have any external dependencies, so use what you like.
@@ -179,7 +179,7 @@ Pushing from code
 Pusher can also be used as a framework to send notifications programmatically. The included Xcode project provides examples for both OS X and iOS. The easiest way to include NWPusher is through CocoaPods:
 
 ```ruby
-pod 'NWPusher', '~> 0.6.1'
+pod 'NWPusher', '~> 0.6.0'
 ```
 
 CocoaPods also compiles documentation, which can be accessed through [CocoaDocs](http://cocoadocs.org/docsets/NWPusher). Alternatively you can include just the files you need from the `Classes` folder. Make sure you link with `Foundation.framework` and `Security.framework`.

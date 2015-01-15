@@ -3,6 +3,8 @@ Change Log
 
 ### master (unreleased)
 
+### 0.6.2 (2015-01-15)
+
 * Add underlying error reason code
 
 ### 0.6.1 (2015-01-14)
