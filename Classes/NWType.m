@@ -7,6 +7,8 @@
 
 #import "NWType.h"
 
+NSString * const NWErrorReasonCodeKey = @"NWErrorReasonCodeKey";
+
 @implementation NWErrorUtil
 
 + (NSString *)stringWithCode:(NWError)code
@@ -89,7 +91,8 @@
 {
     NSString *description = [self stringWithCode:code];
     if (reason) description = [NSString stringWithFormat:@"%@ (%i)", description, (int)reason];
-    NSDictionary *info = @{ NSLocalizedDescriptionKey:description };
+    NSMutableDictionary *info = @{ NSLocalizedDescriptionKey:description }.mutableCopy;
+    if (reason) [info setValue:@(reason) forKey:NWErrorReasonCodeKey];
     return [NSError errorWithDomain:@"NWPusherErrorDomain" code:code userInfo:info];
 }
 
