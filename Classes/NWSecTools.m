@@ -270,6 +270,24 @@ typedef NS_ENUM(NSInteger, NWCertType) {
     }
     return identity;
 }
+
++ (NSDate *)expirationWithCertificate:(NWCertificateRef)certificate
+{
+    return [self valueWithCertificate:certificate key:(__bridge id)kSecOIDInvalidityDate];
+}
+
++ (id)valueWithCertificate:(NWCertificateRef)certificate key:(id)key
+{
+    return [self valuesWithCertificate:certificate keys:@[key] error:nil][key][(__bridge id)kSecPropertyKeyValue];
+}
+
++ (NSDictionary *)valuesWithCertificate:(NWCertificateRef)certificate keys:(NSArray *)keys error:(NSError **)error
+{
+    CFErrorRef e = NULL;
+    NSDictionary *result = CFBridgingRelease(SecCertificateCopyValues((__bridge SecCertificateRef)certificate, (__bridge CFArrayRef)keys, &e));
+    if (error) *error = CFBridgingRelease(e);
+    return result;
+}
 #endif
 
 @end

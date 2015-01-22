@@ -97,7 +97,7 @@ typedef NS_ENUM(NSInteger, NWError) {
     kNWErrorSSLHandshakeUnknownRootCert        = -223,
     /** SSL handshake chain not verifiable to root. */
     kNWErrorSSLHandshakeNoRootCert             = -224,
-    /** SSL handshake chain has expired certificates. */
+    /** SSL handshake expired certificates. */
     kNWErrorSSLHandshakeCertExpired            = -225,
     /** SSL handshake invalid certificate chain. */
     kNWErrorSSLHandshakeXCertChainInvalid      = -226,
@@ -105,6 +105,10 @@ typedef NS_ENUM(NSInteger, NWError) {
     kNWErrorSSLHandshakeClientCertRequested    = -227,
     /** SSL handshake auth interrupted. */
     kNWErrorSSLHandshakeServerAuthCompleted    = -228,
+    /** SSL handshake certificate expired. */
+    kNWErrorSSLHandshakePeerCertExpired        = -229,
+    /** SSL handshake certificate revoked. */
+    kNWErrorSSLHandshakePeerCertRevoked        = -230,
     /** SSL handshake timeout. */
     kNWErrorSSLHandshakeTimeout                = -218,
     

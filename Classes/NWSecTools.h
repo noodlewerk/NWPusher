@@ -58,4 +58,12 @@
 /** Composes a dictionary describing the characteristics of the identity. */
 + (NSDictionary *)inspectIdentity:(NWIdentityRef)identity;
 
+#if !TARGET_OS_IPHONE
+/** Extracts the expiration date. */
++ (NSDate *)expirationWithCertificate:(NWCertificateRef)certificate;
+
+/** Extracts given properties of certificate, see `SecCertificateOIDs.h`, use `nil` to get all. */
++ (NSDictionary *)valuesWithCertificate:(NWCertificateRef)certificate keys:(NSArray *)keys error:(NSError **)error;
+#endif
+
 @end

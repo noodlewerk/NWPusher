@@ -3,6 +3,9 @@ Change Log
 
 ### master (unreleased)
 
+* Add certificate expiration date to listing
+* Add expiration and revocation error message
+
 ### 0.6.2 (2015-01-15)
 
 * Add underlying error reason code

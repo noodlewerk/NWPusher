@@ -159,13 +159,18 @@
     NSMutableString *suffix = @" ".mutableCopy;
     [_certificatePopup removeAllItems];
     [_certificatePopup addItemWithTitle:@"Select Push Certificate"];
+    NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateStyle:NSDateFormatterShortStyle];
+    [formatter setTimeStyle:NSDateFormatterShortStyle];
     for (NSArray *pair in _certificateIdentityPairs) {
         NWCertificateRef certificate = pair[0];
         BOOL hasIdentity = (pair[1] != NSNull.null);
         BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
         NSString *summary = [NWSecTools summaryWithCertificate:certificate];
+        NSDate *date = [NWSecTools expirationWithCertificate:certificate];
+        NSString *expire = [NSString stringWithFormat:@"  [%@]", date ? [formatter stringFromDate:date] : @"expired"];
         // summary = @"com.example.app";
-        [_certificatePopup addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@", hasIdentity ? @"imported: " : @"", summary, sandbox ? @" (sandbox)" : @"", suffix]];
+        [_certificatePopup addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", hasIdentity ? @"imported: " : @"", summary, sandbox ? @" (sandbox)" : @"", expire, suffix]];
         [suffix appendString:@" "];
     }
     [_certificatePopup addItemWithTitle:@"Import PKCS #12 file (.p12)..."];

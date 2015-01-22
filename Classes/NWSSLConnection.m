@@ -140,6 +140,8 @@ OSStatus NWSSLWrite(SSLConnectionRef connection, const void *data, size_t *lengt
         case errSSLXCertChainInvalid: return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakeXCertChainInvalid error:error];
         case errSSLClientCertRequested: return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakeClientCertRequested error:error];
         case errSSLServerAuthCompleted: return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakeServerAuthCompleted error:error];
+        case errSSLPeerCertExpired: return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakePeerCertExpired error:error];
+        case errSSLPeerCertRevoked: return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakePeerCertRevoked error:error];
     }
     return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakeFail reason:status error:error];
 }
