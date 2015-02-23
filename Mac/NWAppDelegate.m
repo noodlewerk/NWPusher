@@ -27,6 +27,7 @@
     IBOutlet NSPopUpButton *_expiryPopup;
     IBOutlet NSPopUpButton *_priorityPopup;
     IBOutlet NSScrollView *_logScroll;
+    IBOutlet NSButton *_sanboxCheckBox;
 
     NWHub *_hub;
     NSDictionary *_config;
@@ -109,6 +110,14 @@
     [self reconnect];
 }
 
+- (IBAction)sanboxCheckBoxDidPressed:(NSButton *)sender
+{
+    if (_selectedCertificate)
+    {
+        [self reconnect];
+    }
+}
+
 - (void)notification:(NWNotification *)notification didFailWithError:(NSError *)error
 {
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -138,10 +147,10 @@
         NWLogWarn(@"No push certificates in keychain.");
     }
     certs = [certs sortedArrayUsingComparator:^NSComparisonResult(NWCertificateRef a, NWCertificateRef b) {
-        BOOL adev = [NWSecTools isSandboxCertificate:a];
-        BOOL bdev = [NWSecTools isSandboxCertificate:b];
-        if (adev != bdev) {
-            return adev ? NSOrderedAscending : NSOrderedDescending;
+        NWEnvironmentOptions envOptionsA = [NWSecTools environmentOptionsForCertificate:a];
+        NWEnvironmentOptions envOptionsB = [NWSecTools environmentOptionsForCertificate:b];
+        if (envOptionsA != envOptionsB) {
+            return envOptionsA < envOptionsB;
         }
         NSString *aname = [NWSecTools summaryWithCertificate:a];
         NSString *bname = [NWSecTools summaryWithCertificate:b];
@@ -165,12 +174,12 @@
     for (NSArray *pair in _certificateIdentityPairs) {
         NWCertificateRef certificate = pair[0];
         BOOL hasIdentity = (pair[1] != NSNull.null);
-        BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
+        NWEnvironmentOptions environmentOptions = [NWSecTools environmentOptionsForCertificate:certificate];
         NSString *summary = [NWSecTools summaryWithCertificate:certificate];
         NSDate *date = [NWSecTools expirationWithCertificate:certificate];
         NSString *expire = [NSString stringWithFormat:@"  [%@]", date ? [formatter stringFromDate:date] : @"expired"];
         // summary = @"com.example.app";
-        [_certificatePopup addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", hasIdentity ? @"imported: " : @"", summary, sandbox ? @" (sandbox)" : @"", expire, suffix]];
+        [_certificatePopup addItemWithTitle:[NSString stringWithFormat:@"%@%@ (%@)%@%@", hasIdentity ? @"imported: " : @"", summary, descriptionForEnvironentOptions(environmentOptions), expire, suffix]];
         [suffix appendString:@" "];
     }
     [_certificatePopup addItemWithTitle:@"Import PKCS #12 file (.p12)..."];
@@ -277,6 +286,18 @@
     }
 }
 
+- (NWEnvironment)selectedEnvironmentForCertificate:(NWCertificateRef)certificate
+{
+    return (_sanboxCheckBox.state & NSOnState) ? NWEnvironmentSandbox : NWEnvironmentProduction;
+}
+
+- (NWEnvironment)preferredEnvironmentForCertificate:(NWCertificateRef)certificate
+{
+    NWEnvironmentOptions environmentOptions = [NWSecTools environmentOptionsForCertificate:certificate];
+    
+    return (environmentOptions & NWEnvironmentOptionSandbox) ? NWEnvironmentSandbox : NWEnvironmentProduction;
+}
+
 #pragma mark - Connection
 
 - (void)connectWithCertificateAtIndex:(NSUInteger)index
@@ -284,14 +305,16 @@
     if (index == 0) {
         [_certificatePopup selectItemAtIndex:0];
         _lastSelectedIndex = 0;
-        [self selectCertificate:nil identity:nil];
+        [self selectCertificate:nil identity:nil environment:NWEnvironmentSandbox];
         _tokenCombo.enabled = NO;
         [self loadSelectedToken];
     } else if (index <= _certificateIdentityPairs.count) {
         [_certificatePopup selectItemAtIndex:index];
         _lastSelectedIndex = index;
         NSArray *pair = [_certificateIdentityPairs objectAtIndex:index - 1];
-        [self selectCertificate:pair[0] identity:pair[1] == NSNull.null ? nil : pair[1]];
+        NWCertificateRef certificate = pair[0];
+        NWIdentityRef identity = pair[1];
+        [self selectCertificate:certificate identity:identity == NSNull.null ? nil : identity  environment:[self preferredEnvironmentForCertificate:certificate]];
         _tokenCombo.enabled = YES;
         [self loadSelectedToken];
     } else {
@@ -300,12 +323,32 @@
     }
 }
 
-- (void)selectCertificate:(NWCertificateRef)certificate identity:(NWIdentityRef)identity
+- (void)disableButtons
+{
+    _pushButton.enabled = NO;
+    _reconnectButton.enabled = NO;
+    _sanboxCheckBox.enabled = NO;
+}
+
+- (void)enableButtonsForCertificate:(NWCertificateRef)certificate environment:(NWEnvironment)environment
+{
+    NWEnvironmentOptions environmentOptions = [NWSecTools environmentOptionsForCertificate:certificate];
+    
+    BOOL shouldEnableEnvButton = (environmentOptions == NWEnvironmentOptionAny);
+    BOOL shouldSelectSandboxEnv = (environment == NWEnvironmentSandbox);
+
+    _pushButton.enabled = YES;
+    _reconnectButton.enabled = YES;
+    _sanboxCheckBox.enabled = shouldEnableEnvButton;
+    _sanboxCheckBox.state = shouldSelectSandboxEnv ? NSOnState : NSOffState;
+}
+
+- (void)selectCertificate:(NWCertificateRef)certificate identity:(NWIdentityRef)identity environment:(NWEnvironment)environment
 {
     if (_hub) {
         [_hub disconnect]; _hub = nil;
-        _pushButton.enabled = NO;
-        _reconnectButton.enabled = NO;
+        
+        [self disableButtons];
         NWLogInfo(@"Disconnected from APN");
     }
     
@@ -313,20 +356,20 @@
     [self updateTokenCombo];
     
     if (certificate) {
-        BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
+        
         NSString *summary = [NWSecTools summaryWithCertificate:certificate];
-        NWLogInfo(@"Connecting to APN..  (%@%@)", summary, sandbox ? @" sandbox" : @"");
+        NWLogInfo(@"Connecting to APN...  (%@ %@)", summary, descriptionForEnvironent(environment));
         
         dispatch_async(_serial, ^{
             NSError *error = nil;
             NWIdentityRef ident = identity ?: [NWSecTools keychainIdentityWithCertificate:certificate error:&error];
-            NWHub *hub = [NWHub connectWithDelegate:self identity:ident error:&error];
+            NWHub *hub = [NWHub connectWithDelegate:self identity:ident environment:environment error:&error];
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (hub) {
-                    NWLogInfo(@"Connected  (%@%@)", summary, sandbox ? @" sandbox" : @"");
+                    NWLogInfo(@"Connected  (%@ %@)", summary, descriptionForEnvironent(environment));
                     _hub = hub;
-                    _pushButton.enabled = YES;
-                    _reconnectButton.enabled = YES;
+                    
+                    [self enableButtonsForCertificate:certificate environment:environment];
                 } else {
                     NWLogWarn(@"Unable to connect: %@", error.localizedDescription);
                     [hub disconnect];
@@ -339,20 +382,23 @@
 
 - (void)reconnect
 {
-    NWLogInfo(@"Reconnecting..");
-    _pushButton.enabled = NO;
-    _reconnectButton.enabled = NO;
+    NSString *summary = [NWSecTools summaryWithCertificate:_selectedCertificate];
+    NWEnvironment environment = [self selectedEnvironmentForCertificate:_selectedCertificate];
+    
+    [self disableButtons];
+    NWLogInfo(@"Reconnecting to APN...(%@ %@)", summary, descriptionForEnvironent(environment));
+    
     dispatch_async(_serial, ^{
         NSError *error =  nil;
         BOOL connected = [_hub reconnectWithError:&error];
         dispatch_async(dispatch_get_main_queue(), ^{
             if (connected) {
-                NWLogInfo(@"Reconnected");
-                _pushButton.enabled = YES;
+                NWLogInfo(@"Reconnected  (%@ %@)", summary, descriptionForEnvironent(environment));
+                [self enableButtonsForCertificate:_selectedCertificate environment:environment];
             } else {
                 NWLogWarn(@"Unable to reconnect: %@", error.localizedDescription);
+                _reconnectButton.enabled = YES;
             }
-            _reconnectButton.enabled = YES;
         });
     });
 }
@@ -395,17 +441,17 @@
             NWLogWarn(@"Unable to connect to feedback service: no certificate selected");
             return;
         }
-        BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
+        NWEnvironment environment = [self selectedEnvironmentForCertificate:certificate];
         NSString *summary = [NWSecTools summaryWithCertificate:certificate];
-        NWLogInfo(@"Connecting to feedback service..  (%@%@)", summary, sandbox ? @" sandbox" : @"");
+        NWLogInfo(@"Connecting to feedback service..  (%@ %@)", summary, descriptionForEnvironent(environment));
         NSError *error = nil;
         NWIdentityRef identity = [NWSecTools keychainIdentityWithCertificate:_selectedCertificate error:&error];
-        NWPushFeedback *feedback = [NWPushFeedback connectWithIdentity:identity error:&error];
+        NWPushFeedback *feedback = [NWPushFeedback connectWithIdentity:identity environment:[self selectedEnvironmentForCertificate:certificate] error:&error];
         if (!feedback) {
             NWLogWarn(@"Unable to connect to feedback service: %@", error.localizedDescription);
             return;
         }
-        NWLogInfo(@"Reading feedback service..  (%@%@)", summary, sandbox ? @" sandbox" : @"");
+        NWLogInfo(@"Reading feedback service..  (%@ %@)", summary, descriptionForEnvironent(environment));
         NSArray *pairs = [feedback readTokenDatePairsWithMax:1000 error:&error];
         if (!pairs) {
             NWLogWarn(@"Unable to read feedback: %@", error.localizedDescription);
@@ -426,9 +472,9 @@
 
 - (NSString *)identifierWithCertificate:(NWCertificateRef)certificate
 {
-    BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
+    NWEnvironmentOptions environmentOptions = [NWSecTools environmentOptionsForCertificate:certificate];
     NSString *summary = [NWSecTools summaryWithCertificate:certificate];
-    return summary ? [NSString stringWithFormat:@"%@%@", summary, sandbox ? @"-sandbox" : @""] : nil;
+    return summary ? [NSString stringWithFormat:@"%@-%@", summary, descriptionForEnvironentOptions(environmentOptions)] : nil;
 }
 
 - (NSMutableArray *)tokensWithCertificate:(NWCertificateRef)certificate create:(BOOL)create

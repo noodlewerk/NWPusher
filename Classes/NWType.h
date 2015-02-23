@@ -158,6 +158,18 @@ typedef NS_ENUM(NSInteger, NWError) {
     kNWErrorKeychainCreateIdentity             = -303,
 };
 
+typedef NS_ENUM(NSInteger, NWEnvironment) {
+    NWEnvironmentSandbox = 0,
+    NWEnvironmentProduction = 1,
+};
+
+typedef NS_ENUM(NSInteger, NWEnvironmentOptions) {
+    NWEnvironmentOptionNone = 0,
+    NWEnvironmentOptionSandbox = 1 << NWEnvironmentSandbox,
+    NWEnvironmentOptionProduction = 1 << NWEnvironmentProduction,
+    NWEnvironmentOptionAny = NWEnvironmentOptionSandbox | NWEnvironmentOptionProduction
+};
+
 /** NSError dictionary key for integer code that indicates underlying reason. */
 extern NSString * const NWErrorReasonCodeKey;
 
@@ -165,6 +177,11 @@ extern NSString * const NWErrorReasonCodeKey;
  
  Most methods in this framework return `NO` or `nil` to indicate an error occurred. In that case an error object will be assigned. This class provides a mapping from codes to description string and some methods to instantiate the `NSError` object.
  */
+
+/** Returns string for given environment, for logging purposes */
+NSString * descriptionForEnvironentOptions(NWEnvironmentOptions environmentOptions);
+NSString * descriptionForEnvironent(NWEnvironment environment);
+
 @interface NWErrorUtil : NSObject
 
 /** @name Helpers */

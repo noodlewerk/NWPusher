@@ -32,9 +32,13 @@ static NWPusherViewController *controller = nil;
     UITextField *_textField;
     UIButton *_pushButton;
     UILabel *_infoLabel;
+    UISwitch *_sanboxSwitch;
     NWHub *_hub;
     NSUInteger _index;
     dispatch_queue_t _serial;
+    
+    NWIdentityRef _identity;
+    NWCertificateRef _certificate;
 }
 
 - (void)viewDidLoad
@@ -47,10 +51,21 @@ static NWPusherViewController *controller = nil;
     _serial = dispatch_queue_create("NWAppDelegate", DISPATCH_QUEUE_SERIAL);
     
     _connectButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    _connectButton.frame = CGRectMake(20, 20, self.view.bounds.size.width - 40, 40);
+    _connectButton.frame = CGRectMake(20, 20, (self.view.bounds.size.width - 40)/2, 40);
     [_connectButton setTitle:@"Connect" forState:UIControlStateNormal];
-    [_connectButton addTarget:self action:@selector(connect) forControlEvents:UIControlEventTouchUpInside];
+    [_connectButton addTarget:self action:@selector(connectButtonPressed) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_connectButton];
+    
+    _sanboxSwitch = [[UISwitch alloc] init];
+    _sanboxSwitch.frame = CGRectMake((self.view.bounds.size.width + 40)/2, 20, 40, 40);
+    [_sanboxSwitch addTarget:self action:@selector(sanboxCheckBoxDidPressed:) forControlEvents:UIControlEventValueChanged];
+    [self.view addSubview:_sanboxSwitch];
+    
+    UILabel *sandboxLabel = [[UILabel alloc] init];
+    sandboxLabel.frame = CGRectMake(CGRectGetMaxX(_sanboxSwitch.frame) + 10, 20, 80, 40);
+    sandboxLabel.font = [UIFont systemFontOfSize:12];
+    sandboxLabel.text = @"Use sandbox";
+    [self.view addSubview:sandboxLabel];
     
     _textField = [[UITextField alloc] init];
     _textField.frame = CGRectMake(20, 70, self.view.bounds.size.width - 40, 26);
@@ -66,46 +81,107 @@ static NWPusherViewController *controller = nil;
     [self.view addSubview:_pushButton];
     
     _infoLabel = [[UILabel alloc] init];
-    _infoLabel.frame = CGRectMake(20, 156, self.view.bounds.size.width - 40, 26);
+    _infoLabel.frame = CGRectMake(20, 156, self.view.bounds.size.width - 40, 60);
     _infoLabel.font = [UIFont systemFontOfSize:12];
+    _infoLabel.numberOfLines = 0;
     [self.view addSubview:_infoLabel];
     
     NWLogInfo(@"Connect with Apple's Push Notification service");
+    
+    [self loadCertificate];
 }
 
-- (void)connect
+- (void)loadCertificate
 {
-    if (!_hub) {
-        NWLogInfo(@"Connecting..");
-        _connectButton.enabled = NO;
-        dispatch_async(_serial, ^{
-            NSURL *url = [NSBundle.mainBundle URLForResource:pkcs12FileName withExtension:nil];
-            NSData *pkcs12 = [NSData dataWithContentsOfURL:url];
-            NSError *error = nil;
-            NWHub *hub = [NWHub connectWithDelegate:self PKCS12Data:pkcs12 password:pkcs12Password error:&error];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (hub) {
-                    NSError *error = nil;
-                    NWCertificateRef certificate = [NWSecTools certificateWithIdentity:hub.pusher.connection.identity error:&error];
-                    NWError(error);
-                    BOOL sandbox = [NWSecTools isSandboxCertificate:certificate];
-                    NSString *summary = [NWSecTools summaryWithCertificate:certificate];
-                    NWLogInfo(@"Connected to APN: %@%@", summary, sandbox ? @" (sandbox)" : @"");
-                    _hub = hub;
-                    _pushButton.enabled = YES;
-                    [_connectButton setTitle:@"Disconnect" forState:UIControlStateNormal];
-                } else {
-                    NWLogWarn(@"Unable to connect: %@", error.localizedDescription);
-                }
-                _connectButton.enabled = YES;
-            });
-        });
-    } else {
-        _pushButton.enabled = NO;
-        [_hub disconnect]; _hub = nil;
-        NWLogInfo(@"Disconnected");
-        [_connectButton setTitle:@"Connect" forState:UIControlStateNormal];
+    NSURL *url = [NSBundle.mainBundle URLForResource:pkcs12FileName withExtension:nil];
+    NSData *pkcs12 = [NSData dataWithContentsOfURL:url];
+    NSError *error = nil;
+    
+    NSArray *ids = [NWSecTools identitiesWithPKCS12Data:pkcs12 password:pkcs12Password error:&error];
+    if (!ids) {
+        NWLogWarn(@"Unable to read p12 file: %@", error.localizedDescription);
+        return;
     }
+    for (NWIdentityRef identity in ids) {
+        NSError *error = nil;
+        NWCertificateRef certificate = [NWSecTools certificateWithIdentity:identity error:&error];
+        if (!certificate) {
+            NWLogWarn(@"Unable to import p12 file: %@", error.localizedDescription);
+            return;
+        }
+        
+        _identity = identity;
+        _certificate = certificate;
+    }
+}
+
+- (IBAction)sanboxCheckBoxDidPressed:(UISwitch *)sender
+{
+    if (_certificate)
+    {
+        [self disconnect];
+        [self connectToEnvironment:[self selectedEnvironmentForCertificate:_certificate]];
+    }
+}
+
+- (NWEnvironment)selectedEnvironmentForCertificate:(NWCertificateRef)certificate
+{
+    return _sanboxSwitch.isOn ? NWEnvironmentSandbox : NWEnvironmentProduction;
+}
+
+- (NWEnvironment)preferredEnvironmentForCertificate:(NWCertificateRef)certificate
+{
+    NWEnvironmentOptions environmentOptions = [NWSecTools environmentOptionsForCertificate:certificate];
+    
+    return (environmentOptions & NWEnvironmentOptionSandbox) ? NWEnvironmentSandbox : NWEnvironmentProduction;
+}
+
+- (void)connectButtonPressed
+{
+    if (_hub)
+    {
+        [self disconnect];
+        _connectButton.enabled = YES;
+        [_connectButton setTitle:@"Connect" forState:UIControlStateNormal];
+        return;
+    }
+
+    NWEnvironment preferredEnvironment = [self preferredEnvironmentForCertificate:_certificate];
+    
+    [self connectToEnvironment:preferredEnvironment];
+}
+
+- (void)disconnect
+{
+    [self disableButtons];
+    [_hub disconnect]; _hub = nil;
+    NWLogInfo(@"Disconnected");
+}
+
+- (void)connectToEnvironment:(NWEnvironment)environment
+{
+    [self disableButtons];
+    
+    NWLogInfo(@"Connecting..");
+    dispatch_async(_serial, ^{
+        NSError *error = nil;
+        
+        NWHub *hub = [NWHub connectWithDelegate:self identity:_identity environment:environment error:&error];
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (hub) {
+                NSString *summary = [NWSecTools summaryWithCertificate:_certificate];
+                NWLogInfo(@"Connected to APN: %@ (%@)", summary, descriptionForEnvironent(environment));
+                _hub = hub;
+                
+                [_connectButton setTitle:@"Disconnect" forState:UIControlStateNormal];
+            } else {
+                NWLogWarn(@"Unable to connect: %@", error.localizedDescription);
+            }
+            
+            [self enableButtonsForCertificate:_certificate environment:environment];
+        });
+    });
 }
 
 - (void)push
@@ -131,6 +207,27 @@ static NWPusherViewController *controller = nil;
     });
 }
 
+#pragma mark - BUtton states
+
+- (void)disableButtons
+{
+    _pushButton.enabled = NO;
+    _connectButton.enabled = NO;
+    _sanboxSwitch.enabled = NO;
+}
+
+- (void)enableButtonsForCertificate:(NWCertificateRef)certificate environment:(NWEnvironment)environment
+{
+    NWEnvironmentOptions environmentOptions = [NWSecTools environmentOptionsForCertificate:certificate];
+    
+    BOOL shouldEnableEnvButton = (environmentOptions == NWEnvironmentOptionAny);
+    BOOL shouldSelectSandboxEnv = (environment == NWEnvironmentSandbox);
+    
+    _pushButton.enabled = YES;
+    _connectButton.enabled = YES;
+    _sanboxSwitch.enabled = shouldEnableEnvButton;
+    _sanboxSwitch.on = shouldSelectSandboxEnv;
+}
 
 #pragma mark - NWLogging
 

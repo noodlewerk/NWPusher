@@ -19,8 +19,10 @@ typedef NS_ENUM(NSInteger, NWCertType) {
     kNWCertTypeMacDevelopment = 3,
     /** OS X Production. */
     kNWCertTypeMacProduction = 4,
+    /** VoIP Services. */
+    kNWCertTypeVoIPServices = 5,
     /** Unknown. */
-    kNWCertTypeUnknown = 5,
+    kNWCertTypeUnknown = 6,
 };
 
 
@@ -111,25 +113,31 @@ typedef NS_ENUM(NSInteger, NWCertType) {
     return result;
 }
 
-+ (BOOL)isSandboxIdentity:(NWIdentityRef)identity
++ (NWEnvironmentOptions)environmentOptionsForIdentity:(NWIdentityRef)identity
 {
     NWCertificateRef certificate = [self certificateWithIdentity:identity error:nil];
-    return [self isSandboxCertificate:certificate];
+    return [self environmentOptionsForCertificate:certificate];
 }
 
-+ (BOOL)isSandboxCertificate:(NWCertificateRef)certificate
++ (NWEnvironmentOptions)environmentOptionsForCertificate:(NWCertificateRef)certificate
 {
     switch ([self typeWithCertificate:certificate summary:nil]) {
         case kNWCertTypeIOSDevelopment:
         case kNWCertTypeMacDevelopment:
-            return YES;
+            return NWEnvironmentOptionSandbox;
+            
         case kNWCertTypeIOSProduction:
         case kNWCertTypeMacProduction:
+            return NWEnvironmentOptionProduction;
+            
+        case kNWCertTypeVoIPServices:
+            return NWEnvironmentOptionAny;
+            
         case kNWCertTypeNone:
         case kNWCertTypeUnknown:
             break;
     }
-    return NO;
+    return NWEnvironmentOptionNone;
 }
 
 + (BOOL)isPushCertificate:(NWCertificateRef)certificate
@@ -139,7 +147,9 @@ typedef NS_ENUM(NSInteger, NWCertType) {
         case kNWCertTypeMacDevelopment:
         case kNWCertTypeIOSProduction:
         case kNWCertTypeMacProduction:
+        case kNWCertTypeVoIPServices:
             return YES;
+            
         case kNWCertTypeNone:
         case kNWCertTypeUnknown:
             break;
@@ -154,6 +164,7 @@ typedef NS_ENUM(NSInteger, NWCertType) {
         case kNWCertTypeIOSProduction: return @"Apple Production IOS Push Services: ";
         case kNWCertTypeMacDevelopment: return @"Apple Development Mac Push Services: ";
         case kNWCertTypeMacProduction: return @"Apple Production Mac Push Services: ";
+        case kNWCertTypeVoIPServices:  return @"VoIP Services: ";
         case kNWCertTypeNone:
         case kNWCertTypeUnknown:
             break;
