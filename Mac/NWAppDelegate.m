@@ -385,22 +385,9 @@
     NSString *summary = [NWSecTools summaryWithCertificate:_selectedCertificate];
     NWEnvironment environment = [self selectedEnvironmentForCertificate:_selectedCertificate];
     
-    [self disableButtons];
     NWLogInfo(@"Reconnecting to APN...(%@ %@)", summary, descriptionForEnvironent(environment));
     
-    dispatch_async(_serial, ^{
-        NSError *error =  nil;
-        BOOL connected = [_hub reconnectWithError:&error];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (connected) {
-                NWLogInfo(@"Reconnected  (%@ %@)", summary, descriptionForEnvironent(environment));
-                [self enableButtonsForCertificate:_selectedCertificate environment:environment];
-            } else {
-                NWLogWarn(@"Unable to reconnect: %@", error.localizedDescription);
-                _reconnectButton.enabled = YES;
-            }
-        });
-    });
+    [self selectCertificate:_selectedCertificate identity:nil  environment:environment];
 }
 
 - (void)push
