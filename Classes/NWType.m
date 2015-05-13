@@ -57,6 +57,7 @@ NSString * const NWErrorReasonCodeKey = @"NWErrorReasonCodeKey";
         case kNWErrorSSLHandshakeServerAuthCompleted   : return @"SSL handshake auth interrupted";
         case kNWErrorSSLHandshakePeerCertExpired       : return @"SSL handshake certificate expired";
         case kNWErrorSSLHandshakePeerCertRevoked       : return @"SSL handshake certificate revoked";
+        case kNWErrorSSLInDarkWake                     : return @"SSL handshake in dark wake";
         case kNWErrorSSLHandshakeTimeout               : return @"SSL handshake timeout";
             
         case kNWErrorReadDroppedByServer               : return @"Read connection dropped by server";

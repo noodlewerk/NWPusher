@@ -109,6 +109,8 @@ typedef NS_ENUM(NSInteger, NWError) {
     kNWErrorSSLHandshakePeerCertExpired        = -229,
     /** SSL handshake certificate revoked. */
     kNWErrorSSLHandshakePeerCertRevoked        = -230,
+    /** SSL handshake in dark wake. */
+    kNWErrorSSLInDarkWake                      = -231,
     /** SSL handshake timeout. */
     kNWErrorSSLHandshakeTimeout                = -218,
     
