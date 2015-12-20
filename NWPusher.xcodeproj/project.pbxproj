@@ -287,7 +287,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = NW;
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = noodlewerk;
 			};
 			buildConfigurationList = B3C6BD7515FD24D200F1F3F1 /* Build configuration list for PBXProject "NWPusher" */;
@@ -399,6 +399,7 @@
 				);
 				INFOPLIST_FILE = "Touch/PusherTouch-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.noodlewerk.pusher;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -425,6 +426,7 @@
 				INFOPLIST_FILE = "Touch/PusherTouch-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				PRODUCT_BUNDLE_IDENTIFIER = com.noodlewerk.pusher;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -441,6 +443,7 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -492,6 +495,7 @@
 				);
 				INFOPLIST_FILE = "Mac/PusherMac-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.noodlewerk.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = Pusher;
 				WRAPPER_EXTENSION = app;
 			};
@@ -509,6 +513,7 @@
 				);
 				INFOPLIST_FILE = "Mac/PusherMac-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.noodlewerk.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = Pusher;
 				WRAPPER_EXTENSION = app;
 			};
