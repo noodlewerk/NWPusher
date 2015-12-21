@@ -3,6 +3,11 @@ Change Log
 
 ### master (unreleased)
 
+### 0.6.4 (2015-12-20)
+
+* Add support for new certificate types (web, simplified, voip)
+* Add support for handshake errors (dark wake and closed abort)
+
 ### 0.6.3 (2015-01-22)
 
 * Add certificate expiration date to listing
