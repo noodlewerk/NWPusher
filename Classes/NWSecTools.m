@@ -23,8 +23,10 @@ typedef NS_ENUM(NSInteger, NWCertType) {
     kNWCertTypeSimplified = 5,
     /** Web Push Production. */
     kNWCertTypeWebProduction = 6,
+    /** VoIP Services. */
+    kNWCertTypeVoIPServices = 7,
     /** Unknown. */
-    kNWCertTypeUnknown = 7,
+    kNWCertTypeUnknown = 8,
 };
 
 
@@ -131,6 +133,7 @@ typedef NS_ENUM(NSInteger, NWCertType) {
         case kNWCertTypeMacProduction:
         case kNWCertTypeSimplified:
         case kNWCertTypeWebProduction:
+        case kNWCertTypeVoIPServices:
         case kNWCertTypeNone:
         case kNWCertTypeUnknown:
             break;
@@ -147,6 +150,7 @@ typedef NS_ENUM(NSInteger, NWCertType) {
         case kNWCertTypeMacProduction:
         case kNWCertTypeSimplified:
         case kNWCertTypeWebProduction:
+        case kNWCertTypeVoIPServices:
             return YES;
         case kNWCertTypeNone:
         case kNWCertTypeUnknown:
@@ -164,6 +168,7 @@ typedef NS_ENUM(NSInteger, NWCertType) {
         case kNWCertTypeMacProduction: return @"Apple Production Mac Push Services: ";
         case kNWCertTypeSimplified: return @"Apple Push Services: ";
         case kNWCertTypeWebProduction: return @"Website Push ID: ";
+        case kNWCertTypeVoIPServices:  return @"VoIP Services: ";
         case kNWCertTypeNone:
         case kNWCertTypeUnknown:
             break;
