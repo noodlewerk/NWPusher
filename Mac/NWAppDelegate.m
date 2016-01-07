@@ -466,7 +466,9 @@
 
 - (NSMutableArray *)tokensWithCertificate:(NWCertificateRef)certificate create:(BOOL)create
 {
-    NSString *identifier = [self identifierWithCertificate:certificate];
+    NWEnvironment environment = [self selectedEnvironmentForCertificate:_selectedCertificate];
+    NSString *summary = [NWSecTools summaryWithCertificate:certificate];
+    NSString *identifier = summary ? [NSString stringWithFormat:@"%@%@", summary, environment == NWEnvironmentSandbox ? @"-sandbox" : @""] : nil;
     if (!identifier) return nil;
     NSArray *result = _config[@"identifiers"][identifier];
     if (create && !result) result = (_config[@"identifiers"][identifier] = @[].mutableCopy);
