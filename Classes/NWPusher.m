@@ -19,10 +19,11 @@ static NSUInteger const NWPushPort = 2195;
 
 #pragma mark - Connecting
 
-- (BOOL)connectWithIdentity:(NWIdentityRef)identity error:(NSError *__autoreleasing *)error
+- (BOOL)connectWithIdentity:(NWIdentityRef)identity environment:(NWEnvironment)environment error:(NSError *__autoreleasing *)error
 {
     if (_connection) [_connection disconnect]; _connection = nil;
-    NSString *host = [NWSecTools isSandboxIdentity:identity] ? NWSandboxPushHost : NWPushHost;
+    
+    NSString *host = (environment == NWEnvironmentSandbox) ? NWSandboxPushHost : NWPushHost;
     NWSSLConnection *connection = [[NWSSLConnection alloc] initWithHost:host port:NWPushPort identity:identity];
     BOOL connected = [connection connectWithError:error];
     if (!connected) {
@@ -32,13 +33,13 @@ static NSUInteger const NWPushPort = 2195;
     return YES;
 }
 
-- (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError *__autoreleasing *)error
+- (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password environment:(NWEnvironment)environment error:(NSError *__autoreleasing *)error
 {
     NWIdentityRef identity = [NWSecTools identityWithPKCS12Data:data password:password error:error];
     if (!identity) {
         return NO;
     }
-    return [self connectWithIdentity:identity error:error];
+    return [self connectWithIdentity:identity environment:(NWEnvironment)environment error:error];
 }
 
 - (BOOL)reconnectWithError:(NSError *__autoreleasing *)error
@@ -54,16 +55,16 @@ static NSUInteger const NWPushPort = 2195;
     [_connection disconnect]; _connection = nil;
 }
 
-+ (instancetype)connectWithIdentity:(NWIdentityRef)identity error:(NSError *__autoreleasing *)error
++ (instancetype)connectWithIdentity:(NWIdentityRef)identity environment:(NWEnvironment)environment error:(NSError *__autoreleasing *)error
 {
     NWPusher *pusher = [[NWPusher alloc] init];
-    return identity && [pusher connectWithIdentity:identity error:error] ? pusher : nil;
+    return identity && [pusher connectWithIdentity:identity environment:environment error:error] ? pusher : nil;
 }
 
-+ (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError *__autoreleasing *)error
++ (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password environment:(NWEnvironment)environment error:(NSError *__autoreleasing *)error
 {
     NWPusher *pusher = [[NWPusher alloc] init];
-    return data && [pusher connectWithPKCS12Data:data password:password error:error] ? pusher : nil;
+    return data && [pusher connectWithPKCS12Data:data password:password environment:environment error:error] ? pusher : nil;
 }
 
 #pragma mark - Pushing payload

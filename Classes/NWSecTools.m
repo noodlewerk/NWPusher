@@ -117,28 +117,31 @@ typedef NS_ENUM(NSInteger, NWCertType) {
     return result;
 }
 
-+ (BOOL)isSandboxIdentity:(NWIdentityRef)identity
++ (NWEnvironmentOptions)environmentOptionsForIdentity:(NWIdentityRef)identity
 {
     NWCertificateRef certificate = [self certificateWithIdentity:identity error:nil];
-    return [self isSandboxCertificate:certificate];
+    return [self environmentOptionsForCertificate:certificate];
 }
 
-+ (BOOL)isSandboxCertificate:(NWCertificateRef)certificate
++ (NWEnvironmentOptions)environmentOptionsForCertificate:(NWCertificateRef)certificate
 {
     switch ([self typeWithCertificate:certificate summary:nil]) {
         case kNWCertTypeIOSDevelopment:
         case kNWCertTypeMacDevelopment:
-            return YES;
+            return NWEnvironmentOptionSandbox;
+            
         case kNWCertTypeIOSProduction:
         case kNWCertTypeMacProduction:
+            return NWEnvironmentOptionProduction;
         case kNWCertTypeSimplified:
         case kNWCertTypeWebProduction:
         case kNWCertTypeVoIPServices:
+            return NWEnvironmentOptionAny;
         case kNWCertTypeNone:
         case kNWCertTypeUnknown:
             break;
     }
-    return NO;
+    return NWEnvironmentOptionNone;
 }
 
 + (BOOL)isPushCertificate:(NWCertificateRef)certificate
@@ -152,6 +155,7 @@ typedef NS_ENUM(NSInteger, NWCertType) {
         case kNWCertTypeWebProduction:
         case kNWCertTypeVoIPServices:
             return YES;
+            
         case kNWCertTypeNone:
         case kNWCertTypeUnknown:
             break;

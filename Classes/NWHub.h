@@ -53,18 +53,18 @@
 - (instancetype)initWithPusher:(NWPusher *)pusher delegate:(id<NWHubDelegate>)delegate;
 
 /** Create, connect and returns an instance with delegate and identity. */
-+ (instancetype)connectWithDelegate:(id<NWHubDelegate>)delegate identity:(NWIdentityRef)identity error:(NSError **)error;
++ (instancetype)connectWithDelegate:(id<NWHubDelegate>)delegate identity:(NWIdentityRef)identity environment:(NWEnvironment)environment error:(NSError **)error;
 
 /** Create, connect and returns an instance with delegate and identity. */
-+ (instancetype)connectWithDelegate:(id<NWHubDelegate>)delegate PKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error;
++ (instancetype)connectWithDelegate:(id<NWHubDelegate>)delegate PKCS12Data:(NSData *)data password:(NSString *)password environment:(NWEnvironment)environment error:(NSError **)error;
 
 /** @name Connecting */
 
 /** Connect the pusher using the identity to setup the SSL connection. */
-- (BOOL)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error;
+- (BOOL)connectWithIdentity:(NWIdentityRef)identity environment:(NWEnvironment)environment error:(NSError **)error;
 
 /** Connect the pusher using the PKCS #12 data to setup the SSL connection. */
-- (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error;
+- (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password environment:(NWEnvironment)environment error:(NSError **)error;
 
 /** Reconnect with the server, to recover from a closed or defect connection. */
 - (BOOL)reconnectWithError:(NSError **)error;

@@ -9,6 +9,44 @@
 
 NSString * const NWErrorReasonCodeKey = @"NWErrorReasonCodeKey";
 
+NSString * descriptionForEnvironentOptions(NWEnvironmentOptions environmentOptions)
+{
+    switch (environmentOptions) {
+        case NWEnvironmentOptionNone:
+            return @"No environment";
+            
+        case NWEnvironmentOptionSandbox:
+            return @"Sandbox";
+            
+        case NWEnvironmentOptionProduction:
+            return @"Production";
+            
+        case NWEnvironmentOptionAny:
+            return @"Sandbox|Production";
+            
+        default:
+            break;
+    }
+    
+    return nil;
+}
+
+NSString * descriptionForEnvironent(NWEnvironment environment)
+{
+    switch (environment) {
+        case NWEnvironmentProduction:
+            return @"production";
+            
+        case NWEnvironmentSandbox:
+            return @"sandbox";
+            
+        default:
+            break;
+    }
+    
+    return nil;
+}
+
 @implementation NWErrorUtil
 
 + (NSString *)stringWithCode:(NWError)code

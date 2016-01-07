@@ -20,10 +20,11 @@ static NSUInteger const NWTokenMaxSize = 32;
 
 #pragma mark - Connecting
 
-- (BOOL)connectWithIdentity:(NWIdentityRef)identity error:(NSError *__autoreleasing *)error
+- (BOOL)connectWithIdentity:(NWIdentityRef)identity environment:(NWEnvironment)environment error:(NSError *__autoreleasing *)error
 {
     if (_connection) [_connection disconnect]; _connection = nil;
-    NSString *host = [NWSecTools isSandboxIdentity:identity] ? NWSandboxPushHost : NWPushHost;
+    
+    NSString *host = (environment == NWEnvironmentSandbox) ? NWSandboxPushHost : NWPushHost;
     NWSSLConnection *connection = [[NWSSLConnection alloc] initWithHost:host port:NWPushPort identity:identity];
     BOOL connected = [connection connectWithError:error];
     if (!connected) {
@@ -33,13 +34,13 @@ static NSUInteger const NWTokenMaxSize = 32;
     return YES;
 }
 
-- (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError *__autoreleasing *)error
+- (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password environment:(NWEnvironment)environment error:(NSError *__autoreleasing *)error
 {
     NWIdentityRef identity = [NWSecTools identityWithPKCS12Data:data password:password error:error];
     if (!identity) {
         return NO;
     }
-    return [self connectWithIdentity:identity error:error];
+    return [self connectWithIdentity:identity environment:environment error:error];
 }
 
 - (void)disconnect
@@ -47,16 +48,16 @@ static NSUInteger const NWTokenMaxSize = 32;
     [_connection disconnect]; _connection = nil;
 }
 
-+ (instancetype)connectWithIdentity:(NWIdentityRef)identity error:(NSError *__autoreleasing *)error
++ (instancetype)connectWithIdentity:(NWIdentityRef)identity environment:(NWEnvironment)environment error:(NSError *__autoreleasing *)error
 {
     NWPushFeedback *feedback = [[NWPushFeedback alloc] init];
-    return identity && [feedback connectWithIdentity:identity error:error] ? feedback : nil;
+    return identity && [feedback connectWithIdentity:identity environment:environment error:error] ? feedback : nil;
 }
 
-+ (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError *__autoreleasing *)error
++ (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password environment:(NWEnvironment)environment error:(NSError *__autoreleasing *)error
 {
     NWPushFeedback *feedback = [[NWPushFeedback alloc] init];
-    return data && [feedback connectWithPKCS12Data:data password:password error:error] ? feedback : nil;
+    return data && [feedback connectWithPKCS12Data:data password:password environment:environment error:error] ? feedback : nil;
 }
 
 

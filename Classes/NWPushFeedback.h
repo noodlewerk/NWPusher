@@ -6,6 +6,7 @@
 //
 
 #import "NWType.h"
+
 #import <Foundation/Foundation.h>
 
 @class NWSSLConnection;
@@ -27,18 +28,18 @@
 /** @name Initialization */
 
 /** Setup connection with feedback service based on identity. */
-+ (instancetype)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error;
++ (instancetype)connectWithIdentity:(NWIdentityRef)identity environment:(NWEnvironment)environment error:(NSError **)error;
 
 /** Setup connection with feedback service based on PKCS #12 data. */
-+ (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error;
++ (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password environment:(NWEnvironment)environment error:(NSError **)error;
 
 /** @name Connecting */
 
 /** Connect with feedback service based on identity. */
-- (BOOL)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error;
+- (BOOL)connectWithIdentity:(NWIdentityRef)identity environment:(NWEnvironment)environment error:(NSError **)error;
 
 /** Connect with feedback service based on PKCS #12 data. */
-- (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error;
+- (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password environment:(NWEnvironment)environment error:(NSError **)error;
 
 /** Disconnect from feedback service. The server will automatically drop the connection after all feedback data has been read. */
 - (void)disconnect;

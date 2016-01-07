@@ -42,14 +42,14 @@
     
 #pragma mark - Connecting
 
-- (BOOL)connectWithIdentity:(NWIdentityRef)identity error:(NSError *__autoreleasing *)error
+- (BOOL)connectWithIdentity:(NWIdentityRef)identity environment:(NWEnvironment)environment error:(NSError *__autoreleasing *)error
 {
-    return [_pusher connectWithIdentity:identity error:error];
+    return [_pusher connectWithIdentity:identity environment:environment error:error];
 }
 
-- (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError *__autoreleasing *)error
+- (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password environment:(NWEnvironment)environment error:(NSError *__autoreleasing *)error
 {
-    return [_pusher connectWithPKCS12Data:data password:password error:error];
+    return [_pusher connectWithPKCS12Data:data password:password environment:environment error:error];
 }
 
 - (BOOL)reconnectWithError:(NSError *__autoreleasing *)error
@@ -62,16 +62,16 @@
     [_pusher disconnect];
 }
     
-+ (instancetype)connectWithDelegate:(id<NWHubDelegate>)delegate identity:(NWIdentityRef)identity error:(NSError *__autoreleasing *)error
++ (instancetype)connectWithDelegate:(id<NWHubDelegate>)delegate identity:(NWIdentityRef)identity environment:(NWEnvironment)environment error:(NSError *__autoreleasing *)error
 {
     NWHub *hub = [[NWHub alloc] initWithDelegate:delegate];
-    return identity && [hub connectWithIdentity:identity error:error] ? hub : nil;
+    return identity && [hub connectWithIdentity:identity environment:environment error:error] ? hub : nil;
 }
 
-+ (instancetype)connectWithDelegate:(id<NWHubDelegate>)delegate PKCS12Data:(NSData *)data password:(NSString *)password error:(NSError *__autoreleasing *)error
++ (instancetype)connectWithDelegate:(id<NWHubDelegate>)delegate PKCS12Data:(NSData *)data password:(NSString *)password environment:(NWEnvironment)environment error:(NSError *__autoreleasing *)error
 {
     NWHub *hub = [[NWHub alloc] initWithDelegate:delegate];
-    return data && [hub connectWithPKCS12Data:data password:password error:error] ? hub : nil;
+    return data && [hub connectWithPKCS12Data:data password:password environment:environment error:error] ? hub : nil;
 }
 
 #pragma mark - Pushing without NSError
