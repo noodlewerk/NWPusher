@@ -205,4 +205,26 @@
     return !!old.count;
 }
 
+#pragma mark - Deprecated
+
+- (BOOL)connectWithIdentity:(NWIdentityRef)identity error:(NSError *__autoreleasing *)error
+{
+    return [self connectWithIdentity:identity environment:NWEnvironmentAuto error:error];
+}
+
+- (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError *__autoreleasing *)error
+{
+    return [self connectWithPKCS12Data:data password:password environment:NWEnvironmentAuto error:error];
+}
+
++ (instancetype)connectWithDelegate:(id<NWHubDelegate>)delegate identity:(NWIdentityRef)identity error:(NSError *__autoreleasing *)error
+{
+    return [self connectWithDelegate:delegate identity:identity environment:NWEnvironmentAuto error:error];
+}
+
++ (instancetype)connectWithDelegate:(id<NWHubDelegate>)delegate PKCS12Data:(NSData *)data password:(NSString *)password error:(NSError *__autoreleasing *)error
+{
+    return [self connectWithDelegate:delegate identity:data environment:NWEnvironmentAuto error:error];
+}
+
 @end

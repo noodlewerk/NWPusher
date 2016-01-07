@@ -12,38 +12,22 @@ NSString * const NWErrorReasonCodeKey = @"NWErrorReasonCodeKey";
 NSString * descriptionForEnvironentOptions(NWEnvironmentOptions environmentOptions)
 {
     switch (environmentOptions) {
-        case NWEnvironmentOptionNone:
-            return @"No environment";
-            
-        case NWEnvironmentOptionSandbox:
-            return @"Sandbox";
-            
-        case NWEnvironmentOptionProduction:
-            return @"Production";
-            
-        case NWEnvironmentOptionAny:
-            return @"Sandbox|Production";
-            
-        default:
-            break;
+        case NWEnvironmentOptionNone: return @"No environment";
+        case NWEnvironmentOptionSandbox: return @"Sandbox";
+        case NWEnvironmentOptionProduction: return @"Production";
+        case NWEnvironmentOptionAny: return @"Sandbox|Production";
     }
-    
     return nil;
 }
 
 NSString * descriptionForEnvironent(NWEnvironment environment)
 {
     switch (environment) {
-        case NWEnvironmentProduction:
-            return @"production";
-            
-        case NWEnvironmentSandbox:
-            return @"sandbox";
-            
-        default:
-            break;
+        case NWEnvironmentNone: return @"none";
+        case NWEnvironmentProduction: return @"production";
+        case NWEnvironmentSandbox: return @"sandbox";
+        case NWEnvironmentAuto: return @"auto";
     }
-    
     return nil;
 }
 

@@ -6,7 +6,6 @@
 //
 
 #import "NWType.h"
-
 #import <Foundation/Foundation.h>
 
 @class NWSSLConnection;
@@ -54,5 +53,12 @@
 
 /** Read all (or max) token-date pairs, where token is hex string. */
 - (NSArray *)readTokenDatePairsWithMax:(NSUInteger)max error:(NSError **)error;
+
+// deprecated
+
++ (instancetype)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error __deprecated;
++ (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error __deprecated;
+- (BOOL)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error __deprecated;
+- (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error __deprecated;
 
 @end

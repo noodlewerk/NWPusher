@@ -143,4 +143,11 @@
  */
 - (BOOL)trimIdentifiers;
 
+// deprecated
+
++ (instancetype)connectWithDelegate:(id<NWHubDelegate>)delegate identity:(NWIdentityRef)identity error:(NSError **)error __deprecated;
++ (instancetype)connectWithDelegate:(id<NWHubDelegate>)delegate PKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error __deprecated;
+- (BOOL)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error __deprecated;
+- (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error __deprecated;
+
 @end

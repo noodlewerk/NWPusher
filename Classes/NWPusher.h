@@ -67,4 +67,11 @@
 /** Read back multiple notification identifiers of, up to max, failed pushes. */
 - (NSArray *)readFailedIdentifierErrorPairsWithMax:(NSUInteger)max error:(NSError **)error;
 
+// deprecated
+
++ (instancetype)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error __deprecated;
++ (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error __deprecated;
+- (BOOL)connectWithIdentity:(NWIdentityRef)identity error:(NSError **)error __deprecated;
+- (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError **)error __deprecated;
+
 @end

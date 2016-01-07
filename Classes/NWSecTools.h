@@ -12,7 +12,6 @@
 
  This is practically the glue that connects this framework to the Security framework and allows interacting with the OS Keychain and PKCS #12 files. It is mostly an Objective-C around the Security framework, including the benefits of ARC. `NWIdentityRef`, `NWCertificateRef` and `NWKeyRef` represent respectively `SecIdentityRef`, `SecCertificateRef`, `SecKeyRef`. It uses Cocoa-style error handling, so methods return `nil` or `NO` if an error occurred.
  */
-
 @interface NWSecTools : NSObject
 
 /** @name Initialization */
@@ -66,5 +65,12 @@
 /** Extracts given properties of certificate, see `SecCertificateOIDs.h`, use `nil` to get all. */
 + (NSDictionary *)valuesWithCertificate:(NWCertificateRef)certificate keys:(NSArray *)keys error:(NSError **)error;
 #endif
+
+// deprecated
+
++ (BOOL)isSandboxIdentity:(NWIdentityRef)identity __deprecated;
++ (BOOL)isSandboxCertificate:(NWCertificateRef)certificate __deprecated;
++ (NWEnvironment)environmentForIdentity:(NWIdentityRef)identity;
++ (NWEnvironment)environmentForCertificate:(NWCertificateRef)certificate;
 
 @end

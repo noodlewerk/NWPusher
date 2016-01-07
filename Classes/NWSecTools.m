@@ -155,7 +155,6 @@ typedef NS_ENUM(NSInteger, NWCertType) {
         case kNWCertTypeWebProduction:
         case kNWCertTypeVoIPServices:
             return YES;
-            
         case kNWCertTypeNone:
         case kNWCertTypeUnknown:
             break;
@@ -308,5 +307,43 @@ typedef NS_ENUM(NSInteger, NWCertType) {
     return result;
 }
 #endif
+
+#pragma mark - Deprecated
+
++ (BOOL)isSandboxIdentity:(NWIdentityRef)identity
+{
+    return [self environmentForIdentity:identity] == NWEnvironmentSandbox;
+}
+
++ (BOOL)isSandboxCertificate:(NWCertificateRef)certificate
+{
+    return [self environmentForCertificate:certificate] == NWEnvironmentSandbox;
+}
+
++ (NWEnvironment)environmentForIdentity:(NWIdentityRef)identity
+{
+    NWCertificateRef certificate = [self certificateWithIdentity:identity error:nil];
+    return [self environmentForCertificate:certificate];
+}
+
++ (NWEnvironment)environmentForCertificate:(NWCertificateRef)certificate
+{
+    switch ([self typeWithCertificate:certificate summary:nil]) {
+        case kNWCertTypeIOSDevelopment:
+        case kNWCertTypeMacDevelopment:
+            return NWEnvironmentSandbox;
+            
+        case kNWCertTypeIOSProduction:
+        case kNWCertTypeMacProduction:
+            return NWEnvironmentProduction;
+        case kNWCertTypeSimplified:
+        case kNWCertTypeWebProduction:
+        case kNWCertTypeVoIPServices:
+        case kNWCertTypeNone:
+        case kNWCertTypeUnknown:
+            break;
+    }
+    return NWEnvironmentOptionNone;
+}
 
 @end

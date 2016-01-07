@@ -22,7 +22,7 @@ static NSUInteger const NWPushPort = 2195;
 - (BOOL)connectWithIdentity:(NWIdentityRef)identity environment:(NWEnvironment)environment error:(NSError *__autoreleasing *)error
 {
     if (_connection) [_connection disconnect]; _connection = nil;
-    
+    if (environment == NWEnvironmentAuto) environment = [NWSecTools environmentForIdentity:identity];
     NSString *host = (environment == NWEnvironmentSandbox) ? NWSandboxPushHost : NWPushHost;
     NWSSLConnection *connection = [[NWSSLConnection alloc] initWithHost:host port:NWPushPort identity:identity];
     BOOL connected = [connection connectWithError:error];
@@ -39,7 +39,7 @@ static NSUInteger const NWPushPort = 2195;
     if (!identity) {
         return NO;
     }
-    return [self connectWithIdentity:identity environment:(NWEnvironment)environment error:error];
+    return [self connectWithIdentity:identity environment:environment error:error];
 }
 
 - (BOOL)reconnectWithError:(NSError *__autoreleasing *)error
@@ -140,6 +140,28 @@ static NSUInteger const NWPushPort = 2195;
         [pairs addObject:@[@(identifier), apnError]];
     }
     return pairs;
+}
+
+#pragma mark - Deprecated
+
+- (BOOL)connectWithIdentity:(NWIdentityRef)identity error:(NSError *__autoreleasing *)error
+{
+    return [self connectWithIdentity:identity environment:NWEnvironmentAuto error:error];
+}
+
+- (BOOL)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError *__autoreleasing *)error
+{
+    return [self connectWithPKCS12Data:data password:password environment:NWEnvironmentAuto error:error];
+}
+
++ (instancetype)connectWithIdentity:(NWIdentityRef)identity error:(NSError *__autoreleasing *)error
+{
+    return [self connectWithIdentity:identity environment:NWEnvironmentAuto error:error];
+}
+
++ (instancetype)connectWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError *__autoreleasing *)error
+{
+    return [self connectWithPKCS12Data:data password:password environment:NWEnvironmentAuto error:error];
 }
 
 @end

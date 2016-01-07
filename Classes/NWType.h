@@ -163,8 +163,10 @@ typedef NS_ENUM(NSInteger, NWError) {
 };
 
 typedef NS_ENUM(NSInteger, NWEnvironment) {
-    NWEnvironmentSandbox = 0,
-    NWEnvironmentProduction = 1,
+    NWEnvironmentNone = 0,
+    NWEnvironmentSandbox = 1,
+    NWEnvironmentProduction = 2,
+    NWEnvironmentAuto = 3,
 };
 
 typedef NS_ENUM(NSInteger, NWEnvironmentOptions) {
