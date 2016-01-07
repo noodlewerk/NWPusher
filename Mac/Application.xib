@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6250"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner">
@@ -158,7 +158,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="600" height="300"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <value key="minSize" type="size" width="500" height="200"/>
             <view key="contentView" id="se5-gp-TjO">
                 <rect key="frame" x="0.0" y="0.0" width="600" height="300"/>
@@ -192,20 +192,8 @@
                             <action selector="certificateSelected:" target="kaW-YJ-UA5" id="Asf-IM-UFv"/>
                         </connections>
                     </popUpButton>
-                    <comboBox verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xpc-0j-elb">
-                        <rect key="frame" x="20" y="230" width="563" height="23"/>
-                        <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Device push token (only first 64 hex chars used, other text is ignored)" drawsBackground="YES" completes="NO" numberOfVisibleItems="5" id="Dzy-yi-6QY">
-                            <font key="font" size="10" name="Monaco"/>
-                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                        </comboBoxCell>
-                        <connections>
-                            <action selector="tokenSelected:" target="kaW-YJ-UA5" id="p9a-qh-3Nh"/>
-                            <outlet property="delegate" destination="kaW-YJ-UA5" id="ZZ9-SB-ZBN"/>
-                        </connections>
-                    </comboBox>
                     <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="imk-VN-mp1">
-                        <rect key="frame" x="18" y="202" width="155" height="26"/>
+                        <rect key="frame" x="18" y="180" width="155" height="26"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="150" id="rN0-Vp-M6c"/>
                         </constraints>
@@ -227,7 +215,7 @@
                         </popUpButtonCell>
                     </popUpButton>
                     <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="c5v-al-Hn5">
-                        <rect key="frame" x="176" y="202" width="160" height="26"/>
+                        <rect key="frame" x="176" y="180" width="160" height="26"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="155" id="DV9-wc-su5"/>
                         </constraints>
@@ -244,7 +232,7 @@
                         </popUpButtonCell>
                     </popUpButton>
                     <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EnU-aP-5PD">
-                        <rect key="frame" x="461" y="199" width="121" height="24"/>
+                        <rect key="frame" x="461" y="177" width="121" height="24"/>
                         <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" id="Olm-G5-Man">
                             <font key="font" metaFont="system"/>
                             <segments>
@@ -278,7 +266,7 @@
                         </textFieldCell>
                     </textField>
                     <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Q6j-iu-9I9">
-                        <rect key="frame" x="20" y="45" width="560" height="152"/>
+                        <rect key="frame" x="20" y="45" width="560" height="130"/>
                         <clipView key="contentView" id="e4e-ov-ymY">
                             <rect key="frame" x="1" y="1" width="558" height="150"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -287,18 +275,18 @@
                                     <rect key="frame" x="0.0" y="0.0" width="558" height="150"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    <size key="minSize" width="558" height="150"/>
+                                    <size key="minSize" width="558" height="128"/>
                                     <size key="maxSize" width="573" height="10000000"/>
                                     <attributedString key="textStorage">
                                         <fragment content="..">
                                             <attributes>
-                                                <font key="NSFont" metaFont="controlContent" size="11"/>
+                                                <font key="NSFont" metaFont="smallSystem"/>
                                                 <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
                                             </attributes>
                                         </fragment>
                                     </attributedString>
                                     <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                                    <size key="minSize" width="558" height="150"/>
+                                    <size key="minSize" width="558" height="128"/>
                                     <size key="maxSize" width="573" height="10000000"/>
                                     <connections>
                                         <outlet property="delegate" destination="kaW-YJ-UA5" id="bUh-Oq-w5B"/>
@@ -328,7 +316,7 @@
                         </textFieldCell>
                     </textField>
                     <scrollView hidden="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="z4n-XE-cfI">
-                        <rect key="frame" x="20" y="45" width="560" height="152"/>
+                        <rect key="frame" x="20" y="45" width="560" height="130"/>
                         <clipView key="contentView" id="uaF-sl-etn">
                             <rect key="frame" x="1" y="1" width="558" height="150"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -337,10 +325,10 @@
                                     <rect key="frame" x="0.0" y="0.0" width="558" height="150"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="backgroundColor" name="windowBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                    <size key="minSize" width="558" height="150"/>
+                                    <size key="minSize" width="558" height="128"/>
                                     <size key="maxSize" width="573" height="10000000"/>
                                     <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                                    <size key="minSize" width="558" height="150"/>
+                                    <size key="minSize" width="558" height="128"/>
                                     <size key="maxSize" width="573" height="10000000"/>
                                 </textView>
                             </subviews>
@@ -355,6 +343,28 @@
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
+                    <button translatesAutoresizingMaskIntoConstraints="NO" id="hU6-Ym-KR3">
+                        <rect key="frame" x="18" y="235" width="228" height="18"/>
+                        <buttonCell key="cell" type="check" title="Should use sandbox environment" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="ros-Zj-bni">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="sanboxCheckBoxDidPressed:" target="kaW-YJ-UA5" id="kzM-IO-iQv"/>
+                        </connections>
+                    </button>
+                    <comboBox verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xpc-0j-elb">
+                        <rect key="frame" x="20" y="208" width="563" height="23"/>
+                        <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Device push token (only first 64 hex chars used, other text is ignored)" drawsBackground="YES" completes="NO" numberOfVisibleItems="5" id="Dzy-yi-6QY">
+                            <font key="font" size="10" name="Monaco"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </comboBoxCell>
+                        <connections>
+                            <action selector="tokenSelected:" target="kaW-YJ-UA5" id="p9a-qh-3Nh"/>
+                            <outlet property="delegate" destination="kaW-YJ-UA5" id="ZZ9-SB-ZBN"/>
+                        </connections>
+                    </comboBox>
                 </subviews>
                 <constraints>
                     <constraint firstAttribute="trailing" secondItem="pAB-wf-piT" secondAttribute="trailing" constant="20" id="1DK-KM-tMh"/>
@@ -376,9 +386,11 @@
                     <constraint firstItem="c5v-al-Hn5" firstAttribute="leading" secondItem="imk-VN-mp1" secondAttribute="trailing" constant="8" id="Syg-OZ-s0W"/>
                     <constraint firstItem="2E1-cP-egh" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" constant="20" id="VPW-kd-JRb"/>
                     <constraint firstItem="pAB-wf-piT" firstAttribute="top" secondItem="z4n-XE-cfI" secondAttribute="bottom" constant="4" id="VSi-vV-wpY"/>
-                    <constraint firstItem="xpc-0j-elb" firstAttribute="top" secondItem="aJR-Gv-8Xr" secondAttribute="bottom" constant="8" id="ejA-7v-S2S"/>
+                    <constraint firstItem="hU6-Ym-KR3" firstAttribute="top" secondItem="aJR-Gv-8Xr" secondAttribute="bottom" constant="8" symbolic="YES" id="ZTZ-NV-b30"/>
                     <constraint firstItem="EnU-aP-5PD" firstAttribute="top" secondItem="c5v-al-Hn5" secondAttribute="top" constant="4" id="emm-N1-qPy"/>
                     <constraint firstAttribute="trailing" secondItem="z4n-XE-cfI" secondAttribute="trailing" constant="20" id="gM0-t7-RqF"/>
+                    <constraint firstItem="hU6-Ym-KR3" firstAttribute="leading" secondItem="aJR-Gv-8Xr" secondAttribute="leading" id="h8B-8W-BTt"/>
+                    <constraint firstItem="xpc-0j-elb" firstAttribute="top" secondItem="hU6-Ym-KR3" secondAttribute="bottom" constant="8" symbolic="YES" id="hqj-w5-p6V"/>
                     <constraint firstItem="M70-t1-JuG" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="20" id="ief-Fk-3Mg"/>
                     <constraint firstAttribute="trailing" secondItem="gQs-Aa-IJi" secondAttribute="trailing" constant="28" id="oT0-VS-Mam"/>
                     <constraint firstAttribute="bottom" secondItem="M70-t1-JuG" secondAttribute="bottom" constant="23" id="pWW-7F-Cxq"/>
@@ -403,6 +415,7 @@
                 <outlet property="_priorityPopup" destination="c5v-al-Hn5" id="6zL-7L-7t3"/>
                 <outlet property="_pushButton" destination="pAB-wf-piT" id="ndY-Uh-dgS"/>
                 <outlet property="_reconnectButton" destination="2E1-cP-egh" id="4CL-8O-MKG"/>
+                <outlet property="_sanboxCheckBox" destination="hU6-Ym-KR3" id="9Zb-UH-d23"/>
                 <outlet property="_tokenCombo" destination="xpc-0j-elb" id="f1o-6I-zGl"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="a4g-51-daC"/>
             </connections>

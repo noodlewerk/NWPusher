@@ -12,6 +12,7 @@
 
  This is practically the glue that connects this framework to the Security framework and allows interacting with the OS Keychain and PKCS #12 files. It is mostly an Objective-C around the Security framework, including the benefits of ARC. `NWIdentityRef`, `NWCertificateRef` and `NWKeyRef` represent respectively `SecIdentityRef`, `SecCertificateRef`, `SecKeyRef`. It uses Cocoa-style error handling, so methods return `nil` or `NO` if an error occurred.
  */
+
 @interface NWSecTools : NSObject
 
 /** @name Initialization */
@@ -46,11 +47,11 @@
 /** Extracts the summary string. */
 + (NSString *)summaryWithCertificate:(NWCertificateRef)certificate;
 
-/** Tells if the identity is for pushing to the Development (sandbox) server. */
-+ (BOOL)isSandboxIdentity:(NWIdentityRef)identity;
+/** Tells what environment options can be used with this identity (Development(sandbox)/Production server or both). */
++ (NWEnvironmentOptions)environmentOptionsForIdentity:(NWIdentityRef)identity;
 
-/** Tells if the certificate is for pushing to the Development (sandbox) server. */
-+ (BOOL)isSandboxCertificate:(NWCertificateRef)certificate;
+/** Tells what environment options can be used with this certificate (Development(sandbox)/Production server or both). */
++ (NWEnvironmentOptions)environmentOptionsForCertificate:(NWCertificateRef)certificate;
 
 /** Tells if the certificate can be used for connecting with APNs. */
 + (BOOL)isPushCertificate:(NWCertificateRef)certificate;
