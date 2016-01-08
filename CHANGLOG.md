@@ -3,6 +3,10 @@ Change Log
 
 ### master (unreleased)
 
+### 0.7.0 (2016-01-07)
+
+* Add support for simplified certificates (pull request by 666tos)
+
 ### 0.6.4 (2015-12-20)
 
 * Add support for new certificate types (web, simplified, voip)
