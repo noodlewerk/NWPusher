@@ -3,6 +3,8 @@ Change Log
 
 ### master (unreleased)
 
+* Remove Mac enum from Touch target
+
 ### 0.7.0 (2016-01-07)
 
 * Add support for simplified certificates (pull request by 666tos)

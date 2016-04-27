@@ -343,7 +343,7 @@ typedef NS_ENUM(NSInteger, NWCertType) {
         case kNWCertTypeUnknown:
             break;
     }
-    return NWEnvironmentOptionNone;
+    return NWEnvironmentNone;
 }
 
 @end
