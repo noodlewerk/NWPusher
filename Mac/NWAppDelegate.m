@@ -6,12 +6,7 @@
 //
 
 #import "NWAppDelegate.h"
-#import "NWHub.h"
-#import "NWNotification.h"
-#import "NWSecTools.h"
-#import "NWLCore.h"
-#import "NWPushFeedback.h"
-
+#import <PusherKit/PusherKit.h>
 
 @interface NWAppDelegate () <NWHubDelegate> @end
 
