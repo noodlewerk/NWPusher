@@ -27,6 +27,12 @@ Alternatively, you can include NWPusher as a framework, using [CocoaPods](http:/
 pod 'NWPusher', '~> 0.7.0'
 ```
 
+or [Carthage](https://github.com/Carthage/Carthage) (iOS 8+ is required to use Cocoa Touch Frameworks)
+
+```
+github "noodlewerk/NWPusher"
+```
+
 Or simply include the source files you need. NWPusher has a modular architecture and does not have any external dependencies, so use what you like.
 
 
