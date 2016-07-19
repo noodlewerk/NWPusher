@@ -3,6 +3,10 @@ Change Log
 
 ### master (unreleased)
 
+### 0.7.2 (2016-07-19)
+
+* Added support for Carthage, thanks to @zats
+
 ### 0.7.1 (2016-04-27)
 
 * Remove Mac enum from Touch target

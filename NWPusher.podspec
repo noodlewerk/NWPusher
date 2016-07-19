@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name          = 'NWPusher'
-  s.version       = '0.7.1'
+  s.version       = '0.7.2'
   s.summary       = 'OS X and iOS application and framework to play with the Apple Push Notification service (APNs).'
   s.homepage      = 'https://github.com/noodlewerk/NWPusher'
   s.license       = { :type => 'BSD', :file => 'LICENSE.txt' }

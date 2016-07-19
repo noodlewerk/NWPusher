@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "5C7803A51D3C4826002107FB"
-               BuildableName = "PusherKit-OSX.framework"
+               BuildableName = "PusherKit.framework"
                BlueprintName = "PusherKit-OSX"
                ReferencedContainer = "container:NWPusher.xcodeproj">
             </BuildableReference>
@@ -46,7 +46,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5C7803A51D3C4826002107FB"
-            BuildableName = "PusherKit-OSX.framework"
+            BuildableName = "PusherKit.framework"
             BlueprintName = "PusherKit-OSX"
             ReferencedContainer = "container:NWPusher.xcodeproj">
          </BuildableReference>
@@ -64,7 +64,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5C7803A51D3C4826002107FB"
-            BuildableName = "PusherKit-OSX.framework"
+            BuildableName = "PusherKit.framework"
             BlueprintName = "PusherKit-OSX"
             ReferencedContainer = "container:NWPusher.xcodeproj">
          </BuildableReference>
