@@ -6,6 +6,7 @@ Change Log
 ### 0.7.3 (2016-09-19)
 
 * Add support for Watch Kit certificates (DanielFontes)
+* Add support for handshake error (certificate unknown)
 
 ### 0.7.2 (2016-07-19)
 
