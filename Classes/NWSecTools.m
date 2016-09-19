@@ -25,8 +25,10 @@ typedef NS_ENUM(NSInteger, NWCertType) {
     kNWCertTypeWebProduction = 6,
     /** VoIP Services. */
     kNWCertTypeVoIPServices = 7,
+    /** WatchKit Services. */
+    kNWCertTypeWatchKitServices = 8,
     /** Unknown. */
-    kNWCertTypeUnknown = 8,
+    kNWCertTypeUnknown = 9,
 };
 
 
@@ -136,6 +138,7 @@ typedef NS_ENUM(NSInteger, NWCertType) {
         case kNWCertTypeSimplified:
         case kNWCertTypeWebProduction:
         case kNWCertTypeVoIPServices:
+        case kNWCertTypeWatchKitServices:
             return NWEnvironmentOptionAny;
         case kNWCertTypeNone:
         case kNWCertTypeUnknown:
@@ -154,6 +157,7 @@ typedef NS_ENUM(NSInteger, NWCertType) {
         case kNWCertTypeSimplified:
         case kNWCertTypeWebProduction:
         case kNWCertTypeVoIPServices:
+        case kNWCertTypeWatchKitServices:
             return YES;
         case kNWCertTypeNone:
         case kNWCertTypeUnknown:
@@ -172,6 +176,7 @@ typedef NS_ENUM(NSInteger, NWCertType) {
         case kNWCertTypeSimplified: return @"Apple Push Services: ";
         case kNWCertTypeWebProduction: return @"Website Push ID: ";
         case kNWCertTypeVoIPServices:  return @"VoIP Services: ";
+        case kNWCertTypeWatchKitServices: return @"WatchKit Services: ";
         case kNWCertTypeNone:
         case kNWCertTypeUnknown:
             break;
@@ -339,6 +344,7 @@ typedef NS_ENUM(NSInteger, NWCertType) {
         case kNWCertTypeSimplified:
         case kNWCertTypeWebProduction:
         case kNWCertTypeVoIPServices:
+        case kNWCertTypeWatchKitServices:
         case kNWCertTypeNone:
         case kNWCertTypeUnknown:
             break;
