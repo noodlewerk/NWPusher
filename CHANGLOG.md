@@ -3,6 +3,10 @@ Change Log
 
 ### master (unreleased)
 
+### 0.7.3 (2016-09-19)
+
+* Add support for Watch Kit certificates (DanielFontes)
+
 ### 0.7.2 (2016-07-19)
 
 * Added support for Carthage, thanks to @zats
