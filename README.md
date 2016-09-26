@@ -366,6 +366,8 @@ If it fails to connect then check:
 
 - Can you connect with the push servers? Try `[NWPusher connectWithIdentity:identity error:&error]` or `[NWPusher connectWithPKCS12Data:pkcs12 password:password error:&error]`.
 
+- Pusher connects on port `2195` with hosts `gateway.push.apple.com` and `gateway.sandbox.push.apple.com`, and on port `2196` with hosts `feedback.push.apple.com` and `feedback.sandbox.push.apple.com`. Make sure your firewall is configured to allow these connections.
+
 If nothing is delivered to the device then check:
 
 - Is the device online? Is it able to receive push notifications from other services? Try to get pushes from other apps, for example a messenger. Many wireless connections work visibly fine, but do not deliver push notifications. Try to switch to another wifi or cellular network.
