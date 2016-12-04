@@ -20,3 +20,4 @@ FOUNDATION_EXPORT const unsigned char PusherKit_iOSVersionString[];
 #import <PusherKit/NWPusher.h>
 #import <PusherKit/NWSSLConnection.h>
 #import <PusherKit/NWSecTools.h>
+#import <PusherKit/NWPushFeedback.h>
