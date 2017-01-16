@@ -111,6 +111,8 @@ typedef NS_ENUM(NSInteger, NWError) {
     kNWErrorSSLHandshakePeerCertRevoked        = -230,
     /** SSL handshake certificate unknown. */
     kNWErrorSSLHandshakePeerCertUnknown        = -233,
+    /** SSL handshake internal error. */
+    kNWErrorSSLHandshakeInternalError          = -234,
     /** SSL handshake in dark wake. */
     kNWErrorSSLInDarkWake                      = -231,
     /** SSL handshake connection closed via error. */

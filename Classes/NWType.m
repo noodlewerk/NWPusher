@@ -80,6 +80,7 @@ NSString * descriptionForEnvironent(NWEnvironment environment)
         case kNWErrorSSLHandshakePeerCertExpired       : return @"SSL handshake certificate expired";
         case kNWErrorSSLHandshakePeerCertRevoked       : return @"SSL handshake certificate revoked";
         case kNWErrorSSLHandshakePeerCertUnknown       : return @"SSL handshake certificate unknown";
+        case kNWErrorSSLHandshakeInternalError         : return @"SSL handshake internal error";
         case kNWErrorSSLInDarkWake                     : return @"SSL handshake in dark wake";
         case kNWErrorSSLHandshakeClosedAbort           : return @"SSL handshake connection closed via error";
         case kNWErrorSSLHandshakeTimeout               : return @"SSL handshake timeout";

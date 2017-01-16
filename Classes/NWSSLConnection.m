@@ -143,6 +143,7 @@ OSStatus NWSSLWrite(SSLConnectionRef connection, const void *data, size_t *lengt
         case errSSLPeerCertExpired: return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakePeerCertExpired error:error];
         case errSSLPeerCertRevoked: return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakePeerCertRevoked error:error];
         case errSSLPeerCertUnknown: return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakePeerCertUnknown error:error];
+        case errSSLInternal: return [NWErrorUtil noWithErrorCode:kNWErrorSSLHandshakeInternalError error:error];
 #if !TARGET_OS_IPHONE
         case errSecInDarkWake: return [NWErrorUtil noWithErrorCode:kNWErrorSSLInDarkWake error:error];
 #endif

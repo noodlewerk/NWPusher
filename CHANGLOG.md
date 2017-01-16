@@ -3,6 +3,11 @@ Change Log
 
 ### master (unreleased)
 
+### 0.7.4 (2017-01-16)
+
+* Add support for handshake error (internal error)
+* Add detection of p12 without password
+
 ### 0.7.3 (2016-09-19)
 
 * Add support for Watch Kit certificates (DanielFontes)
