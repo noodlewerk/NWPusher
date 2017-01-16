@@ -206,6 +206,9 @@
             NSData *data = [NSData dataWithContentsOfURL:url];
             NSError *error = nil;
             NSArray *ids = [NWSecTools identitiesWithPKCS12Data:data password:password error:&error];
+            if (!ids && password.length == 0 && error.code == kNWErrorPKCS12Password) {
+                ids = [NWSecTools identitiesWithPKCS12Data:data password:nil error:&error];
+            }
             if (!ids) {
                 NWLogWarn(@"Unable to read p12 file: %@", error.localizedDescription);
                 return;

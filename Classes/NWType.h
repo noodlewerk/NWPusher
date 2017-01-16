@@ -151,6 +151,8 @@ typedef NS_ENUM(NSInteger, NWError) {
     kNWErrorPKCS12AuthFailed                   = -312,
     /** PKCS12 data wrong password. */
     kNWErrorPKCS12Password                     = -313,
+    /** PKCS12 data password required. */
+    kNWErrorPKCS12PasswordRequired             = -314,
     /** PKCS12 data contains no identities. */
     kNWErrorPKCS12NoItems                      = -307,
     /** PKCS12 data contains multiple identities. */

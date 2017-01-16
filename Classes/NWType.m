@@ -102,6 +102,7 @@ NSString * descriptionForEnvironent(NWEnvironment environment)
         case kNWErrorPKCS12Decode                      : return @"PKCS12 data cannot be read or is malformed";
         case kNWErrorPKCS12AuthFailed                  : return @"PKCS12 data password incorrect";
         case kNWErrorPKCS12Password                    : return @"PKCS12 data wrong password";
+        case kNWErrorPKCS12PasswordRequired            : return @"PKCS12 data password required";
         case kNWErrorPKCS12NoItems                     : return @"PKCS12 data contains no identities";
         case kNWErrorPKCS12MultipleItems               : return @"PKCS12 data contains multiple identities";
             

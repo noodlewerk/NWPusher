@@ -249,7 +249,7 @@ typedef NS_ENUM(NSInteger, NWCertType) {
 
 + (NSArray *)allIdentitiesWithPKCS12Data:(NSData *)data password:(NSString *)password error:(NSError *__autoreleasing *)error
 {
-    NSDictionary *options = @{(__bridge id)kSecImportExportPassphrase: password};
+    NSDictionary *options = password ? @{(__bridge id)kSecImportExportPassphrase: password} : @{};
     CFArrayRef items = NULL;
     OSStatus status = data ? SecPKCS12Import((__bridge CFDataRef)data, (__bridge CFDictionaryRef)options, &items) : errSecParam;
     NSArray *dicts = CFBridgingRelease(items);
@@ -259,6 +259,7 @@ typedef NS_ENUM(NSInteger, NWCertType) {
             case errSecAuthFailed: return [NWErrorUtil nilWithErrorCode:kNWErrorPKCS12AuthFailed error:error];
 #if !TARGET_OS_IPHONE
             case errSecPkcs12VerifyFailure: return [NWErrorUtil nilWithErrorCode:kNWErrorPKCS12Password error:error];
+            case errSecPassphraseRequired: return [NWErrorUtil nilWithErrorCode:kNWErrorPKCS12PasswordRequired error:error];
 #endif
         }
         return [NWErrorUtil nilWithErrorCode:kNWErrorPKCS12Import reason:status error:error];
