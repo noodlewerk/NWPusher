@@ -298,6 +298,46 @@ When connected read the device token and date of invalidation:
 
 Apple closes the connection after the last device token is read.
 
+Pushing to macOS
+---------------
+
+On macOS, you obtain a device token for your app by calling the `registerForRemoteNotificationTypes:` method of the `NSApplication` object. It is recommended that you call this method at launch time as part of your normal startup sequence. The first time your app calls this method, the app object requests the token from APNs. After the initial call, the app object contacts APNs only when the device token changes; otherwise, it returns the existing token quickly.
+
+The app object notifies its delegate asynchronously upon the successful or unsuccessful retrieval of the device token. You use these delegate callbacks to process the device token or to handle any errors that arose. You must implement the following delegate methods to track whether registration was successful:
+
+- Use the `application:didRegisterForRemoteNotificationsWithDeviceToken:` to receive the device token and forward it to your server.
+- Use the `application:didFailToRegisterForRemoteNotificationsWithError:` to respond to errors.
+
+Note: If the device token changes while your app is running, the app object calls the appropriate delegate method again to notify you of the change.
+
+The app delegate calls the `registerForRemoteNotificationTypes:` method as part of its regular launch-time setup, passing along the types of interactions that you intend to use. Upon receiving the device token, the `application:didRegisterForRemoteNotificationsWithDeviceToken:` method forwards it to the app’s associated server using a custom method. If an error occurs during registration, the app temporarily disables any features related to remote notifications. Those features are re-enabled when a valid device token is received.
+
+```objective-c
+    - (void)applicationDidFinishLaunching:(NSNotification *)notification {
+        // Configure the user interactions first.
+        [self configureUserInteractions];
+
+        [NSApp registerForRemoteNotificationTypes:(NSRemoteNotificationTypeAlert | NSRemoteNotificationTypeSound)];
+    }
+```
+
+```objective-c
+    - (void)application:(NSApplication *)application
+        didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+        // Forward the token to your server.
+        [self forwardTokenToServer:deviceToken];
+    }
+```
+
+```objective-c
+    - (void)application:(NSApplication *)application
+        didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+        NSLog(@"Remote notification support is unavailable due to error: %@", error);
+        [self disableRemoteNotificationFeatures];
+    }
+```
+
+
 Certificate and key files
 -------------------------
 Pusher reads certificate and key data from PKCS12 files. This is a binary format that bundles both X.509 certificates and a private key in one file. Conversion from other file formats to and from PKCS12 is provided by the OpenSSL CLI.
