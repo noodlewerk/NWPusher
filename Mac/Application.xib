@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12118"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner">
@@ -158,7 +159,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="600" height="300"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
             <value key="minSize" type="size" width="500" height="200"/>
             <view key="contentView" id="se5-gp-TjO">
                 <rect key="frame" x="0.0" y="0.0" width="600" height="300"/>
@@ -232,7 +233,7 @@
                         </popUpButtonCell>
                     </popUpButton>
                     <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EnU-aP-5PD">
-                        <rect key="frame" x="461" y="177" width="121" height="24"/>
+                        <rect key="frame" x="464" y="177" width="118" height="24"/>
                         <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" id="Olm-G5-Man">
                             <font key="font" metaFont="system"/>
                             <segments>
@@ -257,7 +258,7 @@
                             <action selector="push:" target="kaW-YJ-UA5" id="hXv-2c-nZa"/>
                         </connections>
                     </button>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="M70-t1-JuG">
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="M70-t1-JuG">
                         <rect key="frame" x="18" y="23" width="486" height="14"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="d6h-q1-H0e">
                             <font key="font" metaFont="smallSystem"/>
@@ -268,11 +269,11 @@
                     <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Q6j-iu-9I9">
                         <rect key="frame" x="20" y="45" width="560" height="130"/>
                         <clipView key="contentView" id="e4e-ov-ymY">
-                            <rect key="frame" x="1" y="1" width="558" height="150"/>
+                            <rect key="frame" x="1" y="1" width="558" height="128"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <textView importsGraphics="NO" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="ad5-lb-L5u">
-                                    <rect key="frame" x="0.0" y="0.0" width="558" height="150"/>
+                                <textView importsGraphics="NO" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="ad5-lb-L5u">
+                                    <rect key="frame" x="0.0" y="0.0" width="558" height="128"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <size key="minSize" width="558" height="128"/>
@@ -286,8 +287,6 @@
                                         </fragment>
                                     </attributedString>
                                     <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                                    <size key="minSize" width="558" height="128"/>
-                                    <size key="maxSize" width="573" height="10000000"/>
                                     <connections>
                                         <outlet property="delegate" destination="kaW-YJ-UA5" id="bUh-Oq-w5B"/>
                                     </connections>
@@ -300,11 +299,11 @@
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                         <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="sbz-Qw-fOe">
-                            <rect key="frame" x="543" y="1" width="16" height="150"/>
+                            <rect key="frame" x="543" y="1" width="16" height="128"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gQs-Aa-IJi">
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gQs-Aa-IJi">
                         <rect key="frame" x="470" y="49" width="104" height="14"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="100" id="Vlu-lQ-8rQ"/>
@@ -318,18 +317,16 @@
                     <scrollView hidden="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="z4n-XE-cfI">
                         <rect key="frame" x="20" y="45" width="560" height="130"/>
                         <clipView key="contentView" id="uaF-sl-etn">
-                            <rect key="frame" x="1" y="1" width="558" height="150"/>
+                            <rect key="frame" x="1" y="1" width="558" height="128"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <textView importsGraphics="NO" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="pi6-RR-ayT">
-                                    <rect key="frame" x="0.0" y="0.0" width="558" height="150"/>
+                                <textView importsGraphics="NO" richText="NO" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="pi6-RR-ayT">
+                                    <rect key="frame" x="0.0" y="0.0" width="558" height="128"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="backgroundColor" name="windowBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     <size key="minSize" width="558" height="128"/>
                                     <size key="maxSize" width="573" height="10000000"/>
                                     <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                                    <size key="minSize" width="558" height="128"/>
-                                    <size key="maxSize" width="573" height="10000000"/>
                                 </textView>
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -339,12 +336,12 @@
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                         <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="pny-Of-exT">
-                            <rect key="frame" x="543" y="1" width="16" height="150"/>
+                            <rect key="frame" x="543" y="1" width="16" height="128"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
                     <button translatesAutoresizingMaskIntoConstraints="NO" id="hU6-Ym-KR3">
-                        <rect key="frame" x="18" y="235" width="228" height="18"/>
+                        <rect key="frame" x="18" y="235" width="223" height="18"/>
                         <buttonCell key="cell" type="check" title="Should use sandbox environment" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="ros-Zj-bni">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
@@ -353,7 +350,7 @@
                             <action selector="sanboxCheckBoxDidPressed:" target="kaW-YJ-UA5" id="kzM-IO-iQv"/>
                         </connections>
                     </button>
-                    <comboBox verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xpc-0j-elb">
+                    <comboBox verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xpc-0j-elb">
                         <rect key="frame" x="20" y="208" width="563" height="23"/>
                         <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Device push token (only first 64 hex chars used, other text is ignored)" drawsBackground="YES" completes="NO" numberOfVisibleItems="5" id="Dzy-yi-6QY">
                             <font key="font" size="10" name="Monaco"/>
