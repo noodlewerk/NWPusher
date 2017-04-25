@@ -3,6 +3,8 @@ Change Log
 
 ### master (unreleased)
 
+* Add support for new certificate type (passes)
+
 ### 0.7.4 (2017-01-16)
 
 * Add support for handshake error (internal error)
