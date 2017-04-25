@@ -234,7 +234,7 @@ After a second or so, we can take a look to see if the notification was accepted
     } else if (read) {
         NSLog(@"Read and none failed");
     } else {
-        NSLog(@"Unable to read failed: %@", error);
+        NSLog(@"Unable to read: %@", error);
     }
 ```
 

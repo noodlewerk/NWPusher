@@ -3,7 +3,12 @@ Change Log
 
 ### master (unreleased)
 
+### 0.7.5 (2017-04-25)
+
 * Add support for new certificate type (passes)
+* Fix rich text (#49)
+* Fix app name (#47)
+* Update docs pushing to macOS
 
 ### 0.7.4 (2017-01-16)
 

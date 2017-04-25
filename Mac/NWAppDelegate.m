@@ -408,7 +408,7 @@
                 if (read) {
                     if (!failed) NWLogInfo(@"Payload has been pushed");
                 } else {
-                    NWLogWarn(@"Unable to read failed: %@", error.localizedDescription);
+                    NWLogWarn(@"Unable to read: %@", error.localizedDescription);
                 }
                 [_hub trimIdentifiers];
             });
