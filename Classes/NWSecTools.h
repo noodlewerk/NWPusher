@@ -43,6 +43,9 @@
 
 /** @name Inspection */
 
+/** Extracts the type and summary string. */
++ (NWCertType)typeWithCertificate:(NWCertificateRef)certificate summary:(NSString **)summary;
+
 /** Extracts the summary string. */
 + (NSString *)summaryWithCertificate:(NWCertificateRef)certificate;
 

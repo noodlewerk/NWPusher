@@ -3,6 +3,8 @@ Change Log
 
 ### master (unreleased)
 
+* add certificate type to description
+
 ### 0.7.5 (2017-04-25)
 
 * Add support for new certificate type (passes)

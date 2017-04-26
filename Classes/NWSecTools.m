@@ -7,33 +7,6 @@
 
 #import "NWSecTools.h"
 
-/** Types of push certificates. */
-typedef NS_ENUM(NSInteger, NWCertType) {
-    /** None. */
-    kNWCertTypeNone = 0,
-    /** iOS Development. */
-    kNWCertTypeIOSDevelopment = 1,
-    /** iOS Production. */
-    kNWCertTypeIOSProduction = 2,
-    /** OS X Development. */
-    kNWCertTypeMacDevelopment = 3,
-    /** OS X Production. */
-    kNWCertTypeMacProduction = 4,
-    /** Simplified Certificate Handling. */
-    kNWCertTypeSimplified = 5,
-    /** Web Push Production. */
-    kNWCertTypeWebProduction = 6,
-    /** VoIP Services. */
-    kNWCertTypeVoIPServices = 7,
-    /** WatchKit Services. */
-    kNWCertTypeWatchKitServices = 8,
-    /** Pass Type ID. */
-    kNWCertTypePasses = 9,
-    /** Unknown. */
-    kNWCertTypeUnknown = 10,
-};
-
-
 @implementation NWSecTools
 
 #pragma mark - Initialization

@@ -170,11 +170,13 @@
         NWCertificateRef certificate = pair[0];
         BOOL hasIdentity = (pair[1] != NSNull.null);
         NWEnvironmentOptions environmentOptions = [NWSecTools environmentOptionsForCertificate:certificate];
-        NSString *summary = [NWSecTools summaryWithCertificate:certificate];
+        NSString *summary = nil;
+        NWCertType certType = [NWSecTools typeWithCertificate:certificate summary:&summary];
+        NSString *type = descriptionForCertType(certType);
         NSDate *date = [NWSecTools expirationWithCertificate:certificate];
         NSString *expire = [NSString stringWithFormat:@"  [%@]", date ? [formatter stringFromDate:date] : @"expired"];
         // summary = @"com.example.app";
-        [_certificatePopup addItemWithTitle:[NSString stringWithFormat:@"%@%@ (%@)%@%@", hasIdentity ? @"imported: " : @"", summary, descriptionForEnvironentOptions(environmentOptions), expire, suffix]];
+        [_certificatePopup addItemWithTitle:[NSString stringWithFormat:@"%@%@ (%@ %@)%@%@", hasIdentity ? @"imported: " : @"", summary, type, descriptionForEnvironentOptions(environmentOptions), expire, suffix]];
         [suffix appendString:@" "];
     }
     [_certificatePopup addItemWithTitle:@"Import PKCS #12 file (.p12)..."];

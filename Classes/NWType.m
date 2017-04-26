@@ -31,6 +31,24 @@ NSString * descriptionForEnvironent(NWEnvironment environment)
     return nil;
 }
 
+NSString * descriptionForCertType(NWCertType type)
+{
+    switch (type) {
+        case kNWCertTypeNone: return @"none";
+        case kNWCertTypeIOSDevelopment:
+        case kNWCertTypeIOSProduction: return @"iOS";
+        case kNWCertTypeMacDevelopment:
+        case kNWCertTypeMacProduction: return @"macOS";
+        case kNWCertTypeSimplified: return @"All";
+        case kNWCertTypeWebProduction: return @"Website";
+        case kNWCertTypeVoIPServices: return @"VoIP";
+        case kNWCertTypeWatchKitServices: return @"WatchKit";
+        case kNWCertTypePasses: return @"Pass";
+        case kNWCertTypeUnknown: return @"unknown";
+    }
+    return nil;
+}
+
 @implementation NWErrorUtil
 
 + (NSString *)stringWithCode:(NWError)code
