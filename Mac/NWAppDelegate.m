@@ -23,6 +23,13 @@
     IBOutlet NSPopUpButton *_priorityPopup;
     IBOutlet NSScrollView *_logScroll;
     IBOutlet NSButton *_sanboxCheckBox;
+    
+    IBOutlet NSComboBox *_savedPayloadsCombo;
+    IBOutlet NSButton *_savePayloadButton;
+    IBOutlet NSButton *_loadPayloadButton;
+    
+    BOOL _isPayloadValidJSON;
+    NSDictionary *_savedPayloads;
 
     NWHub *_hub;
     NSDictionary *_config;
@@ -48,6 +55,7 @@
     [self migrateOldConfigurationIfNeeded];
     [self loadConfig];
     [self updateCertificatePopup];
+    [self updateSavedPayloads];
     
     NSString *payload = [_config valueForKey:@"payload"];
     _payloadField.string = payload.length ? payload : @"";
@@ -91,6 +99,8 @@
 - (void)controlTextDidChange:(NSNotification *)notification
 {
 //    if (notification.object == _tokenCombo) [self something];
+    
+    if (notification.object == _savedPayloadsCombo) [self updateSavedPayloadButtons];
 }
 
 - (IBAction)push:(NSButton *)sender
@@ -122,12 +132,80 @@
 }
 
 - (IBAction)selectOutput:(NSSegmentedControl *)sender {
+    _payloadField.hidden = sender.selectedSegment != 0;
+    _countField.hidden = sender.selectedSegment != 0;
     _logScroll.hidden = sender.selectedSegment != 1;
 }
 
 - (IBAction)readFeedback:(id)sender {
     [self feedback];
 }
+
+
+#pragma mark - Saved Payloads
+
+- (void)updateSavedPayloads
+{
+    NSLog(@"Update Saved Payloads Combo");
+    
+    [_savedPayloadsCombo removeAllItems];
+    _savedPayloads = [_config valueForKey:@"savedPayloads"];
+    NSLog(@"_savedPayloads : %@", _savedPayloads);
+    
+    if (!_savedPayloads) _savedPayloads = @{};
+    
+    if (_savedPayloads.count) [_savedPayloadsCombo addItemsWithObjectValues:_savedPayloads.allKeys];
+    [self updateSavedPayloadButtons];
+}
+
+- (void)updateSavedPayloadButtons
+{
+    BOOL hasPayloadKey = _savedPayloadsCombo.stringValue.length > 0;
+    BOOL isSavedPayload = [_savedPayloads valueForKey:_savedPayloadsCombo.stringValue] != nil;
+    
+    [_savePayloadButton setTitle: isSavedPayload ? @"Update" : @"Save"];
+    _savePayloadButton.enabled = _isPayloadValidJSON && hasPayloadKey;
+    _loadPayloadButton.enabled = isSavedPayload && hasPayloadKey;
+}
+
+- (IBAction)savedPayloadsComboDidChange:(NSComboBoxCell *)sender
+{
+    [self updateSavedPayloadButtons];
+}
+
+- (IBAction)loadPayload:(NSButton *)sender
+{
+    NSLog(@"Load Payload");
+    
+    NSString *key = _savedPayloadsCombo.stringValue;
+    if (!_savedPayloads || key.length <= 0) { return; }
+    
+    NSString *value = [_savedPayloads valueForKey: key];
+    _payloadField.string = value.mutableCopy;
+    
+    [self updatePayloadCounter];
+}
+
+- (IBAction)savePayload:(NSButton *)sender
+{
+    NSLog(@"Save Payload");
+    
+    NSString *key = _savedPayloadsCombo.stringValue.mutableCopy;
+    NSString *value = _payloadField.string.mutableCopy;
+    
+    NSMutableDictionary *updatedPayloads = _savedPayloads.mutableCopy;
+    
+    NSLog(@"Saving Payload");
+    NSLog(@"Key     : %@", key);
+    NSLog(@"value   : %@", value);
+    
+    [updatedPayloads setValue:value forKey:key];
+    [_config setValue: updatedPayloads.mutableCopy forKey: @"savedPayloads"];
+    
+    [self updateSavedPayloads];
+}
+
+
 
 #pragma mark - Certificate and Identity
 
@@ -267,9 +345,11 @@
 - (void)updatePayloadCounter
 {
     NSString *payload = _payloadField.string;
-    BOOL isJSON = !![NSJSONSerialization JSONObjectWithData:[payload dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
-    _countField.stringValue = [NSString stringWithFormat:@"%@  %lu", isJSON ? @"" : @"malformed", payload.length];
-    _countField.textColor = payload.length > 256 || !isJSON ? NSColor.redColor : NSColor.darkGrayColor;
+    _isPayloadValidJSON = !![NSJSONSerialization JSONObjectWithData:[payload dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+    _countField.stringValue = [NSString stringWithFormat:@"%@  %lu", _isPayloadValidJSON ? @"" : @"malformed", payload.length];
+    _countField.textColor = payload.length > 256 || !_isPayloadValidJSON ? NSColor.redColor : NSColor.controlTextColor;
+    
+    [self updateSavedPayloadButtons];
 }
 
 - (void)upPayloadTextIndex
@@ -601,7 +681,7 @@
 - (void)log:(NSString *)message warning:(BOOL)warning
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        _infoField.textColor = warning ? NSColor.redColor : NSColor.blackColor;
+        _infoField.textColor = warning ? NSColor.redColor : NSColor.controlTextColor;
         _infoField.stringValue = message;
         if (message.length) {
             NSDictionary *attributes = @{NSForegroundColorAttributeName: _infoField.textColor, NSFontAttributeName: [NSFont fontWithName:@"Monaco" size:10]};

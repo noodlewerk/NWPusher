@@ -15,5 +15,7 @@
 			<string>ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789 my-iphone</string>
 		</array>
 	</dict>
+	<key>savedPayloads</key>
+	<dict/>
 </dict>
 </plist>
