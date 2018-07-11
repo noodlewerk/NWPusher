@@ -150,7 +150,6 @@
     
     [_savedPayloadsCombo removeAllItems];
     _savedPayloads = [_config valueForKey:@"savedPayloads"];
-    NSLog(@"_savedPayloads : %@", _savedPayloads);
     
     if (!_savedPayloads) _savedPayloads = @{};
     
@@ -175,8 +174,6 @@
 
 - (IBAction)loadPayload:(NSButton *)sender
 {
-    NSLog(@"Load Payload");
-    
     NSString *key = _savedPayloadsCombo.stringValue;
     if (!_savedPayloads || key.length <= 0) { return; }
     
@@ -188,17 +185,11 @@
 
 - (IBAction)savePayload:(NSButton *)sender
 {
-    NSLog(@"Save Payload");
-    
     NSString *key = _savedPayloadsCombo.stringValue.mutableCopy;
     NSString *value = _payloadField.string.mutableCopy;
     
     NSMutableDictionary *updatedPayloads = _savedPayloads.mutableCopy;
-    
-    NSLog(@"Saving Payload");
-    NSLog(@"Key     : %@", key);
-    NSLog(@"value   : %@", value);
-    
+
     [updatedPayloads setValue:value forKey:key];
     [_config setValue: updatedPayloads.mutableCopy forKey: @"savedPayloads"];
     
