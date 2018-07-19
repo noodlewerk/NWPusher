@@ -94,7 +94,11 @@ static NWPusherViewController *controller = nil;
     
     NSArray *ids = [NWSecTools identitiesWithPKCS12Data:pkcs12 password:pkcs12Password error:&error];
     if (!ids) {
-        NWLogWarn(@"Unable to read p12 file: %@", error.localizedDescription);
+        if (error.code == kNWErrorPKCS12AuthFailed) {
+            NWLogWarn(@"%@:  Set pkcs12Password in NWAppDelegate.", error.localizedDescription);
+        } else {
+            NWLogWarn(@"Unable to read p12 file: %@", error.localizedDescription);
+        }
         return;
     }
     for (NWIdentityRef identity in ids) {
@@ -198,7 +202,11 @@ static NWPusherViewController *controller = nil;
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         //NSLog(@"failed notification: %@ %@ %lu %lu %lu", notification.payload, notification.token, notification.identifier, notification.expires, notification.priority);
-        NWLogWarn(@"Notification error: %@", error.localizedDescription);
+        if (error.code == kNWErrorAPNInvalidTokenContent) {
+            NWLogWarn(@"%@ error: Please set deviceToken properly in NWAppDelegate.", error.localizedDescription);
+        } else {
+            NWLogWarn(@"Notification error: %@", error.localizedDescription);
+        }
     });
 }
 
