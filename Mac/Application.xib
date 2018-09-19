@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13771" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13771"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -155,7 +155,7 @@
                 </menuItem>
             </items>
         </menu>
-        <window title="Pusher" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" animationBehavior="default" id="F0z-JX-Cv5">
+        <window title="Pusher" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="F0z-JX-Cv5">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="600" height="300"/>
@@ -179,7 +179,7 @@
                         </connections>
                     </button>
                     <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="aJR-Gv-8Xr">
-                        <rect key="frame" x="18" y="256" width="463" height="26"/>
+                        <rect key="frame" x="18" y="256" width="463" height="25"/>
                         <popUpButtonCell key="cell" type="push" title="Select certificate" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="RvW-sH-WOM" id="XcZ-r4-iAc">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="menu"/>
@@ -194,7 +194,7 @@
                         </connections>
                     </popUpButton>
                     <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="imk-VN-mp1">
-                        <rect key="frame" x="18" y="180" width="155" height="26"/>
+                        <rect key="frame" x="18" y="180" width="155" height="25"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="150" id="rN0-Vp-M6c"/>
                         </constraints>
@@ -216,7 +216,7 @@
                         </popUpButtonCell>
                     </popUpButton>
                     <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="c5v-al-Hn5">
-                        <rect key="frame" x="176" y="180" width="160" height="26"/>
+                        <rect key="frame" x="176" y="180" width="160" height="25"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="155" id="DV9-wc-su5"/>
                         </constraints>
@@ -268,25 +268,27 @@
                     </textField>
                     <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Q6j-iu-9I9">
                         <rect key="frame" x="20" y="45" width="560" height="130"/>
-                        <clipView key="contentView" id="e4e-ov-ymY">
+                        <clipView key="contentView" drawsBackground="NO" id="e4e-ov-ymY">
                             <rect key="frame" x="1" y="1" width="558" height="128"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textView importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="panel" allowsCharacterPickerTouchBarItem="NO" allowsUndo="YES" allowsNonContiguousLayout="YES" textCompletion="NO" id="ad5-lb-L5u">
                                     <rect key="frame" x="0.0" y="0.0" width="558" height="128"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     <size key="minSize" width="558" height="128"/>
                                     <size key="maxSize" width="573" height="10000000"/>
                                     <attributedString key="textStorage">
                                         <fragment content="..">
                                             <attributes>
+                                                <color key="NSColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                 <font key="NSFont" metaFont="smallSystem"/>
                                                 <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
                                             </attributes>
                                         </fragment>
                                     </attributedString>
-                                    <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="insertionPointColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <allowedInputSourceLocales>
                                         <string>NSAllRomanInputSourcesLocaleIdentifier</string>
                                     </allowedInputSourceLocales>
@@ -295,13 +297,12 @@
                                     </connections>
                                 </textView>
                             </subviews>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         </clipView>
-                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="66p-aq-6FU">
+                        <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="66p-aq-6FU">
                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
-                        <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="sbz-Qw-fOe">
+                        <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="sbz-Qw-fOe">
                             <rect key="frame" x="543" y="1" width="16" height="128"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
@@ -326,19 +327,20 @@
                                 <textView importsGraphics="NO" richText="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="pi6-RR-ayT">
                                     <rect key="frame" x="0.0" y="0.0" width="558" height="128"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="windowBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     <size key="minSize" width="558" height="128"/>
                                     <size key="maxSize" width="573" height="10000000"/>
-                                    <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="insertionPointColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                 </textView>
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         </clipView>
-                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="5mH-NO-A0y">
+                        <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="5mH-NO-A0y">
                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
-                        <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="pny-Of-exT">
+                        <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="pny-Of-exT">
                             <rect key="frame" x="543" y="1" width="16" height="128"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
@@ -365,6 +367,19 @@
                             <outlet property="delegate" destination="kaW-YJ-UA5" id="ZZ9-SB-ZBN"/>
                         </connections>
                     </comboBox>
+                    <button verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ztj-3C-7c9">
+                        <rect key="frame" x="425" y="13" width="83" height="32"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="70" id="Qjq-FC-hAl"/>
+                        </constraints>
+                        <buttonCell key="cell" type="push" title="Format" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Zo9-sz-wg6">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="formatPayload:" target="kaW-YJ-UA5" id="7qc-1W-23n"/>
+                        </connections>
+                    </button>
                 </subviews>
                 <constraints>
                     <constraint firstAttribute="trailing" secondItem="pAB-wf-piT" secondAttribute="trailing" constant="20" id="1DK-KM-tMh"/>
@@ -408,6 +423,7 @@
                 <outlet property="_certificatePopup" destination="aJR-Gv-8Xr" id="A43-MU-5mS"/>
                 <outlet property="_countField" destination="gQs-Aa-IJi" id="miX-ao-hNk"/>
                 <outlet property="_expiryPopup" destination="imk-VN-mp1" id="t7w-Mt-DKL"/>
+                <outlet property="_formatButton" destination="ztj-3C-7c9" id="RB8-aX-D5S"/>
                 <outlet property="_infoField" destination="M70-t1-JuG" id="dcG-qS-Mll"/>
                 <outlet property="_logField" destination="pi6-RR-ayT" id="aq6-2Z-ytl"/>
                 <outlet property="_logScroll" destination="z4n-XE-cfI" id="qve-u7-cAW"/>
