@@ -601,7 +601,7 @@
 - (void)log:(NSString *)message warning:(BOOL)warning
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        _infoField.textColor = warning ? NSColor.redColor : NSColor.blackColor;
+        _infoField.textColor = warning ? NSColor.redColor : NSColor.textColor;
         _infoField.stringValue = message;
         if (message.length) {
             NSDictionary *attributes = @{NSForegroundColorAttributeName: _infoField.textColor, NSFontAttributeName: [NSFont fontWithName:@"Monaco" size:10]};
