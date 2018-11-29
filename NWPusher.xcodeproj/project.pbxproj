@@ -45,8 +45,8 @@
 		5C7803C01D3C488C002107FB /* NWSSLConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = B3F232AA189682D30043DA98 /* NWSSLConnection.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5C7803C11D3C488C002107FB /* NWType.h in Headers */ = {isa = PBXBuildFile; fileRef = B34BF1B218DDF401004BA9F7 /* NWType.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5C7803C21D3C488C002107FB /* NWLCore.h in Headers */ = {isa = PBXBuildFile; fileRef = B3376A62172BB71200242EBB /* NWLCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9449878121AFFD8000C728AB /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 9449878021AFFD8000C728AB /* icon.icns */; };
 		B3005FC318F43659009BB7C3 /* Application.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3005FC218F43659009BB7C3 /* Application.xib */; };
-		B33FB1C8172B185C006529CE /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = B33FB1BB172B185C006529CE /* icon.icns */; };
 		B33FB1C9172B185C006529CE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B33FB1BC172B185C006529CE /* main.m */; };
 		B33FB1CB172B185C006529CE /* NWAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B33FB1BF172B185C006529CE /* NWAppDelegate.m */; };
 		B33FB1F8172B1A7A006529CE /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B33FB1EE172B1A7A006529CE /* Default-568h@2x.png */; };
@@ -121,10 +121,10 @@
 		5C7803A61D3C4826002107FB /* PusherKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PusherKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C7803A81D3C4826002107FB /* PusherKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PusherKit.h; sourceTree = "<group>"; };
 		5C7803A91D3C4826002107FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9449878021AFFD8000C728AB /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
 		B3005FC218F43659009BB7C3 /* Application.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Application.xib; sourceTree = "<group>"; };
 		B3376A61172BB71200242EBB /* NWLCore.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = NWLCore.c; path = Mac/NWLCore.c; sourceTree = SOURCE_ROOT; };
 		B3376A62172BB71200242EBB /* NWLCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NWLCore.h; path = Mac/NWLCore.h; sourceTree = SOURCE_ROOT; };
-		B33FB1BB172B185C006529CE /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
 		B33FB1BC172B185C006529CE /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B33FB1BE172B185C006529CE /* NWAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWAppDelegate.h; sourceTree = "<group>"; };
 		B33FB1BF172B185C006529CE /* NWAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWAppDelegate.m; sourceTree = "<group>"; };
@@ -253,7 +253,7 @@
 		B3376A60172B9F1F00242EBB /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				B33FB1BB172B185C006529CE /* icon.icns */,
+				9449878021AFFD8000C728AB /* icon.icns */,
 				B33FB1BC172B185C006529CE /* main.m */,
 				B33FB1C0172B185C006529CE /* PusherMac-Info.plist */,
 				B33FB1C1172B185C006529CE /* PusherMac-Prefix.pch */,
@@ -539,8 +539,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9449878121AFFD8000C728AB /* icon.icns in Resources */,
 				B3C6BE0115FD30E900F1F3F1 /* README.md in Resources */,
-				B33FB1C8172B185C006529CE /* icon.icns in Resources */,
 				B3005FC318F43659009BB7C3 /* Application.xib in Resources */,
 				B3B4DCD318A7998300F9F258 /* LICENSE.txt in Resources */,
 				B3AFABEF172C81910027346A /* config.plist in Resources */,
