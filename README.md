@@ -14,7 +14,7 @@ Installation
 Install the Mac app using [Homebrew cask](https://github.com/caskroom/homebrew-cask):
 
 ```shell
-brew cask install pusher
+brew install pusher
 ```
 
 Or download the latest `Pusher.app` binary:
